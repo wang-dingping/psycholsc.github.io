@@ -24,6 +24,9 @@ github_username:  psycholsc
 QQ_username: 362546643
 # Build settings
 markdown: kramdown
+kramdown:
+  input: GFM # Enable GitHub Flavored Markdown (fenced code blocks)
+  hard_wrap: false
 theme: minima
 gems:
   - jekyll-feed
