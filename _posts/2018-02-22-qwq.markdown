@@ -14,14 +14,17 @@ comments: true
 ### STEP 1
 首先确认自己有没有GitHub的账户，登录自己的GitHub账户，然后去GitHub上面fork一个其他人已经提前做好的空模板，[这是一个真·空模板][empty]
 这个模板里面什么都没有，只有jekyII初始自动生成的少量字符。
+
 对了值得一提的是这里使用的是jekyII。使用的时候可以不用知道这是什么，以后希望继续使用的时候可以深入了解一下orz
 ### STEP 2
 在repo的Settings里面找到rename，rename框里面填写
+
 **你的GitHub账户名.github.io**
 
 然后就结束了，直接访问上面刚输入的那个域名就可以访问到自己的博客了。
 
 ---
+
 当然第一篇文章就写这么短不太好。那么后面再加一些
 
 1.这个博客中博文是以markdown的形式写的，markdown的格式参考给一个[传送门][url1]
