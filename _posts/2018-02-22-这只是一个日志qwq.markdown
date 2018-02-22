@@ -7,12 +7,9 @@ comments: true
 ---
 今天尝试搭了一个简单的博客，一向是 ~~极简主义~~ 懒 的我也终于 ~~货比三家~~ 翻了许多教程实例，选了一个**最简单**的模板搭建
 然后这里也顺便试试markdown的语法（笑）
-
-# 最简单的搭建方法
----
-
+## 最简单的搭建方法
 ### STEP 1
-首先确认自己有没有GitHub的账户，登录自己的GitHub账户，然后去GitHub上面fork一个其他人已经提前做好的空模板，[这是一个真·空模板][empty]
+首先确认自己有没有GitHub的账户，登录自己的GitHub账户，然后去GitHub上面fork一个其他人已经提前做好的空模板，[这是一个真·空模板](https://github.com/lizer/jekyll-blog)
 这个模板里面什么都没有，只有jekyII初始自动生成的少量字符。
 对了值得一提的是这里使用的是jekyII。使用的时候可以不用知道这是什么，以后希望继续使用的时候可以深入了解一下orz
 ### STEP 2
@@ -21,17 +18,14 @@ comments: true
 
 然后就结束了，直接访问上面刚输入的那个域名就可以访问到自己的博客了。
 
+
+
+
 ---
 当然第一篇文章就写这么短不太好。那么后面再加一些
-1.这个博客中博文是以markdown的形式写的，markdown的格式参考给一个[传送门][url1]
-2.jekyII这里可以使用的功能还很多，这里也没有全部列举，再给一个[传送门][url2]
+1.这个博客中博文是以markdown的形式写的，markdown的格式参考给一个[传送门](https://www.jianshu.com/p/cd044443a1a6)
+2.jekyII这里可以使用的功能还很多，这里也没有全部列举，再给一个[传送门](https://lizer.github.io/2017/03/03/%E4%B8%89%E5%88%86%E9%92%9F%E5%9C%A8github%E4%B8%8A%E6%9E%B6%E5%A5%BD%E5%8D%9A%E5%AE%A2.html)
 3.~~fgo iOS官服 py码 100,103,988,534~~
-
-[empty]: https://github.com/lizer/jekyll-blog
-[url1]:   https://www.jianshu.com/p/cd044443a1a6
-[url2]:https://lizer.github.io/2017/03/03/%E4%B8%89%E5%88%86%E9%92%9F%E5%9C%A8github%E4%B8%8A%E6%9E%B6%E5%A5%BD%E5%8D%9A%E5%AE%A2.html
-
-
 
 {% if page.comments %}
 <div id="disqus_thread"></div>
