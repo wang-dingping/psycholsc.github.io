@@ -17,7 +17,7 @@ comments: true
 对了值得一提的是这里使用的是jekyII。使用的时候可以不用知道这是什么，以后希望继续使用的时候可以深入了解一下orz
 ### STEP 2
 在repo的Settings里面找到rename，rename框里面填写 
-    你的GitHub账户名.github.io
+**你的GitHub账户名.github.io**
 
 然后就结束了，直接访问上面刚输入的那个域名就可以访问到自己的博客了。
 
