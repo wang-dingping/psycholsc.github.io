@@ -1,8 +1,8 @@
 ---
 layout: post
-title:  "qwq"
+title:  "可能是一篇日志吧"
 date:   2018-02-22 19:19:13 +0000
-categories: jekyll update
+categories: git push
 comments: true
 ---
 今天尝试搭了一个简单的博客，一向是 ~~极简主义~~ 懒 的我也终于 ~~货比三家~~ 翻了许多教程实例，选了一个**最简单**的模板搭建
@@ -23,8 +23,11 @@ comments: true
 
 ---
 当然第一篇文章就写这么短不太好。那么后面再加一些
+
 1.这个博客中博文是以markdown的形式写的，markdown的格式参考给一个[传送门][url1]
+
 2.jekyII这里可以使用的功能还很多，这里也没有全部列举，再给一个[传送门][url2]
+
 3.~~fgo iOS官服 py码 100,103,988,534~~
 
 [empty]: https://github.com/lizer/jekyll-blog
