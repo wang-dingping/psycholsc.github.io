@@ -24,7 +24,7 @@ github_username:  psycholsc
 QQ_username: 362546643
 # Build settings
 markdown: kramdown
-intensedebate_comments: true
+comments: true
 theme: minima
 gems:
   - jekyll-feed
