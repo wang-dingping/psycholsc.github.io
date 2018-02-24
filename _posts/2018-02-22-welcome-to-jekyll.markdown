@@ -31,7 +31,7 @@ Check out the [Jekyll docs][jekyll-docs] for more info on how to get the most ou
 <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
 <script>
 var gitment = new Gitment({
-  id: '页面 ID', // 可选。默认为 location.href
+  id: '-2', // 可选。默认为 location.href
   owner: 'psycholsc',
   repo: 'temp',
   oauth: {
