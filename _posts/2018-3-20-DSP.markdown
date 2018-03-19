@@ -6,6 +6,8 @@ categories: git push
 comments: true
 ---
 
+校园网状态较差，公式加载缓慢。
+
 <script type="text/javascript" 
   src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
 </script>
