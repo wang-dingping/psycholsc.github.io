@@ -20,7 +20,7 @@ comments: true
 
 使用熟悉的启动方式运行，图形壳出现。根据设定选择用于计算的exe程序（不同环境下需要另外编译），进行运算。诶**可是他卡死了、可是他卡死了、可是他卡死了**
 
-使用KeyBoardInterupt进行中断后问题多次定位在了向终端写入
+使用KeyBoardInterupt进行中断后问题多次定位在了从计算程序读取
 
 {% highlight python %}
 self.msg = self.proc.stdout.readline().decode()
