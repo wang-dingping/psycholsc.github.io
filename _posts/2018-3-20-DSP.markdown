@@ -58,3 +58,21 @@ $$a_{k}=\frac{1}{T}X(j\Omega)|_{\Omega = k\omega_{0}}$$
 对于存在周期的时间信号，对其做傅里叶分解时一定会得到以某一组以基波频率为主的时间信号。我们不妨只取这个信号的振幅大小作为参考，绘制在一个以频率为自变量的轴上，此时我们便得到了傅里叶变换（级数）。而连续信号得到的频域变换此时仍然没有形成周期的理由。
 
 >傅里叶级数是一种用来分析频域的方式，通过某种变换积分变换，我们能够将周期信号中的某些信息从中摘出。由于三角函数系的正交性，我们很容易得到某个周期信号（函数）是可以分解为若干（甚至无穷多）个正弦信号（函数）。因此我们可以通过傅里叶级数简单分析某种信号的频域组成。而当信号是有限长非周期时，我们往往可以认为信号周期是无穷大（$$\infty$$），而每条频率谱线的间隔就和周期有关，周期越大则谱线会越密集，最终形成一个连续函数。
+
+{% if page.comments %}
+<div id="container"></div>
+<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+  id: '3', // 可选。默认为 location.href
+  owner: 'psycholsc',
+  repo: 'temp',
+  oauth: {
+    client_id: '9183e7259ea6d850a7df',
+    client_secret: 'd0a82473ca685629b50ded0553f402b6ba2b2dee',
+  },
+})
+gitment.render('container')
+</script>
+{% endif %}
