@@ -1,0 +1,50 @@
+---
+layout: post
+title:  "自控提纲"
+date:   2018-04-23 10:56:13 +0000
+categories: git push
+comments: true
+---
+
+<script type="text/javascript" 
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+#自动控制原理复习提纲
+
+1. 绘制系统对应的信号流图
+2. 求系统的总增益$\frac{C(s)}{R(s)}$ - 梅森公式/传统法 计算
+3. 已知开环传递函数，求闭环传递函数
+4. 求系统在三种条件下的输出响应（三个输入分别为冲激、阶跃和斜坡）
+5. 超调量$\sigma_p$与过渡时间（2%）计算
+6. 求系统的稳态误差（输入仍然是冲激、阶跃与斜坡）
+7. 已知特征方程，求对应系统的稳定性并求出所有特征根 - 或者是其他稳定性判断问题
+8. 闭环根轨迹的画法（详细过程）
+9. 证明根轨迹上存在点并确定此时的k值（相角条件等方式）
+10. 绘制系统的波特图
+11. 求系统相位裕度和系统稳定临界条件
+12. 设计超前或滞后校正网络，使得系统满足规定条件
+13. 线性定常系统的可观性与可控性判断
+14. 可观测性
+15. 一道很难的矩阵题
+
+复习资料：[点此下载](https://github.com/psycholsc/psycholsc.github.io/blob/master/assets/%E8%87%AA%E5%8A%A8%E6%8E%A7%E5%88%B6%E5%8E%9F%E7%90%86pptx.rar)
+
+{% if page.comments %}
+<div id="container"></div>
+<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+  id: '6', // 可选。默认为 location.href
+  owner: 'psycholsc',
+  repo: 'temp',
+  oauth: {
+    client_id: '9183e7259ea6d850a7df',
+    client_secret: 'd0a82473ca685629b50ded0553f402b6ba2b2dee',
+  },
+})
+gitment.render('container')
+</script>
+{% endif %}
+
