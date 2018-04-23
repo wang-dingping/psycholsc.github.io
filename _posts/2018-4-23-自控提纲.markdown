@@ -10,7 +10,7 @@ comments: true
   src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
 </script>
 
-#自动控制原理复习提纲
+# 自动控制原理复习提纲
 
 1. 绘制系统对应的信号流图
 2. 求系统的总增益$\frac{C(s)}{R(s)}$ - 梅森公式/传统法 计算
