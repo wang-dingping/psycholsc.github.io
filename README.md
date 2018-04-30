@@ -1,3 +1,5 @@
 **Look at My Eyes**
 
-![pic](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/7a7e751ed21b0ef40516680dd1c451da80cb3e27.jpg)
+![pic](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/IMG_8072.JPG)
+
+Pixiv id=68304229
