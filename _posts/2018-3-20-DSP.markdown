@@ -14,7 +14,6 @@ comments: true
 
 # DSP - 数字信号处理
 
-
 ---
 
 数字计算机的出现和高速发展为信号处理提供了强有力的手段，而在目前的许多应用方面，数字方法也逐渐替代了传统的模拟方法进行信号处理。
@@ -172,6 +171,383 @@ $$x(n)=IDFT[X(k)]=\frac{1}{N}\sum_{n=0}^{N-1}X(k)e^{j(\frac{2\pi}{N})nk}$$
 为了抑制高频噪声（当然也可能出现其他噪声信号），必须要做一定处理。这里经常做的处理是
 
 下回再说。
+
+
+
+**FFT 基本原理**
+
+1.  FFT引入
+
+FFT是为了减少DFT计算次数而引入的快速有效的算法。对于DFT问题的直接计算，常用公式为
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image002.png)
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image004.png)
+
+二者的主要差别在于W上的指数出现不同，以及一个比例因子（实际上分析过程中更经常考虑的是相对值的比例关系）。
+
+由于计算时采用的信号和变换结果都是复序列，直接计算需要N次计算，复数乘积需要N-1次加法运算，对于N个点的变换结果，一共需要![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image006.png)次复数乘法和N(N-1)次的复数相加。如果将乘法分解为加法运算，我们容易发现整个DFT过程需要4![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image006.png)次乘法运算和2N(N-1)次相加。计算量巨大，因此需要FFT的改进。而改善的基本思路就是利用DFT的一些性质，例如对称性和周期性等，可以将有些项合并或分解。
+
+2.  按时间抽取（DIT）的FFT
+
+此时假设![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image008.png)，即2的整数次幂。如果不满足这个条件，就要采用补零的方式人为添加到这个点数。这种FFT也成为基-2FFT。
+
+此时按时间抽取时间序列为
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image010.png)
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image012.png)
+
+则原式可以写成
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image014.png)
+
+其中前者n为偶数，后者n为奇数，因此将n替换为对应的r后，容易整理得到
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image016.png)
+
+两项分别为奇序列和偶序列。这样就能够把一个长度为N的序列分解为两个N/2长度的序列进行计算。但是此时算得的内容还只是所需内容的前一半。根据W的对称性，我们可以得到后一半的表达式
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image018.png)
+
+将两部分合并得到的就是完整的变换结果。此时使用的时间就会大大减少。又容易知道，由于![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image008.png)，因此容易知道N/4也是整数。那么还可以对奇序列和偶序列继续进行和上方相似的分解，由上面分析的原理可以知道，计算速度会进一步加快。可以计算得到，整个操作中进行的复乘法数和复加法数都与![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image020.png)成正比，因此可以记时间复杂度为![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image020.png)，当数量N较大时，计算速度相比DFT提升十分明显。
+
+按时间抽取的FFT算法中，我们发现每一级FFT中的计算都是N个复数经过N/2个蝶形运算后变成了另外N个复数据，而每一级的数据经过计算后都可以直接抹去，对后面的计算没有影响，因此只用N个寄存器就能完成整个计算的过程，所有的计算都在原位完成，节省设备降低成本。
+
+输出往往是乱序的，又或是单纯输入乱序，这个原因是二进制反序问题。
+
+| 序号 | 二进制码 | 反序码 | 反序序号 |
+| ---- | -------- | ------ | -------- |
+| 0    | 000      | 000    | 0        |
+| 1    | 001      | 100    | 4        |
+| 2    | 010      | 010    | 2        |
+| 3    | 011      | 110    | 6        |
+| 4    | 100      | 001    | 1        |
+| 5    | 101      | 101    | 5        |
+| 6    | 110      | 011    | 3        |
+| 7    | 111      | 111    | 7        |
+
+通过一些特殊的处理也可以使输出为顺序的，这里不做赘述。
+
+时间序列进行抽取的FFT算法还有许多不同的变体，·1例如舍弃原位运算的特性而支持进行顺序输出，或者更改输入顺序而获得顺序输出等。
+
+3.  按频率抽取（DIF）的FFT算法
+
+仍然限定信号为![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image008.png)，且幂为整数时。此时分组选择按前后两半进行分组，此时可以将计算式写为
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image022.png)
+
+而根据定义![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image024.png)，那么可以认为![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image026.png)，![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image028.png)。根据k的奇偶性，可以将X(k)分为两部分。经过计算可以得到，此处变换结果是按照奇偶分类的。因此按频率抽取能够将N点的DFT变换分解为两个![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image030.png)的DFT。而这个过程实际上还可以继续分解下去，直到分解为两个点的DFT。
+
+简单比较可以得到DIT和DIF存在的不同。
+
+1.  DIF的输入是自然顺序，但输出却是反序序列，与DIT相反。当然变换顺序经过一些操作后是可以变化的。
+
+2.  DIF和DIT的蝶形运算图实际上是不同的（参考课本图片4-1和4-15）。DIT是在DFT运算后进行的蝶形运算，而DIF是在进行蝶形运算分组处理等之后才进行了DFT运算。
+
+但是实际上两类算法还有许多共同点
+
+1.   复乘法和加法运算次数相同，均为![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image032.png)次运算，计算量上二者是相同的。
+
+2.  两种算法均可以进行原位运算，且对于每一种按时间抽取的FFT算法都有一种按频率抽取的FFT算法流形图与其互为转置。
+
+
+
+4.  离散傅里叶逆变换的快速算法（IFFT）
+
+根据DFT公式
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image002.png)
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image004.png)
+
+容易发现在计算过程中替换某一部分内容，两个公式可以相互转化。例如根据以上公式，用![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image034.png)代替![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image036.png)，并将结果的系数![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image038.png)转移，我们就能获得相反的计算。因此原计算流图不变，只将输入输出改变，并更改运算中参与的部分算子，就能实现IFFT算法。此时只需要稍加修改FFT的程序就能完成计算。
+
+5.  N为复合数的FFT算法——统一的FFT算法介绍
+
+上面只对![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image008.png)的信号进行讨论，而实际应用中信号长度往往并非这个长度。常用的处理手段是
+
+1.    将原信号补零到最近的一个![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image008.png)位置。当差距较小的时候可以使用，但当差距较大时，我们这样的操作会浪费算力。虽然计算结果并不受影响，但是却浪费了时间与计算资源。
+
+2.  使用CZT方法
+
+3.  分解后使用统一的FFT方法。
+
+假定待计算的N点DFT是一个复合数，N=ML，那么可以用下面的公式表达
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image040.png)
+
+其中![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image042.png)不超过L-1，![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image044.png)不超过M-1。下面举例N=12，M=3，L=4，则可以将原信号排列为矩阵的形式
+
+|      | 0    | 1    | 2    | 3    |
+| ---- | ---- | ---- | ---- | ---- |
+| 0    | 0    | 1    | 2    | 3    |
+| 1    | 4    | 5    | 6    | 7    |
+| 2    | 8    | 9    | 10   | 11   |
+
+这样每一个点都可以由![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image046.png)表示，对于输出频谱也是同理。此时输出可以表示为
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image048.png)
+
+将![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image050.png)与W项进行逐项组合并求和后，我们得到
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image052.png)
+
+这样能够达成对N点傅里叶变换的分解目的，将N点原信号分解为若干小信号，并通过n（或者k）将输入输出序列的顺序进行对应。其详细运算过程如下
+
+首先将N点信号进行分解，分解方式如上文描述
+
+其次对列做M个L点DFT
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image054.png)
+
+把N个![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image056.png)乘相对的旋转因子![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image058.png)组成新序列![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image060.png)
+
+对行做L个M点的DFT
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image062.png)
+
+对计算结果进行译序。做上述操作仍然遵循FFT的基本思想，即将大点数的DFT转换为较小点数的DFT运算，因此这样的分解操作是可以节省计算量的。
+
+当然，如果N是一个高度可分解的数，当分解为N=ML后，仍然可以将M和L进行进一步分解。流图形式可以仿照前面的画法进行分解，这样可以节约更多效率。
+
+有时分解并不唯一，经常将复合数表示为
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image064.png)
+
+当r=2时我们称之为基-2算法，其他时候同理。由于计算机运算时n取2的整数幂时较为方便，因此2的整数幂基数FFT算法受到重视。
+
+ 
+
+6.  分裂基FFT算法
+
+理论上讲采用更高的基数可以得到更快的算法，但是此时硬件实现或程序实现都变得更加麻烦。此处应用分裂基算法将会进一步减少运算量并加快运算速度。
+
+设N=Pq，并且![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image066.png)，q=4，则此时可以套用上面的分解方式将x和X表示出来。则
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image068.png)
+
+其傅里叶变换结果也是相似的形式。稍加变换可以得到频域上每四个点抽取的表达式![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image070.png)。将第一个和第三个偶数项进行合并得到一个统一的偶数项![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image072.png)，因此可以将变换结果视为将一个N点DFT变换分解为一个![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image030.png)点的DFT和两个![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image074.png)点的DFT。后面还可以进行进一步分解，如此可以降低运算量。
+
+理论上分裂基FFT的运算量要比一般的基-2FFT少，但是由于出现了较多的条件判断语句与跳转，实际上程序实现的效率提升可能并不明显。当使用专用设计的芯片时，该类算法可能有较大的应用空间。
+
+7.  实序列的FFT
+
+常见的信号大多都是实信号，但是前面的理论计算时，输入序列均为复序列，因此在实际应用中需要进行修改。
+
+1.  一个N点FFT同时计算两个N点序列。假设两个相互独立的N点实序列，他们的傅里叶变换分别为
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image076.png)
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image078.png)
+
+ 
+
+这两个傅里叶变换可以通过一次FFT获得。我们假设一个序列是实数，一个是虚数，那么整个序列可以看做是
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image080.png)
+
+ 
+
+这个序列经过FFT以后可以获得
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image082.png)
+
+根据复序列的特性，我们可以通过这个结果求得两个序列分别的傅里叶变换，即通过一次FFT运算同时计算了两个相同长度实序列的FFT。
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image084.png)
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image086.png)
+
+2.  一个N点FFT运算一个2N点的实序列。
+
+实际上原理大同小异，只是将2N长度实序列进行分组，按奇数和偶数进行分组如下
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image088.png)
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image090.png)
+
+然后将两个分组组成一个复序列，运算后，通过以下关系获取原序列的FFT变换序列。
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image082.png)
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image092.png)
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image094.png)
+
+8.  线性调频z变换算法
+
+前面提到，当N为高度复合的数时，往往要采取CZT算法进行运算。对于一个信号序列，它的z变换为
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image096.png)
+
+为了适应z可以沿z平面内更一般的路径取值，可以令z的取样点为![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image098.png),
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image100.png)
+
+M是需要分析的信号的点数，不用等于N，可以比N小。A和W是任意复数，
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image102.png)
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image104.png)
+
+此时在复平面上的取样点轨迹是一条曲率半径变化的圆弧，这里不再赘述各个参数的具体意义。但是经过一定的巧妙代换与推导后，我们发现利用z变换的FFT结果是一个卷积的形式，即
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image106.png)
+
+其中
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image108.png)
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image110.png)
+
+这里的离散卷积可以通过圆周卷积求得，而圆周卷积可以通过FFT计算。由于其频率随n线性增长，因此此信号在雷达系统中又被称为线性调频信号。
+
+当计算量较大时，CZT方法比传统方法要快很多。相比之下CZT还有如下特点
+
+1.  输入序列长度N，但是可以选择只分析M个点。
+
+2.  N和M实际上均可以为素数，不需要高度合成。
+
+3.  频率分辨率是任意的。
+
+4.  螺旋形周线在语音信号分析中有一定优势
+
+5.  起点可以任意选取，可以从任意频率开始输入数据进行窄带的高分辨率的分析
+
+6.  CZT中包含传统DFT的特殊情况，即使是在素数的条件下都能计算。
+
+9.  FFT的应用
+
+常见用途为
+
+1.  利用FFT快速求卷积。时域上的卷积运算实际上相当于频域上的乘法运算，计算有一定优势。常见的计算场景有用FFT求**有限长序列间的卷积及求有限长序列与一很长序列的卷积**等。虽然计算流程在频域转换了一次，并且转换回时域，但由于FFT的高效性，实际上这样的卷积更快。
+
+2.  利用FFT求快速相关。相关计算和卷积计算的公式很像，其计算意义为求解两个序列之间的相关性。
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image112.png)
+
+快速相关计算的速度相当于快速卷积的处理速度。
+
+ 
+
+**三、****实验备注**
+
+附带的程序中，包括一个做过底层优化的FFT算法，采用快速数论变换的方法，其运算速度在点数较多的条件下比本章中介绍的算法明显快一些。
+
+**四、****实验验证**
+
+1.  针对典型序列，选择基-2FFT并用C语言编程实现。
+
+首先选取64点FFT。比较其结果。首先是利用C语言的实现。选取信号为
+
+x[i].real = cos(2 * PI / size_x *i) + cos(3 * PI / size_x * i) + cos(4 * PI / size_x *i) + cos(5 * PI / size_x * i);
+
+x[i].img = sin(2 * PI / size_x *i) + sin(3 * PI / size_x * i) + sin(4 * PI / size_x *i) + sin(5 * PI / size_x * i);
+
+即输入信号为一个复信号，实部是四个不同频率的cos的和，虚部是相同频率的sin信号和。观察散点图为
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image113.png)
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image114.png)
+
+如图分别为该信号的实部（上）与虚部（下）信号。使用C语言程序对其进行基-2 FFT得到如下结果。
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image115.png)
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image116.png)
+
+其中运算时间为run time:15.555590us。
+
+相同信号使用过MATLAB的内建FFT函数处理得到以下图像
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image118.jpg)
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image120.jpg)
+
+MATLAB的计算结果与C程序的计算结果完全相同，计算时间
+
+Elapsed time is 0.000128 seconds.
+
+输入另一信号进行处理，信号为
+
+if(i<10){
+
+x[i].real = cos(2 * PI / size_x *i) + cos(3 * PI / size_x * i) + cos(4 * PI / size_x *i) + cos(5 * PI / size_x * i)+1;
+
+x[i].img = 0;
+
+}
+
+else
+
+{
+
+x[i].real = cos(2 * PI / size_x *i) + cos(3 * PI / size_x * i) + cos(4 * PI / size_x *i) + cos(5 * PI / size_x * i);
+
+x[i].img = 0;
+
+}
+
+给原信号小于10的部分加入一个方波，大于10部分不作处理，计算并绘图得到
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image122.png)
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image124.png)
+
+（以上分别为实部与虚部）
+
+使用MATLAB的计算为
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image126.jpg)
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image128.jpg)
+
+使用MATLAB计算的结果如图，经过对比计算结果可知，二者的计算结果完全相同。64点FFT运算速度C++略快于MATLAB。
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image130.jpg)
+
+**幅频关系**
+
+2.  用MATLAB自带的FFT函数对结果进行比较。
+
+比较关系如上图所示，在计算的准确度上两者没有明显区别。主要不同出在运算速度上。此处选取8192点进行FFT，统计时间差异。
+
+MATLAB 8192点FFT运算时间
+
+| 序号 | 计算时间（us） | 平均时间（us） |
+| ---- | -------------- | -------------- |
+| 1    | 178            | 174.0          |
+| 2    | 172            |                |
+| 3    | 187            |                |
+| 4    | 139            |                |
+| 5    | 194            |                |
+
+C++ 8192点FFT运算时间
+
+| 序号 | 计算时间（us） | 平均时间（us） |
+| ---- | -------------- | -------------- |
+| 1    | 3745.341656    | 4175.0315      |
+| 2    | 4334.231854    |                |
+| 3    | 4606.232458    |                |
+| 4    | 4624.454721    |                |
+| 5    | 3564.896811    |                |
+
+普通 基-2 FFT C++的计算速度明显会比MATLAB运算更慢。这种速度优势明显体现在变换点数更大时。通过绘制时间-点数图像可以看出，MATLAB的计算速度
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image131.png)
+
+当点数较小时，运算时间较为稳定，当点数增加时，计算速度趋于稳定。
+
+而C++的计算速度为
+
+![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image132.png)
+
+当N足够大时，时间趋近于![img](file:///C:/Users/Prophet/AppData/Local/Temp/msohtmlclip1/01/clip_image134.png)。
+
+
+
+ 
 
 
 {% if page.comments %}
