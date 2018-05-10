@@ -8,8 +8,10 @@ G2=tf([1],[1])
 G=feedback(G1,G2,-1)
 pzmap(G)
 grid on;
+G=G1*G2
 figure;
 bode(G)
+margin(G)
 grid on;
 [Gm,Pm,Wcg,Wcp]=margin(G)
 %%
@@ -17,25 +19,25 @@ k=5;
 Gzpk=zpk([],[0 -1 -10],[10*k])
 H=tf([1],[1])
 G=feedback(Gzpk,H,-1)
-nyquist(G)
+nyquist(Gzpk)
 grid on;
 figure;
 step(G)
 grid on;
 figure;
-bode(G)
+bode(Gzpk)
 grid on;
-%%
 %%
 k=20;
 Gzpk=zpk([],[0 -1 -10],[10*k])
 H=tf([1],[1])
 G=feedback(Gzpk,H,-1)
-nyquist(G)
+nyquist(Gzpk)
 grid on;
 figure;
 step(G)
 grid on;
 figure;
-bode(G)
+bode(Gzpk)
 grid on;
+%Obviously Unstable.

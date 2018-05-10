@@ -18,13 +18,13 @@ b=1;
 Gtf=tf([b*b],[1 2*a*b b*b])
 step(Gtf)
 grid on;
-figure;
+hold on;
 a=1;
 b=1;
 Gtf=tf([b*b],[1 2*a*b b*b])
 step(Gtf)
 grid on;
-figure;
+hold on;
 a=2;
 b=1;
 Gtf=tf([b*b],[1 2*a*b b*b])
@@ -36,13 +36,13 @@ b=1;
 Gtf=tf([b*b],[1 2*a*b b*b])
 step(Gtf)
 grid on;
-figure
+hold on;
 a=0.5;
 b=5;
 Gtf=tf([b*b],[1 2*a*b b*b])
 step(Gtf)
 grid on;
-figure
+hold on;
 a=0.5;
 b=10;
 Gtf=tf([b*b],[1 2*a*b b*b])
