@@ -1,0 +1,71 @@
+---
+layout: post
+title:  "记一次非常不愉快的debug"
+date:   2018-03-23 00:41:13 +0000
+categories: git push
+comments: true
+---
+
+---
+
+大一暑假的时候跟着[@GeneZC](https://github.com/GeneZC)大佬做了一个棋类项目，实际上就是大佬魔改了一个GitHub本身存在的项目，[Cloudict](https://github.com/lang010/cloudict)
+
+这个魔改十分有效，甚至于最后的出乎预料的胜利以及较显著的性能提升几乎都是因为大佬对**快速冲四**部分算法的修改。我当时的作用基本就是 1. 陪大佬聊天 2. 帮大佬一起调参
+
+后来大佬就走上了这条不归路了，继续研究这些东西= =、我就没有再去管过了，从此相信GitHub的奇迹与魔法，遇到什么问题都能去GitHub找轮子。
+
+然而昨天晚上的时候这个程序它**运行不了了、运行不了了、运行不了了**
+
+*程序的结构是Python3 的Tkinter图形壳，C++的运算代码，由预先设定好的接口进行交互，也可以直接对C++程序进行操作，不可视的环境操作起来很吃力（shi）。*
+
+使用熟悉的启动方式运行，图形壳出现。根据设定选择用于计算的exe程序（不同环境下需要另外编译），进行运算。诶**可是他卡死了、可是他卡死了、可是他卡死了**
+
+使用KeyBoardInterupt进行中断后问题多次定位在了从计算程序读取
+
+{% highlight python %}
+self.msg = self.proc.stdout.readline().decode()
+{% endhighlight %}
+
+这一句上。
+
+所以在出现问题的前一段时间内我一直认为是Python的图形壳出现了什么问题。那么究竟是不是图形壳的问题呢，我翻了一整遍源代码，确认Python源代码没有出现任何明显问题。然后检查了C++代码的修改时间，确认是比赛后从未修改。那么问题出在哪里呢。。。
+
+考虑到新安装的系统可能没有配置环境~~懒得配置环境~~，于是我关闭Windows系统，启动了一个备用的Ubuntu系统进行调试
+
+Ubuntu系统很给面子的缺失tkinter模块，于是又进行了漫长的update与upgrade过程，最终成功运行了程序
+
+然后**他又卡死了。他又卡死了。他又卡死了。**
+
+使用print调试大法进行调试，程序对于进程间通信没有设置异常检测机制，于是在每一次通信时添加输出，并延迟1s，此事的错误终于看清了。出错提示
+
+>[Errno 32]Broken pipe
+
+这个错误出在Python图形壳向计算程序发送指令的时候。于是我尝试重复编译，并没有什么卵用。编译成功通过，但是输出程序**不能用**。
+
+我到这里终于第一次运行了这个问题程序。。。运行以后出现了一个错误提示，正是当年debug的时候添加的错误提示，原因是没能成功打开预设的两个文件。
+
+所以说就狗屎啊，检查了一遍以后终于发现，打开文件的时候使用的是**绝对路径**，**绝对路径**，**绝对路径**！！！
+
+不要贪图一时方便使用绝对路径来标记文件，更换环境以后就不能运行了。由于重装系统后盘符被打乱，当时标记的G盘实际上已经是现在的F盘了。。。
+
+于是回到Windows，打开源码，把两个G改成了F，成功运行（...
+
+
+{% if page.comments %}
+<div id="container"></div>
+<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+  id: '4', // 可选。默认为 location.href
+  owner: 'psycholsc',
+  repo: 'temp',
+  oauth: {
+    client_id: '9183e7259ea6d850a7df',
+    client_secret: 'd0a82473ca685629b50ded0553f402b6ba2b2dee',
+  },
+})
+gitment.render('container')
+</script>
+{% endif %}
+
