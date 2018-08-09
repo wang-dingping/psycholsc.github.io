@@ -70,11 +70,11 @@ comments: true
 
 假如我也想在这个区域卖房，那么我们是否可以根据我的房屋面积来确定它的期望价格呢？实际上有许多方式，这里只说其中的一种。最简单的方式是使用一个直线对数据进行拟合，我们称其为线性回归，但是如果我希望使用其他函数对数据进行拟合，结果可能会更加精确。这种学习去预测房屋价格的问题被称为监督学习问题，因为我们需要给算法提供一个面积的数据集合一个房屋价格的参考值。
 
-![HousingPrice](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/HousingPriceLinear.png)
+![HousingPriceLinear](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/HousingPriceLinear.png)
 
 这是线性拟合可能的结果
 
-![HousingPrice](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/HousingPriceSquare.png)
+![HousingPriceSquare](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/HousingPriceSquare.png)
 
 假如使用二次函数进行拟合，就会得到这样的结果。
 
@@ -86,7 +86,7 @@ comments: true
 
 还有一类监督学习问题叫做**分类(Classification)**问题，这一类问题的变量往往是离散的，例如，你收集了一份乳腺肿瘤的数据集，我们需要一个算法去判断一个肿瘤是否为恶性肿瘤，因此我们收集了关于这个乳腺肿瘤问题的诸多信息，假设我们只通过大小来判断，那么我们的问题就是，假设输入参数为肿瘤大小，输出结果为是否恶性。这个结果只能是0或1的，这时的问题就是分类问题。这时Y轴的坐标就是0或1，即表示肿瘤是良性还是恶性。这还是一个典型的二分类问题。
 
-![HousingPrice](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/BreastCancer.png)
+![BreastCancer](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/BreastCancer.png)
 
 假设收集到的数据如上，我们对这个问题进行建模的时候就会发现这是一个分类问题。
 
@@ -94,13 +94,13 @@ comments: true
 
 对于二维的分类问题，往往会将数据画成这样
 
-![HousingPrice](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/BreastCancerII.png)
+![BreastCancerII](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/BreastCancerII.png)
 
 对于更多维度的分类问题，会有不同的表示方式。
 
 当我们遇到一位用粉色标出的病人时，我们就可以利用我们的模型确定，这个肿瘤是良性的（但是实际结果还是要依据医生的判断。正规的判断流程必须要有经验丰富且接受过专业培训的医师进行参与，本视频系列的作者、讲师吴恩达前些时间带领的团队在医学影像诊断肿瘤的实验中，并没有成功建立一个识别率可以替代专业医师的模型）。
 
-![HousingPrice](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/BreastCancerIII.png)
+![BreastCancerIII](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/BreastCancerIII.png)
 
 当然上面的分类器也只是一个例子，因为实际上对于医学影像进行识别的过程往往需要更多的参数来辅助分类器进行诊断，例如块厚度，肿瘤细胞的大小形状的一致性等等。特征量往往会很多，这对于传统的线性分类器来说也会降低其精准度。不过这里要先从支持向量机说起，这个简单的算法可以让计算机理论上处理无穷多的特征。
 
@@ -108,7 +108,7 @@ comments: true
 
 当我们的样本数据集没有被标识哪些输入应当对应哪些输出，即没有标签的数据，例如
 
-![HousingPrice](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/UnsupervisedI.png)
+![UnsupervisedI](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/UnsupervisedI.png)
 
 我们的问题就成为了，“假如我给定了一个数据集，你是否能够应用学习算法发现数据集中的某些结构或规律吗”。
 
@@ -138,7 +138,7 @@ comments: true
 
 这时我们手里会有一个训练集，包括了$$x$$和对应的标签$$y$$。这时将训练集输入给我们的学习算法，学习算法将输出一个函数$$y=h(x)$$，描述了$$y$$与$$x$$的对应关系。这里用$$h$$是代表了$$hypothesis$$，实际我个人习惯还是写成$$f$$。对这个输出函数输入一个$$x$$，这个函数将给出一个拟合的$$y$$。
 
-![HousingPrice](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/LinearRegressionI.png)
+![LinearRegressionI](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/LinearRegressionI.png)
 
 对于线性回归的关系，我们将表示$$h$$为
 
