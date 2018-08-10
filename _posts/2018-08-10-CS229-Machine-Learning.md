@@ -1,7 +1,7 @@
 ---
 layout: post
-title:  "CS229 I"
-date:   2018-07-24 06:35:54 +0000
+title:  "CS229"
+date:   2018-08-10 06:35:54 +0000
 categories: Notes
 comments: true
 ---
@@ -116,7 +116,9 @@ comments: true
 
 我们在电子领域常见的**鸡尾酒会（Cocktail Party）算法**，即把两个相互叠加的音频相互分离的算法，实际上也是一种无监督学习算法。如果我们只关注实现，而不关心算法要如何去实现的时候，实际上这是一个较为简单的工作，只需要一行代码就能解决
 
+```matlab
 [W,s,v] = svd((repmat(sum(x.*x,1),size(x,1),1).*x)*x');
+```
 
 这实际上是一条Octave语句，在简单的考虑实现效果的条件下可以对Octave，MATLAB或Python等语言进行了解。Octave与MATLAB语句较为相似，易于移植。对于学习过程，吴恩达推荐了Octave。实际上目前条件下使用Python也是较为简单的。当我们用这类语言确定可以实现后，我们就可以将其移植到C++等较快的编译平台上去执行。
 
@@ -283,13 +285,43 @@ $$J(\theta_0,\theta_1)= \frac{1}{2M}\Sigma_{i=1}^M(h_\theta(x_i)-y_i)^2$$
 
 
 
+人们也常用轮廓图（contour plot, a graph that contains many contour lines）来表现一个二维曲面，这看起来更像一个等高线。当我们接近这一组“等高线”的最低端时，我们认为此时就取到了损失函数的最小值，
 
+![CostFunctionIII](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/CostFunctionIII.png)
 
+问题复杂的时候，轮廓图也会变得十分难看。此时计算最优解的过程也变得较为复杂，因此我们选择使用编程实现。
 
+## [Gradient Decent](https://en.wikipedia.org/wiki/Gradient_descent)
 
+**[梯度](https://en.wikipedia.org/wiki/Gradient)下降法**常用与解决最小值的问题。有时也叫牛顿法，广泛应用在众多领域的优化问题上。前面提到解决最小化代价函数的问题，这里要使用梯度下降法来求解。
 
+我们现在有一个代价函数$$J(\theta_0,\theta_1)$$，并且需要求他取到最小值时的$$\theta_0$$和$$\theta_1$$。但是我们并不知道这两个参数的值是什么，所以我们会首先给他们初始化一个值，这个值可以是0，也可以是随机数。我们在梯度下降算法中，会根据一定的规则对两个参数的值进行调整，直到两个参数落入最优解（有可能是全局最优解，也有可能是局部最优解）位置时停止。完整的过程如下：
 
+首先假如我们的代价函数绘制的二维图像和初始化的$$\theta_0$$和$$\theta_1$$如图所示
 
+![GradientDecentI](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/GradientDecentI.png)
+
+现在我们需要搜索规定邻域内（在代码中会说明）的最小值。如果需要让算法速度达到最快，就需要按照梯度（反）方向进行移动，如图
+
+![GradientDecentII](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/GradientDecentII.png)
+
+这样我们就更新了参数$$\theta_0$$和$$\theta_1$$，使得代价函数的值缩小。在新的位置继续按梯度（反）方向进行下降，并且循环下去，我们就会得到最低点
+
+![GradientDecentIII](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/GradientDecentIII.png)
+
+不过这样的算法有时会导致得到局部最优解，而非全局最优解（实际上十分常见），如图
+
+![GradientDecentIV](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/GradientDecentIV.png)
+
+这是这个算法的特点之一。数学上，我们定义梯度下降如下
+
+$$\theta_j:=\theta_j - \alpha \frac{\partial}{\partial\theta_j}J(\theta_0,\theta_1)$$
+
+此时$$j=0, 1$$
+
+这一过程将不断循环直到满足预计的收敛条件。
+
+等式中，$$\alpha$$被称为学习速率，在梯度下降过程中他决定了每一次下降过程中的步长。$$\alpha$$的取值会有后续说明。这个微分项实际上就是我们说的梯度。
 
 {% if page.comments %}
 <div id="container"></div>
