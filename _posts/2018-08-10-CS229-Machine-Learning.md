@@ -130,86 +130,19 @@ comments: true
 
 
 
+
+
+
+
 那么我们似乎可以认为，这些散点可以用一条直线来拟合，即线性回归。我们将拟合直线绘制到平面上，效果如图。
 
 
 
-本程序使用的线性回归的方法被称为“正规方程法”，需要学习对矩阵的求导后才能熟练掌握该算法。
 
-下面这部分可以先不看
+
+
 
 ---
-
-简单介绍一下如何使用正规方程法计算线性回归。线性回归无非就是让我的训练集拟合到一条直线上，即
-
-$$\widehat{y}=w^{T}x$$
-
-即使是不经过原点的直线，也可以将其平移到原点（线性回归得到的结果一定会经过$$(\overline{x},\overline{y})$$，将所有数据点都进行该平移就可以拟合为一条过原点直线）。
-
-在这里$$\widehat{y}$$代表的是线性回归的预测结果，$$w^T$$和$$x$$是向量，$$w^T$$又经常被称为是参数，是本任务的目标。但是我们要明白，输入的$$x$$和$$y$$并不一定是一维的。多线性回归的本质和单线性回归是一样的。这个时候任务**T**就是根据预测的$$x$$和$$y$$关系来从$$x$$预测$$y$$，对于性能度量**P**，为了确保能尽可能评价模型性能，我们常采用**均方差**函数来评价。如果用于测试模型准确性的数据集是测试数据集，共有$$m$$组数据，用$$test$$表示，那么
-
-$$MSE_{test}=\frac{1}{m}\sum_{i}(\widehat{y}^{test}-y^{test})_{i}^{2}$$
-
-由于$$y$$的本质是多维向量，这种方式实际上可以直接写成2-范数的形式
-
-$$MSE_{test}=\frac{1}{m}||\widehat{y}^{test}-y^{test}||_{2}^{2}$$
-
-> 对于范数，在向量中使用最多的是p-范数，而p-范数的表示形式如下
-> $$\left \| x \right \|_{p}=(|x_{1}|^{p}+|x_{2}|^{p}+...+|x_{n}|^{p})^{\frac{1}{p}}$$
-
-2-范数一般用于表示向量之间的抽象的距离。这里用意是使得预测结果和样本结果的“距离”平方和最小。
-
-为了让程序获得经验**E**，我们需要设计一个适合机器学习的算法，使得模型能够在测试样本中获取经验，从而减少MSE，获得最精确的模型。优化模型使MSE这个数值最小的算法经常采用**梯度下降法**，后文中会对这个算法进行说明，此处采用一个更加简单的算法，即**正规方程**。如果对吴恩达的机器学习课程有接触，对这个应该不陌生。最小化MSE的简单方法就是直接求导，使
-
-$$\triangledown _{w}MSE_{train}=0$$
-
-而在2-范数的形式下原式也很容易求导，令导数为0，可以得到
-
-$$\triangledown _{w}\left ( Xw-y \right )^{T}\left ( Xw-y \right )=0$$
-
-将矩阵乘开，可以得到
-
-$$\triangledown _{w}\left ( w^{T}X^{T}Xw-2w^{T}X^{T}y+y^{T}y \right )=0$$
-
-这里需要一些矩阵分析的知识，求导后得到的结果是
-
-$$2X^{T}Xw-2X^{T}y=0$$
-
-把$$w$$表示出来就是
-
-$$w=\left ( X^{(train)T}X^{\left ( train \right )}\right )^{-1}X^{(train)T}y^{train}$$
-
-则这个计算式就成为了一个简单的机器学习算法，上面的式子被称作正规方程。
-
-使用Python实现的代码如下
-
-{% highlight python %}
-import numpy as np
-from matplotlib import pyplot as plt
-w = np.random.random((1, 1))
-xlist = []
-ylist = []
-for i in range(100):
-    noise = np.random.normal()
-    x = np.random.random((1, 1)) * 100
-    y = np.dot(w.T, x)
-    xlist.append(x[0])
-    ylist.append(y[0] + noise)
-plt.plot(xlist, ylist, 'ro')
-plt.show()
-xlist, ylist = np.mat(xlist), np.mat(ylist)
-w1 = np.dot(np.dot(np.dot(xlist.T, xlist).I, xlist.T), ylist)
-print(w1, w)
-{% endhighlight %}
-
-一般来说，对于数量比较小的样本时，人们通常采用正规方程的方式降低预测结果的误差，而对于数量较大（比如超过10000）的样本时，往往会采用梯度下降法进行计算。梯度下降法之后也会单独说明。
-
----
-
-
-
-
-	以上内容不需要现在就能看懂。
 
 
 
@@ -317,11 +250,45 @@ $$J(\theta_0,\theta_1)= \frac{1}{2M}\Sigma_{i=1}^M(h_\theta(x_i)-y_i)^2$$
 
 $$\theta_j:=\theta_j - \alpha \frac{\partial}{\partial\theta_j}J(\theta_0,\theta_1)$$
 
-此时$$j=0, 1$$
+此时$$j=0, 1$$，并且请注意，在每一次做如上操作时，应当在整个周期都计算完毕后才更新参数。
 
 这一过程将不断循环直到满足预计的收敛条件。
 
-等式中，$$\alpha$$被称为学习速率，在梯度下降过程中他决定了每一次下降过程中的步长。$$\alpha$$的取值会有后续说明。这个微分项实际上就是我们说的梯度。
+等式中，$$\alpha$$被称为学习速率，在梯度下降过程中他决定了每一次下降过程中的步长。这个微分项实际上就是我们说的梯度。
+
+$$\alpha$$的取值的问题，在简单问题上一般会取为一个很小的固定值，但是会遇到一些问题，例如结果无法达到最为精确。因为每一次做梯度下降的时候，参数总会按照$$\alpha$$的大小进行变化，因此可能并不能将参数的最精确值计算出来。在实际操作中，实际上常采用的是随下降过程逐渐缩小$$\alpha$$的方法，例如每一定次数的梯度下降后就修改$$\alpha$$为之前的$$90\%$$。随着算法进行，到收敛时我们就能获得一个更为精确的值。
+
+## Cost Function + Gradient Decent + Linear Regression
+
+然后我们将两个内容结合在一起，就得到了下面的式子
+
+$$\frac{\partial}{\partial\theta_j}J(\theta_0,\theta_1)=\frac{\partial}{\partial\theta_j}\frac{1}{2M}\Sigma_{i=1}^M(h_\theta(x_i)-y_i)^2$$
+
+即
+
+$$\frac{\partial}{\partial\theta_j}J(\theta_0,\theta_1)=\frac{\partial}{\partial\theta_j}\frac{1}{2M}\Sigma_{i=1}^M(\theta_0+\theta_1x_i-y_i)^2$$
+
+那么，每次梯度下降时参数的更新就可以写作
+
+$$\theta_0:=\theta_0 - \alpha \frac{1}{M}\Sigma_{i=1}^M(\theta_0+\theta_1x_i-y_i)$$
+
+$$\theta_1:=\theta_1 - \alpha \frac{1}{M}\Sigma_{i=1}^M(\theta_0+\theta_1x_i-y_i)*x_i$$
+
+(前面提到过，在计算出$$\theta_0$$的时候不要直接修改他的数值，而是要等待这一个循环中所有计算都完成后再更新参数的数值。)
+
+接下来我们使用一组数据进行简单的测试，代码将在Python中完成。
+
+程序代码[点此下载](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/tempsrc/LinearRegression.py)
+
+以上将数据进行绘制。我们采用的是均匀分布的$$x$$与正态分布的噪声。
+
+为了拟合直线，我们采用梯度下降的方法，按照前面介绍的方法，程序如上所述。
+
+这个方法一般被称为“**Batch** Gradient Decent（批量梯度下降）”，因为在每一次的梯度下降中我们都需要用到所有数据（每一次都使用所有数据进行求和）。在应用中梯度下降法的种类很多，后面也会逐渐接触。
+
+线性回归的算法还很多，梯度下降法往往并不是最优先考虑的方法，这里只是一个简单介绍。在线性回归中还有一种正规方程法（Normal Equation），这个方法在后面也会提及，但是梯度下降法会在更大量的数据中表现出更优秀的效果。
+
+
 
 {% if page.comments %}
 <div id="container"></div>
