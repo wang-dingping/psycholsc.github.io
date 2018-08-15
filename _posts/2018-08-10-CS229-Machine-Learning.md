@@ -489,7 +489,51 @@ $$h_\theta(x)=\frac{1}{1+e^{-\theta^Tx}}$$
 
 
 
+此时的假设函数就是
 
+$$h_\theta(x)=g(\theta_0+\theta_1x_1+\theta_2x_2)$$
+
+假设我们已经做好了拟合，结果是
+
+$$\theta=\left[ \begin{matrix} -3 \\ 1 \\ 1   \end{matrix} \right]$$
+
+写成我们熟悉的形式就是
+
+$$-3+x_1+x_2 \ge 0$$
+
+条件下会输出一个倾向于$$y=1$$的概率。
+
+而这个区域在图像中表现出来就是
+
+$$x_1+x_2 \ge 3$$
+
+即
+
+![DecisionBoundaryII](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/DecisionBoundaryII.png)
+
+其中在右上方部分的区域就是我们求解的区域。
+
+那么对应的，左下区域这部分就是我们预测$$y=0$$的区域。那么我们绘制的这条洋红色的，将$$y$$的预测值分隔开的这条线，就是我们所说的“决策边界（Decision Boundary）”。
+
+有时候我们的数据集并不是这么友好的，例如有的时候数据集是这样的
+
+![DecisionBoundaryIII](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/DecisionBoundaryIII.png)
+
+对这样的数据集要如何应用逻辑回归呢？我们前面的多项式回归说过可以添加高阶项来拟合，那么我们假设添加两个额外特征如下
+
+$$h_\theta(x)=g(\theta_0+\theta_1x_1+\theta_2x_2+\theta_3x_1^2+\theta_4x_2^2)$$
+
+那么我们就会有五个参数来进行拟合。经过合适的训练（后面会讲），我们可能得到的结果是
+
+$$\theta_0=-1$$，$$\theta_1=\theta_2=0$$，$$\theta_3=\theta_4=1$$
+
+那么得到的决策边界就是
+
+$$x_1^2+x_2^2=1$$
+
+显然我们通过前面学到的使用更加复杂的特征得到了更为精准的决策边界，使用二次项避免了使用直线进行直接拟合。
+
+实际遇到的问题中结果可能会更加复杂，我们拟合的形状也有很多的可能性，这时候可能需要更多的高次项来帮助我们得出决策边界。
 
 
 
