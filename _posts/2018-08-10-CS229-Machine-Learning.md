@@ -535,7 +535,35 @@ $$x_1^2+x_2^2=1$$
 
 实际遇到的问题中结果可能会更加复杂，我们拟合的形状也有很多的可能性，这时候可能需要更多的高次项来帮助我们得出决策边界。
 
+## Cost Function II
 
+我们用同样的方式定义训练集，每个样本都可以写成$$(x^{(i)},y^{(i)})$$的形式。注意由于是逻辑回归，我们的标签$$y \in \{0,1\}$$。
+
+假设函数为
+
+$$h_\theta(x)=\frac{1}{1+e^{-\theta^Tx}}$$
+
+那么我们应该如何对这个模型进行拟合呢？
+
+如果还是采用之前的代价函数（均方差）进行梯度下降求最小化，我们就容易发现，这时的优化目标$$J(\theta)$$是非常难看的——他有很多局部最小值（极小值点）而且分布十分复杂，使用梯度下降法很难对其进行优化。我们称这个$$J(\theta)$$是一个non-convex function。因此我们需要换一个代价函数，使结果成为一个较容易优化的函数，这样就容易收敛到全局最优解。
+
+我们的答案是这样的
+
+$$Cost(h_\theta(x),y)=\begin{equation}\left\{\begin{array}{lr} -log(h_\theta(x),& if\:y=1 \\-log(1-h_\theta(x)),& if\:y=0  \end{array}\right.\end{equation}$$
+
+看起来十分复杂，不妨绘制图像。
+
+当$$y=1$$时，我们绘制结果如图
+
+![CostFunctionIV](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/CostFunctionIV.png)
+
+带入特殊值得到，当$$h_\theta(x)\rightarrow 1$$的时候，代价函数值很小，符合预期，反之代价函数的值趋近于无穷大，满足条件。
+
+当$$y=0$$时，我们绘制结果如图
+
+![CostFunctionV](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/CostFunctionV.png)
+
+同样的我们容易验证这个代价函数符合预期要求，同时也容易验证，当我们对$$y$$进行分类讨论的时候，$$J(\theta)$$会是一个易于优化的函数。
 
 
 
