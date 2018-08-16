@@ -53,3 +53,72 @@ NLP的简单应用领域包括拼写检查、输入法联想，但这些都是�
 
 如果深度学习没有效果，也不会有那么多人进行研究。大约从2010年开始，深度学习的算法就要远优于其他任何一种传统的已经沿用近30年的机器学习算法，但不仅如此，近年间深度学习发展迅速，改进和提升的速度非常迅速。但是实际上我们使用的很多深度学习算法都是上世纪八九十年代左右的时候提出的，但是受限于当时的技术水平，例如编程工具、计算水平、数据量等技术上的局限，这些方法在当时并没有什么效果。但是现在我们几乎有了这些所有的优势。当然算法的革新进步也是不可忽视的。
 
+深度学习真正意义上的第一个重大突破是语音识别。人们用了几十上百年的时间，只对这个算法提升了几个百分点，而当换用深度学习模型的时候，识别错误率直接下降了30%。
+
+而第二个突破就是计算机视觉，和语音识别与处理几乎是现在深度学习的两大领域。在ImageNet 计算机视觉竞赛中突然异军突起得到高分的CNN基础的模型，就是应用深度学习的模型。相关内容在CS231中会有涉及。
+
+## Requirements
+
+1. Python。作业会以Python的形式给出。对TensorFlow的用法有要求。
+2. 多变量的微积分，线性代数（大一结束的中国学生就能掌握）
+3. 基础概率论和数理统计（大二的学生就能掌握）
+4. 机器学习的基础知识（[CS229课程笔记](https://psycholsc.github.io/notes/2018/08/10/CS229-Machine-Learning.html)在同步更新）
+
+## Destination
+
+1. 理解并有能力运用有效的现代方法进行深度学习 - 课程涵盖所有的基础知识和NLP的主要方法，RNN，attention等
+2. 对人类语言有总体了解，以及目前人们理解和产生语言所遇到的困难。
+3. 具有为重要NLP问题构建系统架构的能力（作业见）
+
+课程总计三个大作业（不出意外的话我应该会更代码，一个最终项目，自己提出或导师给出）
+
+## Difficulty
+
+人类语言总是模棱两可的，但编程语言往往都是设计之时就十分明确了，有固定的格式，固定的写法，人类语言总是不按语法或规则来。我们往往需要通过意思或环境来进行判断句意。指代关系也不像编程中那么具体那么明确。语言作为最有效的通信工具的同时，人们往往倾向于省略很多词汇，但是受众往往会自己补全；而在程序编写的时候我们会明确表达出它运行所需要的一切。
+
+![i_could_care_less](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/i_could_care_less.png)
+
+教授给出了几个语义歧义的例子
+
+1. The Pope‘s baby step on gays.
+2. Boy paralyzed after tumor fights back to gain black belt.
+3. Scientists study whales from space.
+4. Juvenile Court to Try Shooting Defendant
+
+
+
+## Deep NLP
+
+融合了Deep Learning的NLP。当前深度学习已经被应用于了语言学的各个方面，层级涉及语音文字句法语义。目前常用的手段都是使用几个核心工具箱来解决所有的NLP问题，不需要针对不同任务做定制，而且工作效果很好。深度学习和语言学都是以词义为起点，我们要做的事，也就是将一个词汇用一个向量来表示，例如
+
+$$$$
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% if page.comments %}
+<div id="container"></div>
+<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+  id: '22', // 可选
+  owner: 'psycholsc',
+  repo: 'temp',
+  oauth: {
+    client_id: '9183e7259ea6d850a7df',
+    client_secret: 'd0a82473ca685629b50ded0553f402b6ba2b2dee',
+  },
+})
+gitment.render('container')
+</script>
+{% endif %}
