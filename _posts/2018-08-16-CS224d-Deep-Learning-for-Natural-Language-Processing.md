@@ -47,4 +47,4 @@ NLP的简单应用领域包括拼写检查、输入法联想，但这些都是�
 
 深度学习是表征学习（representation learning）的一个分支，理念是我们只向电脑提供最原始的信号，然后让电脑去学习并确定什么特征较为重要，依此来完成任务。所以深度学习的意义是自动获取多层的特征，并通过这种方式获得比人类自行设计模型更好的结果。这大概可以看做是无监督学习的一种表现。现在，大约一半的情况下，深度学习只是指在利用神经网络，另一半的情况下就是记者在写报告时瞎写（这个教授太耿直了）。
 
-现在使用神经网络是深度学习的一个主要方法，课程也会讨论使用不同的神经网络来实现不同的算法。当前人类构建的神经网络往往是复杂的神经元的不同堆栈形式，最终导致了某种特定的“思维”或“行为”，这个和统计学家使用神经网络的初衷是不同的。有关神经网络在深度学习中的历史的内容，[这里有一篇PDF格式的论文专门描述]()，原地址为[https://arxiv.org/abs/1404.7828](https://arxiv.org/abs/1404.7828)，作者是[Juergen Schmidhuber](https://en.wikipedia.org/wiki/J%C3%BCrgen_Schmidhuber)，实话讲我似乎见过这个人（真人）。 
+现在使用神经网络是深度学习的一个主要方法，课程也会讨论使用不同的神经网络来实现不同的算法。当前人类构建的神经网络往往是复杂的神经元的不同堆栈形式，最终导致了某种特定的“思维”或“行为”，这个和统计学家使用神经网络的初衷是不同的。有关神经网络在深度学习中的历史的内容，[这里有一篇PDF格式的论文专门描述](https://github.com/psycholsc/psycholsc.github.io/raw/master/assets/Deep%20Learning%20in%20Neural%20Networks_An%20Overview.pdf)，原地址为[https://arxiv.org/abs/1404.7828](https://arxiv.org/abs/1404.7828)，作者是[Juergen Schmidhuber](https://en.wikipedia.org/wiki/J%C3%BCrgen_Schmidhuber)，实话讲我似乎见过这个人（真人）。 
