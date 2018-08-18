@@ -14,7 +14,7 @@ comments: true
 
 [CS229](http://cs229.stanford.edu/) 是斯坦福大学 **Machine Learning**的公开课
 
-由于官网视频质量一般，此处部分参考了[Coursera](https://www.coursera.org/)上的新版视频。
+由于官网视频质量一般，此处大部分参考了[Coursera](https://www.coursera.org/)上的新版视频，由于比较基础比较入门，内容会比较简单。
 
 # CS229
 
@@ -161,6 +161,8 @@ $$h_{\theta}(x)=\theta_0 +\theta_1x$$
 当然这个结果可以不是线性函数，但此处只对线性回归进行说明。
 
 ## Cost Function
+
+*loss function，objective function，损失函数，代价函数，这些词都是一个意思。*
 
 代价函数的含义为A function that can measure the accuracy of our hypothesis function，即可以衡量我们的数据与拟合情况的误差的函数。 
 
@@ -564,6 +566,60 @@ $$Cost(h_\theta(x),y)=\begin{equation}\left\{\begin{array}{lr} -log(h_\theta(x),
 ![CostFunctionV](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/CostFunctionV.png)
 
 同样的我们容易验证这个代价函数符合预期要求，同时也容易验证，当我们对$$y$$进行分类讨论的时候，$$J(\theta)$$会是一个易于优化的函数。
+
+接下来要用梯度下降法进行拟合。上面已经写过了代价函数，但是那个形式是需要两行才能描述损失函数的意义。这样不利于进行梯度下降，所以我们需要对这个形式进行改写。这时候利用一点trick就可以将原形式改写成
+
+$$Cost(h_\theta(x),y)=-ylog(h_\theta(x))-(1-y)log(1-h_\theta(x))$$
+
+*仔细想想这个也是我在高中证明题中常用技巧呢（笑）*
+
+手动带入0和1检验一下就能看出来这样是对的了。
+
+随意损失函数就可以写成
+
+$$J(\theta)=\frac{1}{m}\sum\limits_{i=1}^m[-y^{(i)}log(h_\theta(x^{(i)}))-(1-y^{(i)})log(1-h_\theta(x^{(i)}))]$$
+
+这个代价函数实际上可以从最大似然估计的方法推导，这个在本次课程中并不涉及。只是提及，这个方法可以让优化过程变得简单。所以要找到最小化损失函数的方法。前面说到使用梯度下降法进行优化，那么求解梯度得到
+
+$$\theta_j:=\theta_j-\alpha\sum\limits_{i=1}^m(h_\theta(x^{(i)})-y^{(i)})x_j^{(i)}$$
+
+$$\theta:=\theta-\frac{\alpha}{m}X^T(g(X\theta)-\overrightarrow{y})$$
+
+使用特征缩放也可以使得收敛速度加快，很多特点都和线性回归相似，这里不再赘述。
+
+## Advanced Optimization
+
+实际上梯度下降中我们只需要计算导数项，将导数项插入到计算式中进行计算就可以了，但是如果需要监控收敛性我们可能需要自己写代码来完成。除了梯度下降法以外，实际上还有其他优化方法，例如
+
+- Conjugate gradient
+- BFGS
+- L-BFGS
+
+这些方法更加复杂更加高级，以后等我学会了再来更吧（咕咕咕）
+
+目前来看这些算法有一定的优势，例如不需要人为选择学习率（实际上是自动选择的），运算速度也普遍比梯度下降要快得多，但是他们学起来也比较困难，可能需要好几天或好几周的时间进行学习。
+
+*吴恩达：我都用了十多年了才知道这个算法在干啥*
+
+这些算法也不建议自己进行编写，效率上和准确度上都会有偏差。
+
+## Multiclass Classification
+
+如果使用二元分类的方法进行多分类，我们可以采用的手段是将用例拆分，例如三分类的问题，我们可以拆分成为三个二分类问题。用这样的手段可以拟合三个分类器，那么每输入一个新数值，我们就能把这个数值带入三个分类器中，同时运行三个分类器，通过其概率的输出来判断结果属于哪个分类器。
+
+##Overfitting
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
