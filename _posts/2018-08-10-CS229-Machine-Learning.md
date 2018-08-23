@@ -152,7 +152,7 @@ $$Y=f(X)$$
 
 当我们的样本数据集没有被标识哪些输入应当对应哪些输出，即没有标签的数据，例如
 
-![UnsupervisedI](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/UnsupervisedI.png)
+![Unsupervised](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/Unsupervised.png)
 
 我们的问题就成为了，“假如我给定了一个数据集，你是否能够应用学习算法发现数据集中的某些结构或规律”。
 
