@@ -696,6 +696,60 @@ $$\theta:=\theta-\frac{\alpha}{m}X^T(g(X\theta)-\overrightarrow{y})$$
 1. 手动的减少特征量。我们可以手动选择看起来更有用的变量，筛除看起来没有什么用的变量。实际上也可以使用算法进行自动选择。后者有时更加有效。
 2. 正则化（Regularization）。我们保留所有的特征量，但降低参数$$\theta_j​$$的数量级。这个在后面会说到，当我们不愿意删除特征量的时候会使用。
 
+## Regularization
+
+这里要简介一下正则化。为了解决过拟合问题，我们要使用正则化。假设我们遇到的问题是这样的
+
+![Regularization](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/Regularization.png)
+
+我们的优化项可能是
+
+$$min_\theta \frac{1}{2m}\sum\limits_{i=1}^m(h_\theta(x^{(i)})-y^{(i)})^2$$
+
+我们对它进行一定的修改，例如加入若干项为
+
+$$min_\theta \frac{1}{2m}\sum\limits_{i=1}^m(h_\theta(x^{(i)})-y^{(i)})^2+1000\theta_3^2+1000\theta_4^2$$
+
+这时如果对函数进行最小化优化，我们的算法将不得不把$$\theta_3$$和$$\theta_4$$的值计算的非常小，以至于接近$$0$$，来保证这个损失函数达到最小值。这里我们“惩罚”了$$\theta_3$$和$$\theta_4$$，使这两个项接近零，我们实际上使得原模型变得简单了，即退化成了普通的二次模型。惩罚部分参数的目的也就是活得更简单的模型，而更简单的模型就不那么容易发生过拟合问题。
+
+有时候我们有很多很多的特征，这时候我们并不知道要对哪些特征进行正则化，此时我们就需要对所有项进行这个操作，即
+
+$$min_\theta \frac{1}{2m}\sum\limits_{i=1}^m(h_\theta(x^{(i)})-y^{(i)})^2+\lambda \sum\limits_{i=1}^n\theta_j^2$$
+
+这个正则项会使得所有项都进行一定程度的缩小。当然$$\theta_0$$不在惩罚列表中，所以这一项是大的。不过$$\theta_0$$这一项确实对其他特征没有什么影响，只是一个单独的偏置项而已。最终是否对这一项进行惩罚，其实影响微乎其微（话说回来$$\theta_0$$这一项根本就没有梯度，怎么会被优化呢。。。）。
+
+$$\lambda$$的取值，如果不做什么考虑的话，只要是一个非负数就好，具体大小视情况而定，是一个超参数。
+
+---
+
+对于上面的线性回归的示例，如果我们采用了正则化项，其损失函数将变成
+
+$$J(\theta)=\frac{1}{2m}\left[ \sum\limits_{i=1}^m(h_\theta(x^{(i)})-y^{(i)})^2+\lambda \sum\limits_{i=1}^n\theta_j^2\right]$$
+
+在求导后我们发现，对于$$\theta_0$$来说，梯度并没有改变，改变的只是其他$$\theta_j$$的梯度。求导后的梯度为
+
+$$\theta_j:=\theta_j(1-\frac{\lambda}{m})-\alpha\frac{1}{m}\sum\limits_{i=1}^m(h_\theta(x^{(i)})-y^{(i)})x_j^{(i)}$$
+
+注意$$(1-\frac{\lambda}{m})$$这一项，往往是一个十分接近但小于$$1$$的数字，而后面那一项和前面的推导是一样的，所以我们大概可以得到，梯度项的主要改变就是$$\theta_j$$略有缩小。这导致了所有$$\theta_j$$的梯度都发生了一定程度的减小。
+
+---
+
+对于逻辑回归的示例，我们可以将损失函数改写成
+
+$$J(\theta)=-\left [\frac{1}{m}\sum\limits_{i=1}^my^{(i)}log(h_\theta(x^{(i)}))+(1-y^{(i)})log(1-h_\theta(x^{(i)}))\right ]+\frac{\lambda}{2m} \sum\limits_{i=1}^n\theta_j^2$$
+
+用相似的方法还是可以得到相似的结果
+
+---
+
+吴恩达老师在Coursera里面贱贱地笑着说你们已经掌握了很多了（笑）
+
+无论如何线性回归和逻辑回归这一部分知识的简单介绍就是这些了。
+
+
+
+
+
 
 
 {% if page.comments %}
