@@ -700,7 +700,7 @@ $$\theta:=\theta-\frac{\alpha}{m}X^T(g(X\theta)-\overrightarrow{y})$$
 
 这里要简介一下正则化。为了解决过拟合问题，我们要使用正则化。假设我们遇到的问题是这样的
 
-![Regularization](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/Regularization.png)
+![Regularization](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/RegularizationI.png)
 
 我们的优化项可能是
 
