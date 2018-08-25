@@ -828,6 +828,72 @@ $$b:=b+\alpha y_i$$
 
 感知机的算法存在一种对偶的形式，有机会再进行描述。
 
+[这个是一个感知机的代码](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/tempsrc/Perceptron.py)
+
+## Generalized Linear Model
+
+广义线性模型。我们前面讲到的回归模型，它的$$y$$服从高斯分布。
+
+首先介绍为什么服从高斯分布。我们假设线性回归的模型是
+
+$$y^{(i)}=\theta^Tx^{(i)}+\epsilon^{(i)}$$
+
+我们此处使用$$\epsilon$$作为对未知统计情况的预测，这个未知的条件可能是某些没有被建模的特征量，也有可能是随机噪声。我们对于这样的独立同分布的未建模影响做估计时，总会假设这一类影响服从正态分布，即可以认为
+
+$$p(\epsilon^{(i)})=\frac{1}{\sqrt{2\pi}\sigma}e^{-\frac{(\epsilon^{(i)})^2}{2\sigma^2}}$$
+
+我们根据上面的推测就可以认为$$y^{(i)}-\theta^Tx^{(i)}$$是服从正态分布的，则由于$$x$$是已知的，那么
+
+$$p(y^{(i)}|x^{(i)};\theta)=\frac{1}{\sqrt{2\pi}\sigma}e^{-\frac{(y^{(i)}-\theta^Tx^{(i)})^2}{2\sigma^2}}$$
+
+我们说，$$y$$是服从正态分布的。
+
+而对于分类问题，$$y$$是服从伯努利分布（即只有两点的二项分布，也成为两点分布）的。两者服从不同的分布，对于解决问题来说其实还有一点复杂。实际上，我们可以认为，存在一种分布模型可以将他们统一，这种分布模型是指数分布族，
+
+$$p(y;\eta)=b(y)e^{\eta^TT(y)-a(\eta)}$$
+
+通过这个分布中的不同函数与参数的取值，我们不仅可以将两种分布统一，还能推广到更多问题上。首先对于伯努利分布
+
+$$p(y;\Phi)=\Phi^y(1-\Phi)^{1-y}$$
+
+我们取（将原分布律凑成需要的形式后取值）
+
+$$T(y)=y$$
+
+$$\begin{align*} a(\eta)  &= log(1-\Phi) \\  &= log(1+e^\eta) \end{align*}$$
+
+$$b(y)=1$$
+
+对于高斯分布
+
+$$p(y;\mu)=\frac{1}{\sqrt{2\pi}}e^{-\frac{(y-\mu)^2}{2}}$$
+
+我们取
+
+$$\eta=\mu$$
+
+$$T(y)=y$$
+
+$$\begin{align*} a(\eta)  &= \frac{\mu^2}{2} \\  &= \frac{\eta^2}{2} \end{align*}$$
+
+$$b(y)=\frac{1}{\sqrt{2\pi}}e^{-\frac{y^2}{2}}$$
+
+通过不同的取值，我们可以组合得到不同的分布律。注释上面分布律括号内的参数是期望。使用广义线性模型的时候，例如逻辑回归（即二分类问题）中，我们有
+
+$$h_\theta(x)=0\cdot p(y=0|x;\theta)+1\cdot p(y=1|x;\theta)=E[y|x;\theta]=\Phi=\frac{1}{1+e^{-\theta^Tx}}$$
+
+在回归模型中，同理
+
+$$h_\theta(x)=E[y|x;\theta]=\mu=\eta=\theta^Tx$$
+
+这两个模型分别对应线性回归和逻辑回归，如果将问题推广到多项式回归（多分类模型）上，我们使用相同的方法，经过复杂的推导，可以得到Softmax的表达式。
+
+
+
+
+
+
+
 {% if page.comments %}
 <div id="container"></div>
 <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
