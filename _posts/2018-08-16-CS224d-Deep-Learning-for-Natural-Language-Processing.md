@@ -2,7 +2,7 @@
 layout: post
 title:  "CS224d Deep Learning for Natural Language Processing"
 date:   2018-08-16 12:12:54 +0000
-excerpt "CS224自学笔记。还在学习更新较慢= ="
+excerpt: "CS224自学笔记。还在学习更新较慢= ="
 categories: Notes
 comments: true
 ---
