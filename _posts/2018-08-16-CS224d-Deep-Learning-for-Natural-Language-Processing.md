@@ -2,6 +2,7 @@
 layout: post
 title:  "CS224d Deep Learning for Natural Language Processing"
 date:   2018-08-16 12:12:54 +0000
+excerpt "CS224自学笔记。还在学习更新较慢= ="
 categories: Notes
 comments: true
 ---
@@ -119,7 +120,7 @@ $$ expect=\left[ \begin{matrix} 0.286  \\ 0.792  \\ -0.177 \\ -0.107 \\ 0.109 \\
 
 ##Word Vectors
 
-（这个网站的字母简直有毒=-=）
+（这个网站的字幕简直有毒=-=）
 
 我们希望使用一组数值组成的词向量来描述一个词汇的词义，但这实际上是一个有一定争议的做法。
 
@@ -148,13 +149,11 @@ $$hotel=[0 \:0 \:0\:0\:0\:0\:1\:0\:0\:0\:0 ]$$
 
 我们自然就希望处理成其他形式的编码，使得我们能够直观的看出词汇之间存在联系，然后比如利用点积来判断两个词汇的相似性等。
 
-我们利用一个叫做“分布相似性”的概念，通过对相同词汇的上下文来做一些处理，从而得到关于这个词汇的大量数值。假如我想知道banking这个词的意思，我就可以在语料库中找上千个banking出现的位置，然后根据上下文常出现的词汇，例如debt problems和governments这样的词汇，统计所有出现过的内容，然后通过某种方式用这些词来表示banking的含义。这样的处理甚至有利于对上下文的出现其他词汇的预测。
+这时我们会需要使用向量来描述词汇，让机器使用大量的语料去理解每一个词汇的含义。
 
-然后要解决词向量产生的问题。
+下面介绍word2vec软件包中的skip-gram模型，[这里有一篇文献专门用于介绍skip-gram模型](https://arxiv.org/abs/1301.3781)
 
-我们定义一个模型，来根据中心词汇来预测它的上下文词汇，然后使用一些概率方法对上下文进行预测，并使用一个损失函数来判断预测的准确性。我们可以看到，我们所有能做的就是这样，让程序根据概率去预测前后出现的词汇，但是我们却没有写任何算法告诉程序怎样预测更为精准，只是设置了这样一个目标去训练。仅仅如此，输出的词向量在处理问题和表达含义的时候就已经十分强大。这一切是如何发生的呢？下面介绍word2vec模型
-
-word2vec做的最基本的事情就是利用语言的意义理论来预测每个单词和它上下文的词汇。实际上在word2vec中包含了很多很多东西，里面有两个用于生成词汇向量的算法，和两个（效率中等的）训练方法。首先来介绍skip-gram的方法。
+![skip-gram](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/skip-gram.png)
 
 skip-gram做的工作就如上面所说，总的来说是一个非常精巧的模型。模型首先需要一个词汇表，假设我们的语料库中有10000个单词，那么我们的模型输入就是10000个量，全部都编码为前面所谓的“one-hot encoding”，即这个向量只有一位是1，其余位都是0，且1的位置各自不同。比较简单的方式就是直接输入10000维的单位矩阵。
 
@@ -165,6 +164,18 @@ skip-gram做的工作就如上面所说，总的来说是一个非常精巧的�
 $$S_j=\frac{e^{V_j}}{\sum\limits_{i=1}^{n}e^{V_i}}$$
 
 这就是第$$j$$个元素的Softmax。这个函数的最终会做归一化（详见分母），这样输出结果就会是一个相对概率。另外仔细看这个定义可以发现是对结果求指数后的归一化，显然原来越大的项，在指数归一化之后就会变得更大，从而使输出结果更接近“one-hot encoding”。
+
+
+
+
+
+
+
+
+
+
+
+
 
 好的下面会去更新一段时间CS229。
 
@@ -185,6 +196,7 @@ $$J'(\theta)=\prod\limits_{t=1}^T\prod\limits_{-m\le j \le m}P(w_{t+j}|w_t;\thet
 
 
 {% if page.comments %}
+
 <div id="container"></div>
 <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
 <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
@@ -200,4 +212,5 @@ var gitment = new Gitment({
 })
 gitment.render('container')
 </script>
+
 {% endif %}

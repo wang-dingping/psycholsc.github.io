@@ -2,6 +2,7 @@
 layout: post
 title:  "CS229 Machine Learning"
 date:   2018-08-10 06:35:54 +0000
+excerpt: "CS229自学笔记 更新至朴素贝叶斯方法"
 categories: Notes
 comments: true
 ---
