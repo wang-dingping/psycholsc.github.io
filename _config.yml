@@ -13,7 +13,7 @@
 # you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
-title: 不定期更新的学习笔记
+title: 某不定期更新的学习笔记
 email: prophet1380@gmail.com
 description: > # this means to ignore newlines until "baseurl:"
   动笔是不会动笔的，这辈子都不会动笔的，只能靠打打字写写博客这个样子复习的。如果发现内容有侵权或者需要交流可以使用邮箱联系，也可以直接联系QQ 362546643。
