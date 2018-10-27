@@ -922,6 +922,7 @@ $$L=\left ( \sum\limits_{i=1}^2 |x-x_i|^2 \right )^{\frac{1}{2}}$$
 {% if page.comments %}
 <div id="container"></div>
 <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+
 <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
 <script>
 var gitment = new Gitment({
