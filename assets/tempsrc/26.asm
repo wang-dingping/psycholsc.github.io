@@ -18,22 +18,18 @@ START:
     MOV AX,DATAS
     MOV DS,AX
     CLD
-    mov ES,AX
-    
-    
+    mov ES,AX	; essential
     lea DX,buf
     mov AH,0AH
     int 21H
-    
     mov SI,0
     mov DX,0
 se:
 	mov CX,5
 	mov SI,DX    
     lea DI,buf2
-    repz cmpsb
-    inc CX
-    dec CX
+    repz cmpsb	;repz cx ==0 or zf == 0 jmp
+	cmp CX,0
     JNZ cn0
     
     lea DX,endf
@@ -54,14 +50,11 @@ se:
 	mov AH,09H
 	int 21H
   
-theend:    
-    
+theend:
     MOV AH,4CH
     INT 21H
     
 cn0:
-	inc DX
-	dec DX
 	mov CX,DX
 	sub dx,46
 	JZ theend
@@ -71,5 +64,6 @@ cn0:
 
 CODES ENDS
     END START
+
 
 

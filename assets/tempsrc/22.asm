@@ -1,10 +1,9 @@
 DATAS SEGMENT
     string db '0123456789ABCDEF'
-    EOL db 0AH,0DH,'$'
+    EOL db 0AH,0DH,'$' ;10,13
 DATAS ENDS
 
 STACKS SEGMENT
-    ;此处输入堆栈段代码
 STACKS ENDS
 
 CODES SEGMENT
@@ -13,25 +12,25 @@ START:
     MOV AX,DATAS
     MOV DS,AX
 beg:
-    mov AH,01H
+    mov AH,01H		; input
     int 21H
     lea DX,EOL
-    mov AH,09H
+    mov AH,09H		; output EOL
     int 21H
-    cmp AL,'a'
-    JZ prebuf1
-    cmp AL,'b'
+    cmp AL,'a'		; a?
+    JZ prebuf1		; yep
+    cmp AL,'b'		; b?
     JZ prebuf2
     cmp AL,'c'
     JZ prebuf3
     cmp AL,'d'
     JZ prebuf4
-    cmp AL,1BH
+    cmp AL,1BH		; esc?	esc == 1BH
     JZ preexit
-    JMP beg
+    JMP beg			; unlimited loop
 
 prebuf1:
-	call buf1
+	call buf1		; just a little segment, not a proc. jmp to ret
 	jmp beg
 prebuf2:
 	call buf2
@@ -45,7 +44,7 @@ prebuf4:
 preexit:
 	call exit
 	jmp beg
-buf1 proc near
+buf1 proc near		; a proc. can ret. can also jmp to ret.
 	lea DX,buf1
 	call print
 	jmp beg
@@ -70,20 +69,10 @@ exit proc near
 	MOV AH,4CH
     INT 21H
     exit endp 
-se1:
-	add DL,30H
-	mov AH,02H
-	int 21H
-	ret
-se2:
-	add DL,37H
-	mov AH,02H
-	int 21H
-	ret
 print proc near
-	; DX = index
+	; DX = index 
 	mov CX,16
-ll: 
+ll: 				;xlat
 	JCXZ con2
 	sub CX,4
 	mov BX,DX
@@ -96,7 +85,7 @@ ll:
 	int 21H
 	pop DX
 	JMP ll
-con2:
+con2:			
 	lea DX,EOL
 	mov AH,09H
 	int 21H
@@ -105,3 +94,5 @@ con2:
 CODES ENDS
     END START
 ; longest ever.
+
+
