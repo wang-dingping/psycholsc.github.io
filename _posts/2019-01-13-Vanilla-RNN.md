@@ -133,7 +133,7 @@ $$ y^t=\left[ \begin{matrix} \hat y_1^t  \\ \hat y_2^t   \\ ... \\ ... \\ \hat y
 >
 > ---
 >
-> *由于这属于机器学习的范畴了，因此在这里不做详细说明，但是可以看出深度学习确实是机器学习的一个重要分支。另外这些内容的推导我还不是十分懂来着，吴恩达老师的`CS229`确实很有难度。*
+> 由于这属于机器学习的范畴了，因此在这里不做详细说明，但是可以看出深度学习确实是机器学习的一个重要分支。另外这些内容的推导我还不是十分懂来着，吴恩达老师的`CS229`确实很有难度。
 >
 > 对于多分类模型，往往是采用`Softmax`函数处理结果。
 >
@@ -201,11 +201,59 @@ $$ y^t=\left[ \begin{matrix} \hat y_1^t  \\ \hat y_2^t   \\ ... \\ ... \\ \hat y
 >
 > $$T(1)=\left[ \begin{matrix} 1  \\  0   \\ ... \\ ... \\  0  \end{matrix} \right];T(2)=\left[ \begin{matrix} 0  \\  1   \\ ... \\ ... \\  0  \end{matrix} \right];T(k-1)=\left[ \begin{matrix} 0 \\  0   \\ ... \\ ... \\  1  \end{matrix} \right];T(k)=\left[ \begin{matrix} 0  \\  0   \\ ... \\ ... \\  0  \end{matrix} \right]​$$
 >
-> 严格的说这里就不再是$$T(y)=y​$$了。这时候$$T(y)​$$被描述为
+> 严格的说这里就不再是$$T(y)=y$$了。这时候$$T(y)$$被描述为一个$$k-1$$维向量，通过上述方式对分类结果进行描述，当分类为对应位置时，该位置值为1，其他位置为0。多项式分布在$$y​$$取离散值时的概率分布为
 >
-> 
+> $$p(y;\phi)=\phi_1^{true(y==1)} \phi_2^{true(y==2)} ...\phi_k^{true(y==k)}​$$
 >
-> 
+> 其中$$true(y==k)$$的含义是$$y$$是否为$$k$$。若为真则取该函数为1，否则为0。根据分类结果，其实可以写作$$T(y)_i$$
+>
+> 根据上面的描述，最后一项是可以由前面的判断表达的，即
+>
+> $$p(y;\phi)=\phi_1^{true(y==1)} \phi_2^{true(y==2)} ...\phi_k^{1-\sum\limits_{i=1}^{k-1} true(y==i)}$$
+>
+> 类似的进行对数与指数运算操作（为了向指数函数族靠近）可以得到
+>
+> $$p(y;\phi)=exp\left[T(y)_1 log(\phi_1)  +T(y)_2 log(\phi_2) +...+(1-\sum\limits _{i=1}^{k-1}T(y)_i) log(\phi_k)  \right]​$$
+>
+> 展开最右侧求和的括号可以得到
+>
+> $$p(y;\phi)=exp\left[T(y)_1 log(\phi_1/\phi_k)  +T(y)_2 log(\phi_2/\phi_k) +...+T(y)_{k-1} log(\phi_{k-1}/\phi_k)+ log(\phi_k）  \right]​$$
+>
+> 将上述结果表示成指数函数族可以得到
+>
+> $$p(y;\phi)=b(y)exp\left(\eta^TT(y)-a(\eta)\right)$$
+>
+> 其中
+>
+> $$b(y)=1;\eta=\left[ \begin{matrix} log(\phi_1/\phi_k)  \\  log(\phi_2/\phi_k)   \\ ... \\ ... \\  log(\phi_{k-1}/\phi_k)  \end{matrix} \right];a(\eta)=-log(\phi_k)$$
+>
+> 根据上述结果
+>
+> $$\eta_i=log(\phi_i/\phi_k)$$
+>
+> 对于$$i=k$$我们定义$$\eta_k=0$$
+>
+> 现在推导概率$$\phi$$的表达式
+>
+> $$e^{\eta_i}=\phi_i/\phi_k​$$
+>
+> $$\phi_k e^{\eta_i}=\phi_i$$
+>
+> 概率之和为1，则
+>
+> $$\phi_k \sum\limits_{i=1}^k e^{\eta_i}=1​$$
+>
+> $$\phi_k =\frac{1}{ \sum\limits_{i=1}^k e^{\eta_i}}​$$
+>
+> 回代得到
+>
+> $$\phi_i = \frac{e^{\eta_i}}{ \sum\limits_{j=1}^k e^{\eta_j}}​$$
+>
+> 这个函数就被称为**Softmax**，在$$\eta=\theta^T x$$的假设3下，
+>
+> $$p(y=i\mid x;\theta)=\phi_i=\frac{e^{\theta_i^T x}}{ \sum\limits_{j=1}^k e^{\theta_j^T x}}$$
+>
+> 其他内容在此不再赘述。
 
 
 
@@ -235,13 +283,13 @@ $$loss=-\sum\limits_{t}log(\hat y^t_i)​$$
 
 ---
 
-因为没有抽到阿比所以所以不是很想学习
-
-他妈的心情好了再写
+DDL到了再不写就死了
 
 `2019-1-15 21:14:01`
 
 fgo卖号了~
+
+求求你们买我的号可便宜了
 
 ## Reference
 
