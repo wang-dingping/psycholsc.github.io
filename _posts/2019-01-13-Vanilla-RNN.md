@@ -12,13 +12,13 @@ categories: Notes
 </script>
 ---
 
-其实经过了一段时间的研究后我发现，电信这边常用的方法与模型，都是将问题进行完整的建模后运算推导并简化这样的思路，但是凡是与机器学习与深度学习这样十分依赖于优化的学科有关的运算，主要思想都是找出一个理论上可行的传递系统族，然后调整系统的参数使系统逼近最优系统。由于这些问题本身确实是难以求解最优解的，因此这种方法也不失为一种可行方法。
+其实经过了一小段时间的研究后我发现，电信这边常用的方法与模型，都是将问题进行完整的建模后运算推导并简化这样的思路，但是凡是与机器学习与深度学习这样十分依赖于优化的学科有关的运算，主要思想都是找出一个理论上可行的传递系统族，然后调整系统的参数使系统逼近最优系统。由于这些问题本身确实是难以求解最优解的，因此采用系统调整的方法也不失为一种可行方法。
 
-另外选择的方向是一个大方向，因为有些理论进行深究会发现，不仅有完善的数学体系，而且在短时间内很难完全理解。里面确实免不了出现这种内容，我的理解过于浅显也是一件不可避免的事情。
+另外本次选择的方向（P.S.电子信息类研究计划政策要求）是一个大方向，因为有些理论进行深究会发现，不仅有完善的数学体系，而且在短时间内很难完全理解。里面确实免不了出现这种内容，我的理解过于浅显也是一件不可避免的事情。
 
 以下是几个前几年兴起于NLP的NN模型，这里进行理论介绍与复现。
 
-话说回来，这可能是目前网上能看到的最浅显也最完整的RNN说明了吧。
+话说回来，这可能是目前网上能看到的最浅显也最完整的RNN说明了吧。除了简单介绍了几种RNN模型以外，还连带着说了一下机器学习的相关理论。
 
 
 
@@ -123,7 +123,7 @@ $$ y^t=\left[ \begin{matrix} \hat y_1^t  \\ \hat y_2^t   \\ ... \\ ... \\ \hat y
 >
 >$$loss^t = -y_i^tlog(\hat y_i^t)$$
 >
->这里的$$y^t_i$$一般是取值为$$1$$的那一项，所以也常常不写。
+>这里的$$y^t_i$$一般是取值为$$1​$$的那一项，所以也常常不写。这样一比其实可以发现对数似然损失函数和交叉熵损失函数在这种条件下等价。
 >
 >> 交叉熵和对数损失函数应当是同一种损失函数。我们来稍微讨论一下熵这个东西
 >>
@@ -289,11 +289,25 @@ $$ y^t=\left[ \begin{matrix} \hat y_1^t  \\ \hat y_2^t   \\ ... \\ ... \\ \hat y
 >
 > 这个函数就被称为**Softmax**，在$$\eta=\theta^T x$$的假设3下，
 >
-> $$p(y=i\mid x;\theta)=\phi_i=\frac{e^{\theta_i^T x}}{ \sum\limits_{j=1}^k e^{\theta_j^T x}}$$
+> $$p(y=i\mid x;\theta)=\phi_i=\frac{e^{\theta_i^T x}}{ \sum\limits_{j=1}^k e^{\theta_j^T x}}​$$
 >
 > 其他内容在此不再赘述。
 
 以下开始反向传播推导过程。反向传播（Back Propagation）实际上是根据已知输出进行系统修正的过程，一般的需要通过链式法则进行求导计算，根据导数（梯度）来决定每一个参数应该向什么**方向**做多大**步进**的修正。经过不断的迭代修正，就能得到正确结果。最重要的步骤就是求导。
+
+先把**前向传播**运算拉下来
+
+---
+
+隐藏状态$$h$$更新
+
+$$h^t=f(W_{hx}x^{t}+W_{hh}h^{t-1}+b_h)$$
+
+输出计算
+
+$$y^t=g(W_{hy}h^t+b_y)$$
+
+---
 
 指定时序$$t​$$，计算此时的反向传播参数。由于是时序模型，此时也是针对时间的反向传播。
 
@@ -305,6 +319,38 @@ $$E=\sum\limits_{t}E^t​$$
 
 $$\hat y^t=g(W_{hy}h^t+b_y)=Softmax(W_{hy}h^t+b_y)$$
 
+则输出层**偏置**的梯度为
+
+$$\frac{\partial E}{\partial b_y}=\frac{\partial }{\partial b_y}\sum\limits_{t}E^t=\sum\limits_{t}\frac{\partial E^t}{\partial b_y}​$$
+
+根据链式法则
+
+$$\sum\limits_{t}\frac{\partial E^t}{\partial b_y}=\sum\limits_{t}\frac{\partial E^t}{\partial \hat y^t} \frac{\partial \hat y^t}{\partial z^t}\frac{\partial z^t}{\partial b_y}​$$
+
+第一个求导是关于损失函数的求导，第二个求导是关于`Softmax`的求导，第三层就是Softmax内部的求导过程。这样根据链式法则分别求导可以得到
+
+$$\sum\limits_{t}\frac{\partial E^t}{\partial \hat y^t} \frac{\partial \hat y^t}{\partial z^t}\frac{\partial z^t}{\partial b_y}=\sum\limits_{t}-\frac{1}{\hat y^t} \frac{\partial \hat y^t}{\partial z^t}\frac{\partial z^t}{\partial b_y}=\sum\limits_{t}\left[ -\frac{1}{\hat y^t} \frac{e^{z_i}\sum\limits_j e^{z_j} -(e^{z_i})^2}{(\sum\limits_j e^{z_j})^2}·1\right]​$$
+
+最终可以求得导数为
+
+$$\sum\limits_t (\hat y^t -1)​$$
+
+这里求导只有一个需要注意的，就是求导过程中**分母不能只当做是一个常数**，而是应该注意到分母的**求和项中也有我们的自变量项**，因此求导时需要使用除法求导的法则。
+
+> 注意到RNN参数共享，此处$$b_y​$$并不需要写作$$b_y^t​$$，倒是可以在需要的时候写$$(b_y)_i​$$，但很多模型中由于考虑到计算方便，往往不会将$$b_y​$$设计为向量，而是常数。
+
+同理可以计算关于$$W_{hy}$$的导数，此时的不同点只在上述求导中的第三项
+
+$$\sum\limits_{t}\frac{\partial E^t}{\partial \hat y^t} \frac{\partial \hat y^t}{\partial z^t}\frac{\partial z^t}{\partial W_{hy}}=\sum\limits_{t}-\frac{1}{\hat y^t} \frac{\partial \hat y^t}{\partial z^t}\frac{\partial z^t}{\partial W_{hy}}=\sum\limits_{t}\left[ -\frac{1}{\hat y^t} \frac{e^{z_i}\sum\limits_j e^{z_j} -(e^{z_i})^2}{(\sum\limits_j e^{z_j})^2}·(h^t)^T\right]$$
+
+结果为
+
+$$\sum\limits_t (\hat y^t -1)·(h^t)^T$$
+
+---
+
+这里分页，因为后面的计算变得复杂了许多。观察计算表达式可以发现，如果计算关于$$W_{hh}$$和$$W_{hx}$$的表达式的导数，就会发现，对于$$t$$时刻的输出结果，应由两部分组成，分别为$$t$$时刻的梯度与$$t+1$$时刻的梯度。这是因为在前向传播计算时，$$t$$时刻状态$$h^t$$不仅影响该时刻的输出$$\hat y^t$$，还会影响下一时刻的输出$$\hat y^{t+1}$$。当然这还都只是从表达式直接得到的，考虑到状态在网络中不断传递，实际上影响是不断传递的。计算时根据前向传播表达式计算的结果就可以直接推导整个过程。
+
 
 
 
@@ -313,7 +359,7 @@ $$\hat y^t=g(W_{hy}h^t+b_y)=Softmax(W_{hy}h^t+b_y)$$
 
 ## LSTM
 
-
+想了想果然还是应该在下一篇文章里写呢
 
 ---
 
