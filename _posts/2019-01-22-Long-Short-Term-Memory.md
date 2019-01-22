@@ -72,9 +72,13 @@ LSTM的关键是里面新加入的一个参量，$$C_t$$。这个是`cell state`
 
 LSTM能够将信息从`cell state`中移除或添加到其中，这个过程是通过门控的，该门控结构如图
 
-![](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/LSTMGate.png)
+<img src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/LSTMGate.png" alt="" data-disqus-identifier="/posts/2015-08-Understanding-LSTMs/disqussion-58">
+
+
 
 门是一种选择性通过信息的方法，它们通过一个`Sigmoid`层和一个逐点乘法组成。我们知道`Sigmoid`函数的输出结果是$$(0,1)$$之内的，因此这里被赋予通过信息量的意义，门控信号越小，则允许通过信息越少，反之越大。每个LSTM单元有三个这样的门结构，分别负责不同的功能。以下是LSTM每一个cell的实际工作过程
+
+> 备注一句，目前常用的RNN模型中，很多人都将以下过程写在一起，本文也不例外。这样的操作可以减少参数的使用，从而加速优化。
 
 ### 第一步 - 遗忘门
 
@@ -90,11 +94,49 @@ LSTM首先决定要从`cell state`遗忘什么信息，这个是通过遗忘门�
 
 ![](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/LSTMInput.png)
 
-可以说，在上述语言模型的例子中，新对象的信息就是通过这个门进行输入的。
+可以说，在上述语言模型的例子中，新对象的信息就是通过这个门进行输入的。同样的，这个门需要的输入信息也是$$h_{t-1}$$和$$x_t$$。
 
+### 第三步 - 更新cell状态
 
+此步骤根据以上信息将$$C_{t-1}$$更新为$$C_t$$。
 
+目前我们得到的信息是
 
+$$f_t=Sigmoid\left(W_f\cdot [h_{t-1},x_t]+b_f\right)\tag{1}​$$
+
+$$i_t=Sigmoid\left( W_f\cdot [h_{t-1},x_t]+b_f \right)\tag{2}$$
+
+$$\hat C_t=tanh\left( W_C\cdot [h_{t-1},x_t]+b_C \right)\tag{3}$$
+
+根据上述的三个结果进行参数更新。
+
+对于旧状态保留比例为$$f_t$$，对于新状态的接纳比例是$$i_t$$，则新的状态为
+
+$$C_t=f_t\cdot C_{t-1}+i_t \cdot \hat C_t \tag{4}​$$
+
+![](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/LSTMUpdateC.png)
+
+值得注意的是，由于我们的参数实际都是矩阵（或者说向量），所以可以被忘记的信息很多，被输入的新信息也不仅一条。
+
+### 第四步 - 输出
+
+接下来这一层与vanilla RNN相似，但是会使用前面的计算出的$$C_t​$$进行一定程度的筛选。通过激活函数计算的输出为
+
+$$o_t=Sigmoid\left( W_o[h_{t-1},x_t]+b_o \right) \tag{5}$$
+
+当然这并不是输出，实际输出结果要经过筛选，即
+
+$$h^t = o_t\cdot tanh(C_t)\tag{6}​$$
+
+整个过程中的激活函数，其作用大多是对范围进行规整。
+
+对筛选结果举例，例如对于一个对象，我们下一个输出词可能是一个动词。这时候就需要LSTM决定输出动词的形式，例如单复数。通过筛选有利于我们选择正确的结果。
+
+---
+
+以上实际上是一个较为正常的LSTM，就像前面说的RNN一样，`without any fancy stuff`。实际见于论文与应用的LSTM结构都经历了微小的变构。
+
+### 变构的LSTM
 
 
 
