@@ -361,13 +361,15 @@ $$\sum\limits_t (\hat y^t -y^t)·(h^t)^T\tag{5}$$
 
 我们在这里把两个表达式写出来，一个是该时刻的损失
 
-$$E^t=-log\left[ Softmax\left( W_{hy}tanh(W_{hx}x^t +W_{hh}h^{t-1} +b_h )  +b_y \right) \right]=-log\left[ Softmax\left( W_{hy}h^t +b_y \right) \right]\tag{6}$$
+$$E^t=-log\left[ Softmax\left( W_{hy}tanh(W_{hx}x^t +W_{hh}h^{t-1} +b_h )  +b_y \right) \right]\tag{6}$$
 
+为方便起见，此处写作
 
+$$E^t=-log\left[ Softmax\left( W_{hy}h^t +b_y \right) \right]\tag{6}$$
 
 一个是下一时刻的损失
 
-$$E^{t+1}=-log\left[ Softmax\left( W_{hy}tanh(W_{hx}x^{t+1} +W_{hh}h^{t} +b_h )  +b_y \right) \right]\tag{7}$$
+$$E^{t+1}=-log\left[ Softmax\left( W_{hy}tanh(W_{hx}x^{t+1} +W_{hh}h^{t} +b_h )  +b_y \right) \right]\tag{7}​$$
 
 可以看出总损失$$E​$$与两个方向的导数有关，因此计算的时候可能会考虑到两个方向的计算。首先计算较为简单的$$b_h​$$的导数。$$b_h​$$就是$$h^t​$$计算中的一个共享参数，计算时采用链式法则可以写作
 
