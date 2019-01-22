@@ -43,11 +43,15 @@ Vanilla原义是香草，此处含义是`without fancy stuff`，即最原初的�
 
 隐藏状态$$h$$更新
 
-$$h^t=f(W_{hx}x^{t}+W_{hh}h^{t-1}+b_h)$$
+$$h^t=f(W_{hx}x^{t}+W_{hh}h^{t-1}+b_h)\tag{1}$$
+
+
 
 输出计算
 
-$$y^t=g(W_{hy}h^t+b_y)​$$
+$$y^t=g(W_{hy}h^t+b_y) \tag{2}$$
+
+
 
 以上计算与个人习惯有关，运算可以理解为，每一个`cell`输入前一时刻的状态$$h^{t-1}​$$，利用输入$$x^{t}​$$，通过一个非线性关系计算该时刻的状态$$h^t​$$，然后利用该时刻状态计算输出$$y^t​$$。此过程建立了输入与输出的联系，并且对其中循环更新的隐藏状态$$h​$$进行更新。
 
@@ -301,11 +305,11 @@ $$ y^t=\left[ \begin{matrix} \hat y_1^t  \\ \hat y_2^t   \\ ... \\ ... \\ \hat y
 
 隐藏状态$$h$$更新
 
-$$h^t=f(W_{hx}x^{t}+W_{hh}h^{t-1}+b_h)$$
+$$h^t=f(W_{hx}x^{t}+W_{hh}h^{t-1}+b_h)\tag{1}$$
 
 输出计算
 
-$$y^t=g(W_{hy}h^t+b_y)$$
+$$y^t=g(W_{hy}h^t+b_y)\tag{1.2} $$
 
 ---
 
@@ -351,7 +355,7 @@ $$\sum\limits_t (\hat y^t -y^t)·(h^t)^T$$
 
 ---
 
-这里分页，因为后面的计算变得复杂了许多。观察计算表达式可以发现，如果计算关于$$W_{hh}$$和$$W_{hx}$$的表达式的导数，就会发现，对于$$t$$时刻的输出结果，应由两部分组成，分别为$$t$$时刻的梯度与$$t+1$$时刻的梯度。这是因为在前向传播计算时，$$t$$时刻状态$$h^t$$不仅影响该时刻的输出$$\hat y^t$$，还会影响下一时刻的输出$$\hat y^{t+1}$$。当然这还都只是从表达式直接得到的，考虑到状态在网络中不断传递，实际上影响是不断传递的。计算时根据前向传播表达式计算的结果就可以直接推导整个过程。
+这里分页，因为后面的计算变得复杂了许多。观察计算表达式可以发现，如果计算关于$$W_{hh}​$$和$$W_{hx}​$$的表达式的导数，就会发现，对于$$t​$$时刻的输出结果，应由两部分组成，分别为$$t​$$时刻的梯度与$$t+1​$$时刻的梯度。这是因为在前向传播计算时，$$t​$$时刻状态$$h^t​$$不仅影响该时刻的输出$$\hat y^t​$$，还会影响下一时刻的输出$$\hat y^{t+1}​$$。当然这还都只是从表达式直接得到的，考虑到状态在网络中不断传递，实际上影响是不断传递的。计算时根据前向传播表达式计算的结果就可以直接推导整个过程。
 
 我们在这里把两个表达式写出来，一个是该时刻的损失
 
@@ -363,7 +367,11 @@ $$E^{t+1}=-log\left[ Softmax\left( W_{hy}tanh(W_{hx}x^{t+1} +W_{hh}h^{t} +b_h ) 
 
 可以看出总损失$$E​$$与两个方向的导数有关，因此计算的时候可能会考虑到两个方向的计算。首先计算较为简单的$$b_h​$$的导数。$$b_h​$$就是$$h^t​$$计算中的一个共享参数，计算时采用链式法则可以写作
 
-$$\frac{\partial E}{\partial b_h}=\frac{\partial \sum\limits_{t}E^t}{\partial b_h}=\sum\limits_{t}\frac{\partial E^t}{\partial b_h}=\sum\limits_{t}\frac{\partial E^t}{\partial h^t}\frac{\partial h^t}{\partial b_h}$$
+$$\frac{\partial E}{\partial b_h}=\frac{\partial \sum\limits_{t}E^t}{\partial b_h}=\sum\limits_{t}\frac{\partial E^t}{\partial b_h}=\sum\limits_{t}\frac{\partial E^t}{\partial h^t}\frac{\partial h^t}{\partial b_h} $$
+
+
+
+
 
 这里比较复杂的就是$$h^t​$$部分的处理，前面说了存在两种方法，计算时主要是考虑$$\frac{\partial E}{\partial h^t}​$$的特殊性。
 
@@ -381,7 +389,23 @@ $$\frac{\partial E^t}{\partial h^t}=W_{hy}^T (\hat y^t-y^t)$$
 
 按照求导规则，激活函数的导数一般是与之前结果做哈达玛积，`tanh`的导数一般也采用其本身来表示，即$$(tanh(x))'=1-(tanh(x))^2$$，计算结果就可以表示为
 
-$$$$
+$$\frac{\partial E^{t+1}}{\partial h^{t+1}}\frac{\partial h^{t+1}}{\partial h^{t}}=W_{hh}^T \frac{\partial E^{t+1}}{\partial h^{t+1}}\odot(1-(h^{t+1})^2)​$$
+
+如果向量化结果，平方项就需要写成
+
+$$h^{(t+1)}\cdot h^{(t+1)T}​$$
+
+而采用哈达玛积时结果应与$$diag(1-h^{(t+1)}\cdot h^{(t+1)T})$$等价，因此结果可以写作
+
+$$W_{hh}^T \frac{\partial E^{t+1}}{\partial h^{t+1}}diag\left((1-(h^{t+1})^2)\right)=W_{hh}^T \delta ^{t+1}diag\left((1-(h^{t+1})^2)\right)$$
+
+
+
+
+
+
+
+
 
 
 
