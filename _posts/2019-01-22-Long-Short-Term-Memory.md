@@ -10,9 +10,7 @@ categories: Notes
 <script type="text/javascript"
   src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
 </script>
----
-
-## Long Short Term Memory
+## 长短期记忆
 
 长短期记忆模型是一个**门控RNN**（`Gated RNN`）模型，用于解决RNN中的长期依赖问题。
 
@@ -64,6 +62,42 @@ LSTM的模型正是用来解决这个问题的。
 
 
 
+![](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/LSTMNotation.png)
+
+LSTM的关键是里面新加入的一个参量，$$C_t$$。这个是`cell state`，代表每一个LSTM cell的状态。这个状态突出一点描述起来是这样的
+
+![](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/LSTMC.png)
+
+看起来有些像传送带，里面只有一些微小的线性相互作用，信息很容易在传送线上流动而不发生较大的改变。
+
+LSTM能够将信息从`cell state`中移除或添加到其中，这个过程是通过门控的，该门控结构如图
+
+![](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/LSTMGate.png)
+
+门是一种选择性通过信息的方法，它们通过一个`Sigmoid`层和一个逐点乘法组成。我们知道`Sigmoid`函数的输出结果是$$(0,1)$$之内的，因此这里被赋予通过信息量的意义，门控信号越小，则允许通过信息越少，反之越大。每个LSTM单元有三个这样的门结构，分别负责不同的功能。以下是LSTM每一个cell的实际工作过程
+
+### 第一步 - 遗忘门
+
+LSTM首先决定要从`cell state`遗忘什么信息，这个是通过遗忘门实现的，遗忘门位于输入的位置，如图
+
+![](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/LSTMForget.png)
+
+通过图示可以看出，这是由$$h_{t-1}$$和$$x_t$$决定的。在语言模型中，可以列举前面的例子，即根据前面输入的结果去预测下一个单词输出。`cell state`中可能包含当前对象的性别等于输出有关的信息，例如代词的选择。当我们的输入中遇到了新的对象时，我们就有理由忘记旧对象的信息。
+
+### 第二步 - 输入门
+
+此时的LSTM要决定`cell state`中需要保存什么新信息，这个结构是由两部分组成的。第一个结构是**输入门**，是一个`Sigmoid`层；第二个是`tanh`层，产生一个$$\hat C_t$$候选。
+
+![](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/LSTMInput.png)
+
+可以说，在上述语言模型的例子中，新对象的信息就是通过这个门进行输入的。
+
+
+
+
+
+
+
 ---
 
 `2019-1-22 15:34:41`
@@ -72,3 +106,4 @@ LSTM的模型正是用来解决这个问题的。
 
 ## Reference
 
+[1] [colah.github.io](http://colah.github.io/posts/2015-08-Understanding-LSTMs/)中的博文
