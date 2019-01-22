@@ -72,11 +72,13 @@ LSTM的关键是里面新加入的一个参量，$$C_t$$。这个是`cell state`
 
 LSTM能够将信息从`cell state`中移除或添加到其中，这个过程是通过门控的，该门控结构如图
 
+<div style="width:25%; margin-left:auto; margin-right:auto; margin-bottom:8px; margin-top:8px;">
 <img src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/LSTMGate.png" alt="" data-disqus-identifier="/posts/2015-08-Understanding-LSTMs/disqussion-58">
+</div>
 
 
 
-门是一种选择性通过信息的方法，它们通过一个`Sigmoid`层和一个逐点乘法（即`Hadamard Product`，下面有介绍如何计算）组成。我们知道`Sigmoid`函数的输出结果是$$(0,1)$$之内的，因此这里被赋予通过信息量的意义，门控信号越小，则允许通过信息越少，反之越大。每个LSTM单元有三个这样的门结构，分别负责不同的功能。以下是LSTM每一个cell的实际工作过程
+门是一种选择性通过信息的方法，它们通过一个`Sigmoid`层和一个逐点乘法（即`Hadamard Product`，下面有介绍如何计算）组成。我们知道`Sigmoid`函数的输出结果是$$(0,1)​$$之内的，因此这里被赋予通过信息量的意义，门控信号越小，则允许通过信息越少，反之越大。每个LSTM单元有三个这样的门结构，分别负责不同的功能。以下是LSTM每一个cell的实际工作过程
 
 > 备注一句，目前常用的RNN模型中，很多人都将以下过程写在一起，本文也不例外。这样的操作可以减少参数的使用，从而加速优化。
 >
@@ -191,6 +193,10 @@ $$h_t=(1-z_t)\odot h_{t-1}+z_t\odot \hat h_t$$
 以上模型存在孰优孰劣吗？那当然是存在的。但是不同模型的区别仅在个别不同的任务中有所体现，实际应用中许多模型各自效果相差无几。
 
 至今为止人们使用RNN获得的成果大多数都是LSTM完成的，对于大多数任务而言，它们的工作效果很好。除了网络模型以外，人们常用的研究重点还有`Attention`等，而目前`Attention`的相关研究也带来了许多正面的效果。当然除此之外也存在其他的提升性能的研究方向，当前的研究还只是一个开端。
+
+## 反向传播
+
+
 
 ---
 
