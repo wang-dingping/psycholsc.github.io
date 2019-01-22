@@ -453,3 +453,4 @@ $$\frac{\partial E}{\partial W_{hh}}=\sum\limits_{t}\frac{\partial E^t}{\partial
 
 [3] Gradient 《Deep Learning》
 
+[4] 刘建平Pinard blog
