@@ -76,9 +76,11 @@ LSTM能够将信息从`cell state`中移除或添加到其中，这个过程是�
 
 
 
-门是一种选择性通过信息的方法，它们通过一个`Sigmoid`层和一个逐点乘法组成。我们知道`Sigmoid`函数的输出结果是$$(0,1)$$之内的，因此这里被赋予通过信息量的意义，门控信号越小，则允许通过信息越少，反之越大。每个LSTM单元有三个这样的门结构，分别负责不同的功能。以下是LSTM每一个cell的实际工作过程
+门是一种选择性通过信息的方法，它们通过一个`Sigmoid`层和一个逐点乘法（即`Hadamard Product`，下面有介绍如何计算）组成。我们知道`Sigmoid`函数的输出结果是$$(0,1)$$之内的，因此这里被赋予通过信息量的意义，门控信号越小，则允许通过信息越少，反之越大。每个LSTM单元有三个这样的门结构，分别负责不同的功能。以下是LSTM每一个cell的实际工作过程
 
 > 备注一句，目前常用的RNN模型中，很多人都将以下过程写在一起，本文也不例外。这样的操作可以减少参数的使用，从而加速优化。
+>
+> 另外下面采用的激活函数均为Sigmoid和tanh，目前Sigmoid已经不再常用，且所有激活函数的选择都是根据情况选择的，并不是一定选择tanh或Sigmoid。当然也不能随便选。
 
 ### 第一步 - 遗忘门
 
@@ -106,13 +108,15 @@ $$f_t=Sigmoid\left(W_f\cdot [h_{t-1},x_t]+b_f\right)\tag{1}​$$
 
 $$i_t=Sigmoid\left( W_f\cdot [h_{t-1},x_t]+b_f \right)\tag{2}$$
 
-$$\hat C_t=tanh\left( W_C\cdot [h_{t-1},x_t]+b_C \right)\tag{3}$$
+$$\hat C_t=tanh\left( W_C\cdot [h_{t-1},x_t]+b_C \right)\tag{3}​$$
 
 根据上述的三个结果进行参数更新。
 
-对于旧状态保留比例为$$f_t$$，对于新状态的接纳比例是$$i_t$$，则新的状态为
+对于旧状态保留比例为$$f_t​$$，对于新状态的接纳比例是$$i_t​$$，则新的状态为
 
-$$C_t=f_t\cdot C_{t-1}+i_t \cdot \hat C_t \tag{4}​$$
+$$C_t=f_t\cdot C_{t-1}+i_t \cdot \hat C_t \tag{4}$$
+
+> 备注一点，一般的都采用列向量形式，这里乘积实际上是Hadamard Product，即哈达玛积。其效果是做对应位置的乘积，结果仍在对应位置，只能对size相同的矩阵或向量进行乘法。
 
 ![](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/LSTMUpdateC.png)
 
@@ -138,7 +142,55 @@ $$h^t = o_t\cdot tanh(C_t)\tag{6}​$$
 
 ### 变构的LSTM
 
+#### Peephole LSTM
 
+![](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/LSTMPeephole.png)
+
+实际上包含所有LSTM中的结构，唯一的不同点在图中标出，即让$$C_{t-1}$$参与到遗忘与输入的决策中。`Peephole`是窥视孔，取义为可以让门观测`cell state`。
+
+*这个在Wiki上的参考是用$$C_t$$取代$$h_t$$的位置。该结果存疑，仍需要继续调查*
+
+#### Coupled Forget and Input Gates
+
+翻译应该是**耦合遗忘输入门**，提出遗忘与输入不应单独决策，而是应该同时决策。
+
+![](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/LSTMCoupled.png)
+
+>We only forget when we’re going to input something in its place. We only input new values to the state when we forget something older.
+
+实际上看起来只是调整了权重，果然起名是个技术，还**耦合**呢哈哈哈哈
+
+#### GRU(Gated Recurrent Unit)
+
+这个模型2014年才提出，而LSTM早在2000年就已经提出了，顺便RNN模型最早的大规模研究在1994年左右。整整二十年。顺便这个模型一般被独立于LSTM进行研究，而不认为应与LSTM并列，可见其影响力。
+
+这个模型将遗忘门和输入门合并为了一个**更新门**（`Update Gate`），顺便还合并了$$C_t$$和$$h_t$$。
+
+![](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/LSTMGRU.png)
+
+*这个框图画的真tm反人类*
+
+这个模型的复杂度显然是小于标准LSTM的，其运算如下
+
+$$z_t=Sigmoid(W_z\cdot [h_{t-1},x_t])​$$
+
+$$r_t=Sigmoid(W_r\cdot [h_{t-1},x_t])$$
+
+$$\hat h_t=tanh(W_h \cdot[r \odot h_{t-1},x_t])$$
+
+$$h_t=(1-z_t)\odot h_{t-1}+z_t\odot \hat h_t$$
+
+*省略常数项*
+
+实际上仔细一看改动也不是很大嘛。对于遗忘与输入，标准LSTM都是针对$$C_t$$动手，此处直接对$$h_t$$进行操作，因为合并了状态；进行更新状态时，采用的候选参数仍然是`tanh`激活的结果，更新时采用的权重比例也继承了`Peephole`的思想。
+
+---
+
+### 总结
+
+以上模型存在孰优孰劣吗？那当然是存在的。但是不同模型的区别仅在个别不同的任务中有所体现，实际应用中许多模型各自效果相差无几。
+
+至今为止人们使用RNN获得的成果大多数都是LSTM完成的，对于大多数任务而言，它们的工作效果很好。除了网络模型以外，人们常用的研究重点还有`Attention`等，而目前`Attention`的相关研究也带来了许多正面的效果。当然除此之外也存在其他的提升性能的研究方向，当前的研究还只是一个开端。
 
 ---
 
