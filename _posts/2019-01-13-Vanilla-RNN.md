@@ -331,9 +331,9 @@ $$\sum\limits_{t}\frac{\partial E^t}{\partial b_y}=\sum\limits_{t}\frac{\partial
 
 $$\sum\limits_{t}\frac{\partial E^t}{\partial \hat y^t} \frac{\partial \hat y^t}{\partial z^t}\frac{\partial z^t}{\partial b_y}=\sum\limits_{t}-\frac{1}{\hat y^t} \frac{\partial \hat y^t}{\partial z^t}\frac{\partial z^t}{\partial b_y}=\sum\limits_{t}\left[ -\frac{1}{\hat y^t} \frac{e^{z_i}\sum\limits_j e^{z_j} -(e^{z_i})^2}{(\sum\limits_j e^{z_j})^2}·1\right]​$$
 
-最终可以求得导数为
+最终可以求得向量化导数为
 
-$$\sum\limits_t (\hat y^t -1)​$$
+$$\sum\limits_t (\hat y^t -y^t)$$
 
 这里求导只有一个需要注意的，就是求导过程中**分母不能只当做是一个常数**，而是应该注意到分母的**求和项中也有我们的自变量项**，因此求导时需要使用除法求导的法则。
 
@@ -343,13 +343,47 @@ $$\sum\limits_t (\hat y^t -1)​$$
 
 $$\sum\limits_{t}\frac{\partial E^t}{\partial \hat y^t} \frac{\partial \hat y^t}{\partial z^t}\frac{\partial z^t}{\partial W_{hy}}=\sum\limits_{t}-\frac{1}{\hat y^t} \frac{\partial \hat y^t}{\partial z^t}\frac{\partial z^t}{\partial W_{hy}}=\sum\limits_{t}\left[ -\frac{1}{\hat y^t} \frac{e^{z_i}\sum\limits_j e^{z_j} -(e^{z_i})^2}{(\sum\limits_j e^{z_j})^2}·(h^t)^T\right]$$
 
-结果为
+向量化结果为
 
-$$\sum\limits_t (\hat y^t -1)·(h^t)^T$$
+$$\sum\limits_t (\hat y^t -y^t)·(h^t)^T$$
+
+
 
 ---
 
 这里分页，因为后面的计算变得复杂了许多。观察计算表达式可以发现，如果计算关于$$W_{hh}$$和$$W_{hx}$$的表达式的导数，就会发现，对于$$t$$时刻的输出结果，应由两部分组成，分别为$$t$$时刻的梯度与$$t+1$$时刻的梯度。这是因为在前向传播计算时，$$t$$时刻状态$$h^t$$不仅影响该时刻的输出$$\hat y^t$$，还会影响下一时刻的输出$$\hat y^{t+1}$$。当然这还都只是从表达式直接得到的，考虑到状态在网络中不断传递，实际上影响是不断传递的。计算时根据前向传播表达式计算的结果就可以直接推导整个过程。
+
+我们在这里把两个表达式写出来，一个是该时刻的损失
+
+$$E^t=-log\left[ Softmax\left( W_{hy}tanh(W_{hx}x^t +W_{hh}h^{t-1} +b_h )  +b_y \right) \right]=-log\left[ Softmax\left( W_{hy}h^t +b_y \right) \right]$$
+
+一个是下一时刻的损失
+
+$$E^{t+1}=-log\left[ Softmax\left( W_{hy}tanh(W_{hx}x^{t+1} +W_{hh}h^{t} +b_h )  +b_y \right) \right]$$
+
+可以看出总损失$$E​$$与两个方向的导数有关，因此计算的时候可能会考虑到两个方向的计算。首先计算较为简单的$$b_h​$$的导数。$$b_h​$$就是$$h^t​$$计算中的一个共享参数，计算时采用链式法则可以写作
+
+$$\frac{\partial E}{\partial b_h}=\frac{\partial \sum\limits_{t}E^t}{\partial b_h}=\sum\limits_{t}\frac{\partial E^t}{\partial b_h}=\sum\limits_{t}\frac{\partial E^t}{\partial h^t}\frac{\partial h^t}{\partial b_h}$$
+
+这里比较复杂的就是$$h^t​$$部分的处理，前面说了存在两种方法，计算时主要是考虑$$\frac{\partial E}{\partial h^t}​$$的特殊性。
+
+这里假设一个
+
+$$\delta(t)=\frac{\partial E}{\partial h^t}=\frac{\partial E^t}{\partial h^t}+\frac{\partial E^{t+1}}{\partial h^{t+1}}\frac{\partial h^{t+1}}{\partial h^{t}}$$
+
+由于每一次计算时刻$$t$$的导数时都会导致两项结果，因此可以通过这种递推方式求得所有层的结果。
+
+另外，实际上效果应该是无穷传递的，但是这样下去不会得到解析解，因此求导的假设是其它层已知时求导该层。前面一项前面求过了
+
+$$\frac{\partial E^t}{\partial h^t}=W_{hy}^T (\hat y^t-y^t)$$
+
+后面一项计算时有些需要考虑的内容，一个是$$tanh$$的导数，另一个是`Hadamard Product`问题。
+
+按照求导规则，激活函数的导数一般是与之前结果做哈达玛积，`tanh`的导数一般也采用其本身来表示，即$$(tanh(x))'=1-(tanh(x))^2$$，计算结果就可以表示为
+
+$$$$
+
+
 
 
 
@@ -362,8 +396,6 @@ $$\sum\limits_t (\hat y^t -1)·(h^t)^T$$
 想了想果然还是应该在下一篇文章里写呢
 
 ---
-
-DDL到了再不写就死了
 
 `2019-1-15 21:14:01`
 
