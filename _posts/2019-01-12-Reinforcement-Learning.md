@@ -30,6 +30,8 @@ categories: Notes
 
 ## 第一章 Introduction
 
+### 引入
+
 当我们说起学习的本质的时候，我们总会认为第一个想到，我们是通过与环境的互动学习的。我们出生的时候，并没有老师教我们如何进行活动，但是我们自己确实与环境有直接的感觉运动联系。人类的一生中，许多学习都是这样的，就像今天`2019-1-23`，面对两把外观相同的钥匙，经过一段时间的观察，我就发现哪一把是刚配的，哪一把是旧的。
 
 在我们的一生中，通过与环境的互动来进行学习的例子很多，我们大多数时间都是通过环境的反应进行学习的，开车，交谈，一切都是这样，我们敏锐地意识到我们的环境是如何对我们所做的做出反应的，我们寻求通过我们的行为来影响所发生的事情。从互动中学习是几乎所有学习和智力理论的基础。
@@ -64,6 +66,45 @@ categories: Notes
 > Modern artiﬁcial intelligence now includes much research looking for general principles of learning, search, and decision making, as well as trying to incorporate vast amounts of domain knowledge. It is not clear how far back the pendulum will swing, but reinforcement learning research is certainly part of the swing back toward simpler and fewer general principles of artiﬁcial intelligence.
 
 简单举例几个强化学习应用以后我就直接进入主题。
+
+- 象棋高手的每一步决策
+- 自适应控制器实时调整某项参数
+- 新生动物在出生后的几分钟内学会站立（站起来！萌萌！站起来！）
+- 扫地机器人基于当前电量决策继续进行垃圾收集还是还是回到充电站。
+
+这些都涉及一个积极的决策`agent`与其环境的相互作用，尽管环境可能并不确定，但是`agent`仍然寻求一个目标。`agent`的行为决策可能会影响未来的环境，例如上述的象棋决策，从而会进一步影响`agent`以后可能获得的选择与机会。
+
+>Correct choice requires taking into account indirect, delayed consequences of actions, and thus may require foresight or planning.
+
+### 基本元素
+
+除了`agent`和`environment`，我们还可以识别强化学习系统的四个主要基本元素，策略`policy`，奖励信号`reward signal`，价值函数`value function`，（可选）环境模型`model`
+
+- `policy`定义了`agent`在指定时间的行为方式，即从环境感知到的状态与决策之间的映射关系。一般来说，`policy`可能是随机的
+- `reward`是强化学习问题的目标。在每个时间步骤中，环境都向`agent`发送一个数值，称为`reward`。`agent`就是在长远角度来看尽可能地获取最大的`total reward`。一般来说，奖励信号可能是环境状态和所采取行动的随机函数。
+- `value function`指定的是`agent`期望的总`reward`。`reward`可以说是短期的收益，而`value`才是长期收益。
+    - 从某种意义上说，`reward`是首要的，而`value`会次要一些。但是我们实际采取决策的时候，`value`才是最重要的因素，因为我们的目标是长远来看获取最大收益。不过确定`value`比确定`reward`要困难得多，对于`value`的估计也是强化学习算法中最重要的部分，过去数十年的研究也是基于此。
+- `environment model`是对环境行为进行模拟的模型。具体内容在第8章才涉及
+
+
+
+### 限制
+
+强化学习过于依赖`state`这个概念。在RNN中`state`是灵魂，强化学习本不应是类似的模型，但是却一样地依赖于状态。强化学习中的每一个元素都可以看做是一个状态。我们主要关心的问题不是如何设计状态信号，而是在任意状态信号可用时该如何采取行动。
+
+
+
+**这里本该有一个Tic-Tac-Toe的示例，此处先行略去**
+
+## 第二章 Multi-armed Bandit Problem
+
+多臂赌博机问题。
+
+
+
+
+
+
 
 
 
