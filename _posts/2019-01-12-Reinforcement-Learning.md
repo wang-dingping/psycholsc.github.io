@@ -57,9 +57,13 @@ categories: Notes
 
 强化学习的另一个关键特征是它明确地考虑了目标导向的`agent`与不确定环境相互作用的整个问题。这与很多只考虑子问题而不考虑该如何将它们在更大范围内实现的方法形成对比，例如监督学习方法。这种只关心子问题的方法存在明显限制，例如它们只学到了如何对指定数据集进行回归，而不知道面对回归问题时该如何进行操作。（不知道这个理解对不对）（这个**子问题（Subproblems）**实在是不懂在说啥）
 
+目前强化学习与许多其他工程和科学学科已经有了富有成效的结合，也反过来促进心理学与神经科学的发展。这些内容在书中最后部分。
 
+至于发现机器智能的一般原则的过程中，强化学习所做的贡献也是十分有限的，目前投入的研究资源也很少，在这条道路上还得不出结论。
 
+> Modern artiﬁcial intelligence now includes much research looking for general principles of learning, search, and decision making, as well as trying to incorporate vast amounts of domain knowledge. It is not clear how far back the pendulum will swing, but reinforcement learning research is certainly part of the swing back toward simpler and fewer general principles of artiﬁcial intelligence.
 
+简单举例几个强化学习应用以后我就直接进入主题。
 
 
 
