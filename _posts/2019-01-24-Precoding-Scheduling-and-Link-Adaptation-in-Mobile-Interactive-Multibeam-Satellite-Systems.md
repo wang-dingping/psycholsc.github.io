@@ -10,6 +10,14 @@ categories: Notes
 <script type="text/javascript"
   src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
 </script>
+---
+
+看标题也差不多明白，这篇论文像是一篇基础论文，讲解移动交互多波束卫星系统的预编码、调度与链路自适应问题。这个文章是强化学习解决自适应问题的一个基础吧。正好我也不是很懂这一方面，来看一看好了。
+
+`2019-2-1 10:50:24`
+
+真的感谢通信老师给我上80
+
 ## 摘要   -   Abstract
 
 本文讨论了下一代移动交互式**多波束卫星系统**的预编码(`precoding`)、调度(`scheduling`)和链路自适应(`link adaptation`)问题。
@@ -20,7 +28,7 @@ categories: Notes
 
 关键词索引：预编码`Precoding`, 多波束卫星系统`multibeam satellite systems`, 自适应编码与调制`adaptive coding and modulation`, 不完全的信道状态信息`imperfect channel state information`
 
-## 引入   -   Introduction
+## I - 引入   -   Introduction
 
 移动交互卫星(`Mobile interactive satellite`)通过低用户成本设备提供了全球语音和数据传输服务。由于用户终端(`User terminal, UT`)的要求，它们（移动交互卫星）的硬件与固定服务的一般的高增益天线不同，*因为人们更需要非定向的低剖面天线(`low profile antenna`)。通信服务与数据传输服务往往被分配在**L**波段，因为`L`波段相比`Ka-Ku`波段卫星传输，即使可用带宽很小，但是路径损失(`pathloss`)要小一些。
 
@@ -36,9 +44,39 @@ categories: Notes
 
 尽管延迟的CSI会影响调度过程，但我们通过使用所建议的调度算法和固定的余量，观察到所考虑的场景具有相当高的增益。
 
-`2019-1-31 23:32:33`
+后面的安排主要是
 
-机翻+人工修正，累了睡了明天再更
+- 第**二**部分描述移动预编码卫星系统的信号与系统模型
+- 第**三、四、五**部分描述了指定场景下推荐的预编码、调度与链路自适应算法
+- 第**六**部分评估了一个接近现实场景的设想
+- 第**七**部分主要是总结结论
+
+---
+
+**符号说明**
+
+- 黑色大写字母表示**矩阵**，黑色小写字母表示**列向量**
+- `Hermitian transpose:`$$ (\cdot)^H$$
+- `transpose:`$$(\cdot)^T$$
+- `conjugate:`$$(\cdot)^*$$
+- `diagonal(with positive diagonal elements):`$$(\cdot)^+$$
+- $$\left[ X \right]_{i,j}$$表示$$X$$矩阵的$$i$$行$$j$$列元素，$$\left[ x \right]_{i}$$表示$$X$$向量的$$i$$行元素
+- $$\mid\mid \cdot \mid\mid$$表示弗罗贝尼乌斯范数运算（或希尔伯特-施密特范数），通俗地讲就是**2-范数**；$$\mid\cdot\mid$$就是绝对值运算符。
+- $$\circ$$表示`Hadamard Matrix Product`
+
+## II - 系统与信道模型   -   System Model and Channel Model
+
+### A - 系统模型
+
+假设有一个多波束卫星系统，其中卫星配备有阵列馈电反射天线，总馈源数为$$N$$。这些馈送信号被组合起来形成一个$$K$$波束辐射模式，其中这个$$K$$是一个固定值。在每一帧中，我们假定来自同一波束$$N_u$$用户的多路信号是多路复用(`multiplexed`)的。这是卫星标准中的一种方式，以便通过统计复用实现高帧效率。这其实就是说，每一个时间帧中，$$KN_u$$个用户被提供服务。
+
+考虑到所有波束都在同一频段内辐射，因此可以将任意时刻$$t$$接收的信号建模为
+
+$$y(t)^{[i]}=H(t)^{[i]}x(t)+n(t)^{[i]};i=1,2,...,N_u;\tag{1}​$$
+
+其中$$y(t)^{[i]}$$是一个复向量，该向量包含了第$$i$$个用户终端的接收信号。
+
+- $$\left[y(t)^{[i]}\right]_k$$代表第$$k$$波束的第$$i$$个用户终端的接收信号
 
 
 
