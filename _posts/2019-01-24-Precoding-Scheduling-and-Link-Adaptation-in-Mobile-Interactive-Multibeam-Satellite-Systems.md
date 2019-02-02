@@ -218,6 +218,38 @@ $$\mid H_B(f) \mid^2=\frac{A}{1+(\frac{f}{f_C})^{2N_B}}$$
 
 ### A - CSI滞后效应
 
+为了避免重复使用上标$$i$$，我们将第$$k$$个波束的用户的$$SINR$$写作
+
+$$SINR^{delayed\:CSI}_k=\frac{\mid \alpha_k(t+\tau)e^{j\theta_k(t+\tau)}\overline{h}^H_k(t)w_k(t) \mid^2}{\sum_{j\neq k} \mid \alpha_k(t+\tau)e^{j\theta_k(t+\tau)}\overline{h}^H_k(t)w_k(t) \mid^2 +1}\tag{15}$$
+
+这里的$$\overline{h}_k​$$是$$\overline{H}​$$的第$$k​$$行。
+
+由于相位对每个馈送信号影响是相同的，这对SINR没有影响。（胡说八道么这不是，明明是从计算的角度说，绝对值里面的相位影响消掉了）
+
+那么原式可以写作
+
+$$SINR^{delayed\:CSI}_k=\frac{\alpha_k(t+\tau)\mid \overline{h}^H_k(t)w_k(t) \mid^2}{\sum_{j\neq k} \alpha_k(t+\tau)\mid \overline{h}^H_k(t)w_k(t) \mid^2 +1}\tag{16}$$
+
+>备注： 在具有固定预编码的多波束卫星系统中，由于CSI延迟效应 导致的SINR下降的唯一因素是幅度$$\alpha$$
+
+注意衰落幅度变化$$\alpha_k(t)$$的影响对于信号功率的期望部分  和  干扰部分 是相同的，但是不会影响噪声。这意味着如果链路受到高度干扰限制**，那么衰落幅度对预编码的影响也可以忽略不计**（谁来告诉我这是为啥）。这类情况很少发生，因为预编码信噪比（SIR）往往很大，移动卫星系统信噪比（SNR）通常受限。此外仍需要注意，常见的衰落幅度变化的影响不同于自动增益控制在用户终端接收机的影响。AGC的增益是对噪声一视同仁的，也是因此AGC的幅度改变与预编码性能无关。
+
+再稍微进一步研究一下$$SINR$$的延迟效应。从表达式上看似乎是受到$$\alpha$$的直接控制。那么我们假设
+
+$$\alpha_k(t+\tau)>\alpha_k(t)\tag{17}$$
+
+那么推导一下吧。
+
+
+
+`2019-2-2 22:09:56`
+
+第一次严肃认真读论文，一天一页的样子。。
+
+
+
+
+
 
 
 
