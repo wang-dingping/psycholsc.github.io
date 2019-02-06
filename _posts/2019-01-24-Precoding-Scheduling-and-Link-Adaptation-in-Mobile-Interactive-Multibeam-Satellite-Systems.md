@@ -38,7 +38,23 @@ categories: Notes
 
 如果真的希望通过这个博文了解到这篇论文在说啥，那么只看这一部分就好了，下面是论文的翻译。
 
+<div style="width:50%; margin-left:auto; margin-right:auto; margin-bottom:8px; margin-top:8px;">
+<img src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/MultibeamSatelliteI.png" alt="" 
+</div>
 
+<div style="width:50%; margin-left:auto; margin-right:auto; margin-bottom:8px; margin-top:8px;">
+<img src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/MultibeamSatelliteII.png" alt="" 
+</div>
+
+
+
+- **多波束天线**$${}^{[2]}​$$。以高增益覆盖较大的地面区域，而且又能根据需要调整波束形状。主要都采用相控阵天线。多波束天线能够同时产生多个子波束（或点波束），从而覆盖地面上所关心的区域的天线系统。根据通信需要，有一定的分类
+  - **固定区域点波束覆盖**，如上第一个图所示，本文主要介绍的应该就是这种
+  - **赋形束覆盖**，点波束在地面上相互迭加, 得到的辐射方向图形成所需要的图形（赋形束）
+  - **非固定区域点波束覆盖**，所有点波束在$$3dB$$处彼此相互连接，宗波束覆盖一定面积的区域，但是覆盖区域随卫星移动而移动。用于非同步卫星通信系统。如上面第二个图所示。
+- 
+
+首先文章简单介绍了若干公式，计算**信道矩阵**等用作`CSI`，然后
 
 
 
@@ -284,3 +300,4 @@ $$\alpha_k(t+\tau)>\alpha_k(t)\tag{17}$$
 
 [1] [Precoding Scheduling and Link Adaptation in Mobile Interactive Multibeam Satellite Systems](https://ieeexplore.ieee.org/document/8353925)
 
+[2] 周乐柱 卫星通信多波束天线综述
