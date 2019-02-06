@@ -55,7 +55,7 @@ categories: Notes
   - **非固定区域点波束覆盖**，所有点波束在$$3dB$$处彼此相互连接，宗波束覆盖一定面积的区域，但是覆盖区域随卫星移动而移动。用于非同步卫星通信系统。如上面第二个图所示。
 - 
 
-首先文章简单介绍了若干公式，计算**信道矩阵**等用作`CSI`，然后
+首先文章简单介绍了若干公式，计算**信道矩阵**等用作`CSI`，然后介绍了一下流程，分析了一下其中的影响因素。主要结论是
 
 
 
@@ -103,12 +103,12 @@ categories: Notes
 **符号说明**
 
 - 黑色大写字母表示**矩阵**，黑色小写字母表示**列向量**
-- `Hermitian transpose:`$$ (\cdot)^H$$
-- `transpose:`$$(\cdot)^T$$
-- `conjugate:`$$(\cdot)^*$$
-- `diagonal(with positive diagonal elements):`$$(\cdot)^+$$
+- `Hermitian transpose:`$$ (\cdot)^H​$$，我寻思不就是个**共轭转置**吗
+- `transpose:`$$(\cdot)^T$$，转置
+- `conjugate:`$$(\cdot)^*$$，共轭
+- `diagonal(with positive diagonal elements):`$$(\cdot)^+$$，对角阵
 - $$\left[ X \right]_{i,j}$$表示$$X$$矩阵的$$i$$行$$j$$列元素，$$\left[ x \right]_{i}$$表示$$X$$向量的$$i$$行元素
-- $$\mid\mid \cdot \mid\mid$$表示弗罗贝尼乌斯范数运算（或希尔伯特-施密特范数），通俗地讲就是**2-范数**；$$\mid\cdot\mid$$就是绝对值运算符。
+- $$\mid\mid \cdot \mid\mid$$表示弗罗贝尼乌斯范数运算（或希尔伯特-施密特范数），通俗地讲就是**2-范数**；$$\mid\cdot\mid​$$就是绝对值运算符。
 - $$\circ$$表示`Hadamard Matrix Product`
 
 ## II - 系统与信道模型   -   System Model and Channel Model
@@ -277,9 +277,9 @@ $$\alpha_k(t+\tau)>\alpha_k(t)\tag{17}$$
 
 
 
-`2019-2-2 22:09:56`
+`2019-2-6 23:04:26`
 
-第一次严肃认真读论文，一天一页的样子。。
+过年这几天没啥进度。明天开始认真更
 
 
 
