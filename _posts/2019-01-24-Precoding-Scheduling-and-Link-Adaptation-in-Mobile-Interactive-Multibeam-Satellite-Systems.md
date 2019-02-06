@@ -39,11 +39,12 @@ categories: Notes
 如果真的希望通过这个博文了解到这篇论文在说啥，那么只看这一部分就好了，下面是论文的翻译。
 
 <div style="width:50%; margin-left:auto; margin-right:auto; margin-bottom:8px; margin-top:8px;">
-<img src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/MultibeamSatelliteI.png" alt="" 
+<img src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/MultibeamSatelliteI.png" alt="" data-disqus-identifier="/posts/2015-08-Understanding-LSTMs/disqussion-58">
 </div>
 
+
 <div style="width:50%; margin-left:auto; margin-right:auto; margin-bottom:8px; margin-top:8px;">
-<img src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/MultibeamSatelliteII.png" alt="" 
+<img src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/MultibeamSatelliteII.png" alt="" data-disqus-identifier="/posts/2015-08-Understanding-LSTMs/disqussion-58">
 </div>
 
 
