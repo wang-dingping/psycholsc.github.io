@@ -374,27 +374,48 @@ $$MCS_k(t)=\prod\left( \min\limits_{i=1,...,N_u} SINR_k^{[i]}(t)/\mu_k \right)\t
 
 其中$$\mu_k$$是边界值(`margin value`)，这个数值根据不同情境、用户数量、预编码功率控制和最大发射功率等多个参数进行大量广泛的数值模拟计算得到。
 
+
+
+## VI - 数值结果   -   NUMERICAL RESULTS
+
+对用户调度、链路自适应和预编码数值仿真是基于$$N=K=32$$的基础进行的，即天线阵有32馈源，而波束也有32个。该系统的馈电辐射方向图是典型的多波束卫星系统，工作频率是`L`波段。其他详细参数在下表中描述
+
 ![1549547033216](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/SystemParameters.png)
 
-
-
-
+基础场景采用的馈送辐射方向图是相邻波束在不相交的频带内操作，最小化多波束干扰。预编码方法应用于全频复用(`full frequency reuse, FFR Precoding`)的情况，调制与编码方案采用的是`ETSI TS 102 744-2-1`标准通信提供的`MCS`子集，用于移动交互式窄带通信的参考系统。所考虑的MCS子集在下表中描述，其中假设目标分组错误率为$$10^{-3}$$。
 
 <div style="width:50%; margin-left:auto; margin-right:auto; margin-bottom:8px; margin-top:8px;">
 <img src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/ProdFunction.png" alt="" >
 </div>
 
+在所有的条件下，我们定义整个多波束卫星系统平均吞吐量为
+
+$$\mathit{TH}=B\sum\limits_{k=1}^{K}\frac{1}{N_u}\sum\limits_{i=1}^{N_u}\mathit{O}_k^{[i]}\prod(\eta_k)$$
+
+运算基于500次蒙特卡洛(`Monte Carlo`)循环
+
+### A - 单用户条件
+
+首先在单用户的情况中展示了性能。平均吞吐量考虑到慢变化并且在海上的低海拔状况，对于边界(`margin`)情况，考虑到
+
+- 所有边界条件$$\mu_k$$都是相同为$$\mu$$的
+- 指定两个边界条件，$$\mu=0dB$$和$$\mu=5dB$$
+
+假设此时`Gateway`能够执行无延迟`perfect CSI`的调制编码调度`MCS`方案。在所有结果中，四舍五入延迟为$$1s​$$，并且假设预编码就是根据这个延迟计算的。
+
+<div style="width:50%; margin-left:auto; margin-right:auto; margin-bottom:8px; margin-top:8px;">
+<img src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/Fig2.png" alt="" >
+</div>
 
 
 
+<div style="width:50%; margin-left:auto; margin-right:auto; margin-bottom:8px; margin-top:8px;">
+<img src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/Fig3.png" alt="" >
+</div>
+
+上方两个图展示的是通信出错的概率随每个集群(`cluster`)功率的变化，分别是缓慢变化的和海上的低海拔场景。当我们还没有采用`margin`的时候，我们看到基线情景显示没有预编码的时候会产生更大的中断概率，但是他们都不符合实际通信系统的中断性能目标。当采用固定的`margin`时结果相似，即基线情况和预编码情况采用固定`margin`处理中断概率都是刻意的。在这两种情况下，拥有$$\mu=5dB$$固定`margin`的情况下，中断概率十分接近于$$0$$
 
 
-
-
-
-
-
-## VI - 数值结果   -   NUMERICAL RESULTS
 
 
 ## VII - 结论   -   CONCLUSIONS
