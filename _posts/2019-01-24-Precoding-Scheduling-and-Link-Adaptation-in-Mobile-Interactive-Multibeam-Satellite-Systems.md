@@ -329,7 +329,9 @@ $$w_k=\frac{\gamma_{MMSE}}{\hat{\alpha_k}}\left( \sum\limits_{l=1}^K\hat{h_l}\ha
 
 下面介绍**算法1**(`Algorithm I`)，对于每个波束，该调度机制可以在`Gateway`中并行完成。
 
-![1549530370150](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/AlgorithmI.png)
+<div style="width:75%; margin-left:auto; margin-right:auto; margin-bottom:8px; margin-top:8px;">
+<img src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/AlgorithmI.png" alt="" >
+</div>
 
 
 
