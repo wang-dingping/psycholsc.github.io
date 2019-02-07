@@ -332,11 +332,61 @@ $$w_k=\frac{\gamma_{MMSE}}{\hat{\alpha_k}}\left( \sum\limits_{l=1}^K\hat{h_l}\ha
 <div style="width:100%; margin-left:auto; margin-right:auto; margin-bottom:8px; margin-top:8px;">
 <img src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/AlgorithmI.png" alt="" >
 </div>
+$$\mathit{I}_k$$是用户集，调度的性能以及整个预编码系统的性能强烈依赖于$$\mid \mathit{I}_k \mid​$$，即给定时刻服务的用户密度。这个密度越高，我们认为调度方案越有效。
 
+该方法首先随机选择一个用户$$i \in \mathit{I}_k$$，然后再选择其他的$$N_u -1$$个人进行服务。用户的选择是基于最小化范数误差来进行的。详细一点说就是，首先选择随机一位编号为$$i$$的用户，其信道矢量分别为$$h_k^{[i]}$$；然后在$$\mathit{I}_k-\{i\}$$集合中找出信道矢量之间范数误差最小的$$N_u-1$$个。这个也叫欧氏距离(`Euclidean distance`)最小的。
 
-
+这里需要注意的是，计算范数误差时，由于计算的是$$h$$之间的误差，因此衰落的幅度相位都会导致结果产生不同。上述的$$\chi$$的值，即范数误差的值，会随着`Gateway`是否收到`perfect`或`delayed`的`CSI`而变动。
 
 ## V - 链路自适应   -   LINK ADAPTATION
+
+发射机(`Gateway`)需要为每一时间帧选择最合适的调制与编码方案。这个决策是在每个波束内基于每一个$$SINR_k^{[i]}(t)​$$，这代表的是`perfect CSI`状态下的$$SINR​$$。在理想状态下，发射机知道了信道的$$SINR_k^{[i]}(t+\tau)​$$，即`delayed CSI`状态下的$$SINR​$$，调制编码方案就会基于该$$SINR​$$来选择。
+
+$$MCS_k(t)=\prod\left( \min\limits_{i=1,...,N_u} SINR_k^{[i]}(t+\tau) \right)\: bits/s/Hz\tag{23}​$$
+
+$$\prod(·)$$是分段线性函数，即根据$$SINR$$来选择一个合适的频谱效率。
+
+不幸的是，由于`CSI`延迟效应，接收机并不能知道信道的$$SINR_k^{[i]}(t+\tau)$$，这将导致`MCS`选项与信道状态不匹配，这有可能导致传输的中断等（例如接收机不能正确地将某一时间帧的数据解调或解码）。我们定义一个中断函数
+
+当取值为
+
+$$\mathit{O}_k^{[i]}=1\tag{24}​$$
+
+此时我们有
+
+$$SINR_k^{[i]}(t+\tau)<\eta_k(t)\tag{25}​$$
+
+其中$$\eta_k(t)$$是$$SINR$$的阈值，
+
+$$\eta_k(t)=\prod^{-1}\left( MCS_k\left(t\right) \right)\tag{26}$$
+
+否则如果
+
+$$SINR_k^{[i]}(t+\tau)\geq \eta_k(t)\tag{27}$$
+
+我们取$$\mathit{O}_k^{[i]}=0$$。
+
+
+
+为了使中断概率保持在一定阈值之下，我们采用一种手段如下
+
+$$MCS_k(t)=\prod\left( \min\limits_{i=1,...,N_u} SINR_k^{[i]}(t)/\mu_k \right)\tag{28}$$
+
+其中$$\mu_k$$是边界值(`margin value`)，这个数值根据不同情境、用户数量、预编码功率控制和最大发射功率等多个参数进行大量广泛的数值模拟计算得到。
+
+![1549547033216](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/SystemParameters.png)
+
+
+
+<div style="width:100%; margin-left:auto; margin-right:auto; margin-bottom:8px; margin-top:8px;">
+<img src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/ProdFunction.png" alt="" >
+</div>
+
+
+
+
+
+
 
 
 ## VI - 数值结果   -   NUMERICAL RESULTS
@@ -344,10 +394,11 @@ $$w_k=\frac{\gamma_{MMSE}}{\hat{\alpha_k}}\left( \sum\limits_{l=1}^K\hat{h_l}\ha
 
 ## VII - 结论   -   CONCLUSIONS
 
+`2019-2-7 18:00:35`
 
-`2019-2-6 23:04:26`
+摸了一天鱼好累哦
 
-过年这几天没啥进度。明天开始认真更
+
 
 
 
