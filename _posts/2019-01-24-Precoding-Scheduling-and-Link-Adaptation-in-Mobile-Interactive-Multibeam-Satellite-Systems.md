@@ -378,9 +378,14 @@ $$MCS_k(t)=\prod\left( \min\limits_{i=1,...,N_u} SINR_k^{[i]}(t)/\mu_k \right)\t
 
 
 
-<div style="width:100%; margin-left:auto; margin-right:auto; margin-bottom:8px; margin-top:8px;">
+
+
+<div style="width:50%; margin-left:auto; margin-right:auto; margin-bottom:8px; margin-top:8px;">
 <img src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/ProdFunction.png" alt="" >
 </div>
+
+
+
 
 
 
