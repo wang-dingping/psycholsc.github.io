@@ -412,8 +412,13 @@ $$\mathit{TH}=B\sum\limits_{k=1}^{K}\frac{1}{N_u}\sum\limits_{i=1}^{N_u}\mathit{
 <div style="width:50%; margin-left:auto; margin-right:auto; margin-bottom:8px; margin-top:8px;">
 <img src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/Fig3.png" alt="" >
 </div>
+上方两个图展示的是通信出错的概率随每个集群(`cluster`)功率的变化，分别是缓慢变化的和海上的低海拔场景。当我们还没有采用`margin`的时候，我们看到基线情景显示没有预编码的时候会产生更大的中断概率，但是他们都不符合实际通信系统的中断性能目标。当采用固定的`margin`时结果相似，即基线情况和预编码情况采用固定`margin`处理中断概率都是刻意的。在这两种情况下，拥有$$\mu=5dB$$固定`margin`的情况下，中断概率十分接近于$$0$$。
 
-上方两个图展示的是通信出错的概率随每个集群(`cluster`)功率的变化，分别是缓慢变化的和海上的低海拔场景。当我们还没有采用`margin`的时候，我们看到基线情景显示没有预编码的时候会产生更大的中断概率，但是他们都不符合实际通信系统的中断性能目标。当采用固定的`margin`时结果相似，即基线情况和预编码情况采用固定`margin`处理中断概率都是刻意的。在这两种情况下，拥有$$\mu=5dB$$固定`margin`的情况下，中断概率十分接近于$$0​$$
+<div style="width:50%; margin-left:auto; margin-right:auto; margin-bottom:8px; margin-top:8px;">
+<img src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/Fig45.png" alt="" >
+</div>
+
+上方两个图描述的是平均吞吐量。
 
 
 
