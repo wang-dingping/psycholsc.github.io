@@ -417,12 +417,17 @@ $$\mathit{TH}=B\sum\limits_{k=1}^{K}\frac{1}{N_u}\sum\limits_{i=1}^{N_u}\mathit{
 <div style="width:50%; margin-left:auto; margin-right:auto; margin-bottom:8px; margin-top:8px;">
 <img src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/Fig45.png" alt="" >
 </div>
+上方两个图描述的是平均吞吐量。在`Gateway`理想地选择调制编码调度的条件下，预编码可以在两种情况下提供较大的吞吐增益。特别地，当32个波束簇的最大可用功率为`32W`时，平均吞吐量增益可达`55%`。需要重要指出的是，该增益是在采用`delayed CSI`版信道矩阵计算预编码矩阵的。
 
-上方两个图描述的是平均吞吐量。
+当调制编码调度基于延迟`CSI`进行选择的时候，差异就显示了出来。当没有使用`margin`的时候，观察到的增益是有限的；在$$\mu=5dB$$的条件下，我们可以看出基线情景甚至比预编码的更好。
 
+显然固定`margin`在预编码移动多波束卫星系统中有着重要作用。为了公平对比一下基线系统和上述提出条件下的系统，我们在一个合理的标准下比较了两种方法，对于慢变化情景给予目标为中断概率`0.05`，海面（低海平面）给予目标为中断概率`0.1`。具体而言，我们针对上述给出的实现目标计算$$\mu^{FFR\:Precoding}$$和$$\mu^{Baseline}$$。这俩分别是预编码场景和基线场景。算出来`margin`后我们计算并评估了平均吞吐量的差异。在本次评估中我们假定所有用户调度都是在$$\mid \mathit{I}_k\mid=300$$试验用户中进行的。实验结果显示在下图中，发射功率为`64w`，服务用户数取`1、2、5`人。显然我们看出多播的效率不及单播，但是尽管如此吞吐量增益还是比较高的，每时间帧`5`用户数的时候大约有`20%`的增益，每时间帧`2`用户的时候有`40%`的增益。
 
+<div style="width:50%; margin-left:auto; margin-right:auto; margin-bottom:8px; margin-top:8px;">
+<img src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/Fig678.png" alt="" >
+</div>
 
-## VII - 结论   -   CONCLUSIONS
+## VII - 结论   -   CONCLUSIONS 
 
 `2019-2-7 23:18:12`
 
