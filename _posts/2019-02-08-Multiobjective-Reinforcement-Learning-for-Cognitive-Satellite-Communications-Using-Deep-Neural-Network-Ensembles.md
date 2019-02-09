@@ -121,6 +121,9 @@ $$a_k=h(s_k)\tag{4}$$
 
 
 
+
+
+
 ## III - 提出解决方案 - PROPOSED SOLUTION
 
 
