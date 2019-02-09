@@ -79,7 +79,7 @@ categories: Notes
 
 ### B - 强化学习概述 - Reinforcement Learning Overview
 
-强化学习算法通过与环境交互反复试错的方式进行学习。基于预定目标，强化学习**智能体**`agent`会查找实现这些目标时优化系统性能的决策(`action`)。在传统的强化学习算法中，`agent`根据离散时刻$$k$$的`exploration probability function`$$f(\varepsilon)$$计算的`exploration probability value`$$\varepsilon_k$$在`exploitation`与`action`之间进行交替选择。
+强化学习算法通过与环境交互反复试错的方式进行学习。基于预定目标，强化学习**智能体**`agent`会查找实现这些目标时优化系统性能的决策(`action`)。在传统的强化学习算法中，`agent`根据离散时刻$$k​$$的`exploration probability function`$$f(\varepsilon)​$$计算的`exploration probability value`$$\varepsilon_k​$$在`exploitation`与`action`之间进行交替选择。
 
 > 即智能体根据一定概率进行其他决策的探索，否则就直接决策而不探索其他决策方式。
 
@@ -89,11 +89,35 @@ categories: Notes
 
 应该通过下式给出的贪婪策略`policy`，对状态s下可能的所有行动，评估 表示在遵循`policy`$$\pi$$时处于`state`$$s$$时所采取的特定`action`$$a$$的值的`action-value`函数$$Q_\pi(s,a)$$
 
-$$\pi(s)=arg\max\limits_a(Q(s,a))\tag{1}$$
+$$\pi(s)=arg\max\limits_a(Q(s,a))\tag{1}​$$
 
+对于每一个$$s\in S$$，`policy`都会选出一个$$Q(s,a)$$最大的$$a\in A$$。
 
+在包含数千个`action`$$a$$的连续或离散的$$A$$的问题时，在`state`$$s$$评估所有$$Q(s,a)$$可能是不行的。这里是无线通信的情况，在无线通信中，探索每一个`action`$$a$$可能会花费很多时间，并且迫使通信系统经历较为严重的性能下跌。实际的替代方案是让`agent`保持探索的动作。
 
+一些文献中提到，认知无线电对即时`reward`敏感，并且任何`action`可以从任意`state`采取，而不需要计划在线申请。这些假设导致`Bellman Q-value function`稍加修改
 
+$$Q_{k+1}(s_k,a_k)=Q_k(s_k,a_k)+\alpha \left[ r_k-Q_k(s_k,a_k) \right]\tag{2}$$
+
+$$Q_{k+1}$$是得到`reward`$$r_k$$之后更新的`Q-val`，根据参数可以知道，此处的条件仍然是`state`$$s_k$$与`action`$$a_k$$，$$\alpha$$是学习率。即使状态转移与`state-action`模型是未知的，$$f(\varepsilon)$$和`reward function`$$\rho$$，其应用如下，仍然需要被定义。
+
+$$r_k=\rho(s_k,a_k)\tag{3}$$
+
+`state-action`映射函数
+
+$$a_k=h(s_k)\tag{4}$$
+
+在算式$$(1)​$$中给出了。
+
+### C - RLNN 概述 - RLNN Overview
+
+已经有先人提出过**多目标强化学习**(`MORL`)算法。也已经有人率先将前人的结果融合创新，设计了`NN-based RL, RLNN`，例如有将两篇文献中强化学习与神经网络结合在一起的人，假定时不变`AWGN`同步卫星通信信道进行设计的。它使用神经网络来虚拟地测试不同`action`，并测量它们的性能，从而允许对环境进行“虚拟探索”。
+
+训练后，`RLNN`预测所有`actions`的多目标效能分数（即不同目标的加权和）。接下来根据性能阈值来将`action`分类为好或坏，即无线电参数的设定是否合适，并将所有效能得分计算为最高效能的百分比。然后从任意一类中依`action rejection probability`选取一个`action`。图1说明了被RLNN探索算法拒绝的`action`的时间序列性能的一个示例，这些`action`被预测在低于0.7的阈值下执行。相反，它建议执行高于该阈值的动作。
+
+<div style="width:50%; margin-left:auto; margin-right:auto; margin-bottom:8px; margin-top:8px;">
+<img src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/RLNNFig1.png" alt="" >
+</div>
 
 
 
@@ -101,7 +125,15 @@ $$\pi(s)=arg\max\limits_a(Q(s,a))\tag{1}$$
 
 
 
+
+
+
+
 ## IV - 结果 - RESULTS
+
+
+
+
 
 
 
