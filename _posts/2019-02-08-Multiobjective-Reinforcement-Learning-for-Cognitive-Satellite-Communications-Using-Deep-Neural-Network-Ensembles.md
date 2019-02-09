@@ -17,6 +17,7 @@ categories: Notes
 - 这个文章看起来英文水平比较好
 - `2019-2-8 20:40:19`放你妈的狗屎这什么垃圾英语
 - 用了巨多从句，整的谷歌都翻译不出来 = =、
+- 这篇论文话好多
 
 ## 摘要 - Abstract
 
@@ -125,9 +126,10 @@ $$a_k=h(s_k)\tag{4}$$
 
 上述的算法的主要缺陷是没有考虑到动态信道的问题。下图展示了一个时序示例，其中信道被假设为静态信道，给出的是每个动作的多目标性能得分。根据轨道的动态变化，载波频率、大气或空间天气可能会导致信道出现快速或慢速衰落，从而使其产生动态变化。
 
-<div style="width:50%; margin-left:auto; margin-right:auto; margin-bottom:8px; margin-top:8px;">
+<div style="width:60%; margin-left:auto; margin-right:auto; margin-bottom:8px; margin-top:8px;">
 <img src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/RLNNFig2.png" alt="" >
 </div>
+
 
 > 强化学习算法在同步卫星通信信道上搜索可用的更好`action`，搜索前首先考虑上一次探索到的`action`性能表现值。从图中可以明显看出决策`action`在不同时间段内的最优决策方案，连续位置可以覆盖整个时间段，此处的`action`就是系统的最优决策。
 
@@ -136,15 +138,30 @@ $$a_k=h(s_k)\tag{4}$$
 但是如果信道是动态变化的，这种方法就有三种主要缺陷
 
 - 现在采取某种`action`的性能值得分可能和过去或将来采取同一个`action`的不同（这不是废话么，`action`的得分本来就是受时间和环境影响的啊，硬加一个缺陷还行）
-  - 之前计算的性能值在后来使用的时候就过时了，这将导致采用某种`action`的时候做出错误决策。此问题的解决方法就是更新对应的性能值。这对于非动态变化的信道而言似乎没有大问题，但是对于动态变化的信道，某个特定的`action`可能在不同的环境下有不同的性能表现，之前探索计算的性能得分就无效了。下图第一个图很好的说明了这一点。
-- 必须为每个不同的多维`state`储存特定`action`的性能表现值，其中`state`是由连续变量表示的
-  - 
-- 必须为动态变化的特定通道条件存储每个`action-state`的性能表现值，但是信道变化也是连续的。
 
-<div style="width:50%; margin-left:auto; margin-right:auto; margin-bottom:8px; margin-top:8px;">
+  - 之前计算的性能值在后来使用的时候就过时了，这将导致采用某种`action`的时候做出错误决策。此问题的解决方法就是更新对应的性能值。这对于非动态变化的信道而言似乎没有大问题，但是对于动态变化的信道，某个特定的`action`可能在不同的环境下有不同的性能表现，之前探索计算的性能得分就无效了。下图很好的说明了这一点。该图片描述了两个不同的`action`随信道变化的仿真性能。即使是对于不同的通信任务，有的`action`也会表现出微小的变化，但是有的`action`随时间推移而产生的性能变化是剧烈非线性的。下方左右两图的剧烈反差实际上推动了本次研究。
+
+- 必须为每个不同的多维`state`储存特定`action`的性能表现值，其中`state`是由连续变量表示的
+
+  - 该缺陷导致需要大量的存储器（指数增加的存储器），这是由于当假设信道条件离散改变时，每个动作表现为不同性能水平。实际上状态是连续变化的，原计算需要更改如下
+
+    $$Q_{k+1}(s(t),a_k)=Q_{k}(s(t),a_k)+\alpha[r_k(t)-Q_{k}(s(t),a_k)]\tag{5}$$
+
+    这就表示给定`action`的得分随时间的动态行为。
+
+- 必须为动态变化的特定信道条件存储每个`action-state`的性能表现值，但是信道变化也是连续的。
+
+  - 该缺陷 增加了性能值的另一个维度，即随时间的变化，让数据的存储变的更为困难不可实现。从在线系统操作的实现角度来看，保存所有信息是不切实际而且不可能的。
+
+<div style="width:100%; margin-left:auto; margin-right:auto; margin-bottom:8px; margin-top:8px;">
 <img src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/RLNNFig3.png" alt="" >
 </div>
 
+> 两个不同动作$$a_A$$和$$a_B$$的多目标性能分别如图所示。在环境变化的整个过程中，保持`action`恒定，遵循的`SNR`配置也在图中显示。$$a_A$$在不同任务的表现随时间的变化并不明显，但是$$a_B$$的表现显然发生了明显的突变。
+
+`2019-2-9 22:31:29`
+
+本段还有很多内容没有完全看明白，还需要打磨一下。
 
 
 ## III - 提出解决方案 - PROPOSED SOLUTION
