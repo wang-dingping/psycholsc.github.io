@@ -16,6 +16,7 @@ categories: Notes
 
 - 这个文章看起来英文水平比较好
 - `2019-2-8 20:40:19`放你妈的狗屎这什么垃圾英语
+- 用了巨多从句，整的谷歌都翻译不出来 = =、
 
 ## 摘要 - Abstract
 
@@ -118,9 +119,31 @@ $$a_k=h(s_k)\tag{4}$$
 <div style="width:50%; margin-left:auto; margin-right:auto; margin-bottom:8px; margin-top:8px;">
 <img src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/RLNNFig1.png" alt="" >
 </div>
+> 一段50秒时间序列示例，图中是RLNN仅采用虚拟探索，并将拒绝概率设置为1。在前200个数据包时，神经网络收集训练数据。显然，我们设置的阈值0.7，则预测出来性能不高于0.7的`action`的**探索**都被拒绝了。避免了不利的探索。
 
+强化学习神经网络的一个重要好处在于知道每个动作的预期性能值（先验）,从而允许它们被分类。另一个好处就是可以通过`action rejection probability`来控制探索好的或坏的`action`的数量，通过滤除坏的`action`来提高系统整体的性能，`agent`可以避免花费时间去探索那些预测出来性能表现不佳的`action`。
 
+上述的算法的主要缺陷是没有考虑到动态信道的问题。下图展示了一个时序示例，其中信道被假设为静态信道，给出的是每个动作的多目标性能得分。根据轨道的动态变化，载波频率、大气或空间天气可能会导致信道出现快速或慢速衰落，从而使其产生动态变化。
 
+<div style="width:50%; margin-left:auto; margin-right:auto; margin-bottom:8px; margin-top:8px;">
+<img src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/RLNNFig2.png" alt="" >
+</div>
+
+> 强化学习算法在同步卫星通信信道上搜索可用的更好`action`，搜索前首先考虑上一次探索到的`action`性能表现值。从图中可以明显看出决策`action`在不同时间段内的最优决策方案，连续位置可以覆盖整个时间段，此处的`action`就是系统的最优决策。
+
+使用过的每一个离散的`action`都将其得分值存储在`Q-vector`中（假设`reward`与`state`是相同的），这些值在探索期间接收新值并更新现有值。
+
+但是如果信道是动态变化的，这种方法就有三种主要缺陷
+
+- 现在采取某种`action`的性能值得分可能和过去或将来采取同一个`action`的不同（这不是废话么，`action`的得分本来就是受时间和环境影响的啊，硬加一个缺陷还行）
+  - 之前计算的性能值在后来使用的时候就过时了，这将导致采用某种`action`的时候做出错误决策。此问题的解决方法就是更新对应的性能值。这对于非动态变化的信道而言似乎没有大问题，但是对于动态变化的信道，某个特定的`action`可能在不同的环境下有不同的性能表现，之前探索计算的性能得分就无效了。下图第一个图很好的说明了这一点。
+- 必须为每个不同的多维`state`储存特定`action`的性能表现值，其中`state`是由连续变量表示的
+  - 
+- 必须为动态变化的特定通道条件存储每个`action-state`的性能表现值，但是信道变化也是连续的。
+
+<div style="width:50%; margin-left:auto; margin-right:auto; margin-bottom:8px; margin-top:8px;">
+<img src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/RLNNFig3.png" alt="" >
+</div>
 
 
 
