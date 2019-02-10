@@ -19,6 +19,8 @@ categories: Notes
 - 用了巨多从句，整的谷歌都翻译不出来 = =、
 - 这篇论文话好多
 - 我发现每天的工作就是打开`Acrobat`，打开`Tpyora`，打开谷歌翻译和`Github`，然后开始复制粘贴和瞎BB
+- 可以说本文作者很喜欢故弄玄虚了。
+- 神经网络被他们当做了无敌的非线性拟合器，ε=(´ο｀*)))
 
 ## 摘要 - Abstract
 
@@ -186,9 +188,25 @@ $$a_k=h(s_k)\tag{4}$$
 
 训练的时候，数据集被**随机**分为$$7:3$$两部分，常见做法。$$70\%$$将用于进行训练(`training set`)，剩余的$$30\%$$还要对半分，平均分为两部分，$$15\%$$的部分用于测试(`testing set`)，另外的$$15\%$$的部分用于验证(`validation set`)。对应部分的用法在《统计学习方法》这本书里面有详细的说明，另外训练时的数据全部都按比例缩放到$$[-1,1]​$$范围内（这个是`scaling`操作，在[很久前的文章](https://psycholsc.github.io/notes/2018/08/10/CS229-Machine-Learning.html)里有介绍）。这个网络集合中有20个相同的网络结构，均采用相同的数据集进行训练，其输出结果用来对不同的`action`进行分类，分类依据是`action select agent`提供的性能表现阈值。另有`action rejection probability`控制从好的或坏的集合中随机选取动作，该动作即无线电参数的选择。
 
-我们自己提出的混合`MORL Algorithm`采用两种不同的神经网络，一组用于`exploration`，另一组用于`exploitation`。
+我们自己提出的混合`MORL Algorithm`（文中自称为先人`RLNN`的改良版`RLNN2`）采用两种不同的神经网络，一组用于`exploration`，另一组用于`exploitation`，其结构如下。
 
+<div style="width:75%; margin-left:auto; margin-right:auto; margin-bottom:8px; margin-top:8px;">
+<img src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/RLNNFig5.png" alt="" >
+</div>
 
+> 新型的为动态卫星通讯信道设计的`MORL`算法结构。此处我们提出的`RLNN2`和同样我们提出的探索与开发 神经网络 相互作用。
+
+该结构将前面的神经网络和我们自己的新算法(`Exploitation NN`)进行了结合。这种新的算法可以处理卫星通信信道内的动态变化的衰减水平。该算法(`RLNN2`)的`agent`与环境进行交互，或者(`either`)通过虚拟探索`virtual exploration`探索不同的`action`（这将防止通信系统花费额外的时间探索可能性能不佳的参数组合），又或者(`or`)直接尝试曾经已经试过的`action`，为当前变化的信道预测最优的`action`（作者这里起了一个很中二很傻逼的名字，多维动作预测器，`multi-dimensional action predictor`）。
+
+`Exploiting Reinforced Multi-Dimensional Actions:`为了解决前面第II部分提出的限制，我们删掉了`Q-value`计算的过程，而是到当前的环境状态水平（就是通信信道条件），建议使用另一个神经网络来预测应该使用哪个`action`。提出的这个神经网络的特征应该包括
+
+- 解决使用过时的性能指标来决定使用哪个`action`的问题
+- 不需要存储所有环境条件下所有动作状态的性能值
+- 允许强化学习`state`与`action`相互分离（解耦、不相关等），这将允许在环境动态变化时通过开发不同的`action`来达到与之前相同的性能水平。
+
+`2019-2-10 23:40:48`
+
+说的什么几把
 
 
 
