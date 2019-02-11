@@ -299,15 +299,21 @@ $$
 
 ### A - RLNN2的性能评价 - Remarks on RLNN2 Performance
 
+如图所示
 
+<div style="width:75%; margin-left:auto; margin-right:auto; margin-bottom:8px; margin-top:8px;">
+<img src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/RLNNFig8.png" alt="" >
+</div>
 
+图像a-f分别呈现的是任务1-6的归一化得分分布。尽管每一个任务都有不同的配置，但是所有的图像中我们都能看出，性能表现均集中在较高水平。因为我们的目标是让更多数的数据包发送后的得分尽可能地接近理想分数，通过穷举搜索评估没个时间瞬间的所有动作性能。这些图像显示`RLNN2`能选择好的`action`，在信道动态变化时能够学习`reward`和`action`的关系。
 
+为了更好理解该方案的准确性，用`1`减去该结果得到归一化误差。归一化误差是每一个数据包传递时的实际得分与理想的分的差值，用`1`减去这个结果后得到下图
 
+<div style="width:75%; margin-left:auto; margin-right:auto; margin-bottom:8px; margin-top:8px;">
+<img src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/RLNNFig9.png" alt="" >
+</div>
 
-
-
-
-
+得到的精确度分布曲线如图9所示，预计将作为未来空间通信系统CE研究的基准。 对于所有任务，`RLNN2`算法可以使大多数数据包根据需要集中在非常高的精度值附近。
 
 ## V - 结论 - CONCLUSIONS
 
