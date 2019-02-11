@@ -250,6 +250,26 @@ $$f_{Pwr\_eff}=\frac{kc}{10^{\frac{E_s}{10N_0}}R_S}\tag{9}$$
 
 $$f_{Pwr\_con}=E_S\cdot R_S\tag{10}$$
 
+通过`MATLAB`中对`DVB-S2`通信系统的仿真获得的曲线函数进行插值计算误码率。假设帧长度为`64800 bits`，即`DVB-S2`中的长帧类型。
+
+先前定义的`reward function`，即`fitness score`，计算函数如下。实际上是一个加权过程，代表该通信过程中对哪项指标更为重视。
+
+
+$$
+\begin{equation*}%加*表示不对公式编号
+\begin{split}
+f_{obs}(x) =& w_1f_{Thrp}+w_2f_{BER}+w_3f_{BW}+\\ & w_4f_{Spc\_eff}+w_5f_{Pwr\_eff}+w_6f_{Pwr\_con}
+
+\end{split}
+\tag{11}
+\end{equation*}
+$$
+
+
+
+
+
+
 
 
 
