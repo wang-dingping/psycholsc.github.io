@@ -270,7 +270,6 @@ $$
 <div style="width:75%; margin-left:auto; margin-right:auto; margin-bottom:8px; margin-top:8px;">
 <img src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/RLNNTab2.png" alt="" >
 </div>
-
 ---
 
 `Algorithm 1`定义了神经网络训练缓冲区(`buffer`)的使用，该缓冲区总共包含$$NN_{bs}​$$个条目，每个条目由`action(a)`、`state(s)`和`fitness function value`，这些都是在`exploration`过程中加入的。当然无论什么时候对这个`buffer`被填满，神经网络就要经历一轮新的训练，此时还会将最旧的一组条目从`buffer`中删除，其大小为$$NN_{dump}​$$。总而言之就是，每填充$$NN_{bs}​$$个条目后，神经网络训练一遍，并且丢弃最旧的$$NN_{dump}​$$个条目等待重新填充，以保持一定的时效性，并同时提高效率降低运算量。
@@ -312,8 +311,15 @@ $$
 <div style="width:75%; margin-left:auto; margin-right:auto; margin-bottom:8px; margin-top:8px;">
 <img src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/RLNNFig9.png" alt="" >
 </div>
-
 得到的精确度分布曲线如图9所示，预计将作为未来空间通信系统CE研究的基准。 对于所有任务，`RLNN2`算法可以使大多数数据包根据需要集中在非常高的精度值附近。
+
+另一种关于误差的度量方式是计算上两个图中的曲线保卫面积，计算结果如下
+
+<div style="width:75%; margin-left:auto; margin-right:auto; margin-bottom:8px; margin-top:8px;">
+<img src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/RLNNTab3.png" alt="" >
+</div>
+
+
 
 ## V - 结论 - CONCLUSIONS
 
