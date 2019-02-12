@@ -284,7 +284,7 @@ $$
 - $$NN_{dump}=50$$，即每训练一次，丢掉$$50​$$个等待下次填充
 - $$tr_a=0.95​$$，`action`拒绝概率
 - $$min_{good\%}=0.9$$，达到这个水平才是好的
-- $$f(\varepsilon)$$是随时间变化的，假定$$\varepsilon_k=\frac{1}{k}$$，当取值为$$10^{-4}$$时进行重置
+- $$f(\varepsilon)​$$是随时间变化的，假定$$\varepsilon_k=\frac{1}{k}​$$，当取值为$$10^{-4}​$$时进行重置
 
 ---
 
@@ -358,4 +358,96 @@ $$
 
 - 红豆泥感谢[@GeneZC](https://github.com/GeneZC)佬，我不会的问题都能帮我解决，隔着屏幕就感觉到了一股大佬的气息！
 - `2019-2-12 10:58:53`计划着开始写个程序仿真一下看看了。
+
+首先是算法1，其流程如下
+
+<div style="width:50%; margin-left:auto; margin-right:auto; margin-bottom:8px; margin-top:8px;">
+<img src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/RLNNAlg1.png" alt="" >
+</div>
+
+在算法进行之前，需要初始化两个神经网络1和2，即进行模型的建立，资源分配和初始化赋值。后面的若干个参数分别为
+
+- $$R_S:​$$符号速率
+- $$E_S:​$$每个符号的能量
+- $$k:$$每个符号中含多少`bit`信息
+- $$\beta:​$$滚降系数，成形滤波器使用
+- $$M:$$调制阶数
+- $$c:$$编码率（信息率），即信息占所有编码结果的比例。
+- $$NN_{bs}:​$$神经网络训练集的大小。$$NN_{bs}=200​$$，即缓冲区容量定义为$$200​$$个条目
+- $$NN_{dump}:​$$神经网络中缓冲区大小，文中有具体介绍作用，$$NN_{dump}=50​$$，即每训练一次，丢掉$$50​$$个等待下次填充
+- $$f(\varepsilon):$$描述$$\varepsilon_k$$的函数，假定$$\varepsilon_k=\frac{1}{k}$$，当取值为$$10^{-4}$$时进行重置
+- $$tr_a:$$`action`拒绝概率，$$tr_a=0.95$$
+- $$min_{good\%}:$$性能指标规划，取$$0.9$$
+
+注意其实每一个参数都有取值范围，我们此时生成一个集合，用来储存所有取值的组合。该全集我们称为`U`
+
+整个算法1现在就开始了，实际上算法1整个流程就是一个大循环，`loop`，现在做完了初始化，流程正式开始（进入循环）
+
+- 如果我们的取值范围发生了改变，那么立即更新全集`U`
+- 检查神经网络的训练数据缓冲区是否满了，即拥有200组数据供训练
+  - 如果缓冲区没有达到200个，就开始强制探索模式，`exploration only`
+- $$z:=random(0,1)​$$，均匀分布的随机数
+- $$z$$和$$\varepsilon_k$$进行比较
+  - 如果$$z$$比较小，则采用`NN1`预测`action`
+  - 使用$$min_{good\%}$$进行分类，高于该值认为是`good`，否则认为是`bad`
+  - $$u:=random(0,1)$$，均匀分布的随机数
+  - 比较$$u$$和$$tr_a$$
+    - 如果$$u$$更小，此时选择`good set`中的`action`
+    - 如果$$u$$更大，此时选择`bad set`中的`action`
+  - 以上为$$z$$较小的条件
+  - 如果$$z$$比较大，则采用`NN2`预测被利用的`action a `
+  - 执行`action a`
+  - 测量（或者说读取）强化学习`state s`
+  - 计算`multi-objective fitness function`$$f_{obs}(x)$$
+  - 通过算法2选择一个`NN2`的输入
+  - 更新神经网络训练缓冲区
+  - 构造`NN1`和`NN2`的训练集
+  - 如果 训练数据缓冲区达到了`200`组，则丢弃`50`个条目
+
+回到`loop`循环首
+
+以上是算法1的流程。
+
+---
+
+下面是算法2的相关内容，其流程如下
+
+<div style="width:50%; margin-left:auto; margin-right:auto; margin-bottom:8px; margin-top:8px;">
+<img src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/RLNNAlg2.png" alt="" >
+</div>
+
+首先是初始化取值，这里给出的是$$max\_f_{obs}=0$$，$$m_{reset}$$和$$Exploit_{score}=[]$$
+
+- 检查训练数据缓冲区是否满
+  - 若没满，则循环执行以下操作
+  - 如果是强制探索模式，则$$Exploit_{score}=max(f_{obs}(x))$$
+  - 若缓存区满了，该`while`段结束。
+- 如果 $$f_{obs}>max\_f_{obs}​$$
+  - $$max\_f_{obs}=f_{obs}(x)$$
+  - 如果 $$z<\varepsilon_k$$
+    - $$NN2_{input}=state$$
+  - 否则
+    - 如果$$f_{obs}<Exploit_{score}​$$
+      - 如果$$Exploit_{score}-f_{obs}>m_{reset}$$且连续两个时间步内`action`相同$$a_k=a_{k-1}$$
+        - 重置神经网络训练缓冲区
+        - 开始强制探索模式
+      - 否则如果$$f_{obs}<0.9\times Exploit_{score}​$$
+        - $$NN2_{input}$$从训练缓冲区内接收`state`
+      - 否则如果$$f_{obs}>0.9\times Exploit_{score}​$$
+        - $$Exploit_{score}=f_{obs}(x)​$$
+      - 否则
+        - $$NN2_{input}=last\_NN2_{input}​$$
+    - 否则
+      - $$Exploit_{score}=f_{obs}(x)$$
+      - $$last\_NN2_{input}=state$$
+
+复杂的关系。
+
+
+
+
+
+
+
+
 
