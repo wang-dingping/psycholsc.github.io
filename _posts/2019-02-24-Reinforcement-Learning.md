@@ -1,9 +1,9 @@
 ---
 layout: post
 comments: true
-title:  "Reinforcement Learning"
+title:  "Reinforcement Learning: The Multi-Armed Bandit"
 excerpt: "-"
-date:   2019-01-12 14:42:24 +0000
+date:   2019-02-24 14:42:24 +0000
 categories: Notes
 ---
 
@@ -98,7 +98,25 @@ categories: Notes
 
 ## 第二章 Multi-armed Bandit Problem
 
-多臂赌博机问题。
+> 考虑到篇幅所限，多臂赌博机问题将是本文的主要内容，强化学习其他内容会出现在其他文章中
+
+强化学习问题，简单说就是一个决策问题，如上文所述，主要是`agent`通过`policy`，根据`state`做出`action`决策的问题。而其中最基础的一个问题就是**the exploration versus exploitation dilemma**，即探索和利用的抉择问题，多臂赌博机问题就是该问题的一个重要模型。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
