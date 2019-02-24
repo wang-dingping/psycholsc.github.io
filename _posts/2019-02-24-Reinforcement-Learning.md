@@ -100,10 +100,15 @@ categories: Notes
 
 > 考虑到篇幅所限，多臂赌博机问题将是本文的主要内容，强化学习其他内容会出现在其他文章中
 
-强化学习问题，简单说就是一个决策问题，如上文所述，主要是`agent`通过`policy`，根据`state`做出`action`决策的问题。而其中最基础的一个问题就是**the exploration versus exploitation dilemma**，即探索和利用的抉择问题，多臂赌博机问题就是该问题的一个重要模型。
+强化学习问题，简单说就是一个决策问题，如上文所述，主要是`agent`通过`policy`，根据`state`做出`action`决策的问题。而其中最基础的一个问题就是**the exploration versus exploitation dilemma**，即**探索和利用的抉择**问题，多臂赌博机问题就是该问题的一个重要模型。
+
+简单介绍这个所谓的抉择问题。UCB介绍这个问题时采用的例子是，假设我们每天都去
 
 
 
+<p style="width: 70%;" class="center"><img src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/exploration_vs_exploitation.png" alt="bernoulli bandit" /></p>
+
+<p><em>Fig. 1. A real-life example of the exploration vs exploitation dilemma: where to eat? (Image source: UC Berkeley AI course <a href="http://ai.berkeley.edu/lecture_slides.html">slide</a>, <a href="http://ai.berkeley.edu/slides/Lecture%2011%20--%20Reinforcement%20Learning%20II/SP14%20CS188%20Lecture%2011%20--%20Reinforcement%20Learning%20II.pptx">lecture 11</a>.)</em></p>
 
 
 
