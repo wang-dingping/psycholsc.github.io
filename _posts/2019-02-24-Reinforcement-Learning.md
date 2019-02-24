@@ -118,13 +118,76 @@ categories: Notes
 
 此处我们只讨论无数次实验的情况，因为有限次数的实验会导致一个新的`exploration`问题，例如尝试次数少于老虎机的次数，我们甚至都不能估计所有老虎机的奖励概率。因此我们需要在有限的知识和资源（例如时间资源）的条件下进行决策。
 
-bern_bandit.png
+<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/bern_bandit.png" style="display: inline-block;" width="500"/>
+</div>
 
+一个简单的方法就是我们只玩其中的一个老虎机，玩到足够多的次数后我们就可以有效估计这个老虎机的奖励概率了。这个是所谓的“**大数定律**”。然而这个是一个相当浪费时间的做法，而且显然并不能让长期收益最佳。
 
+#### Definition
 
+科学地定义多臂赌博机问题如下
 
+一个伯努利多臂赌博机问题可以由一个元组$$\left \langle A,R \right \rangle$$来描述
 
+- 我们有$$K$$个赌博机，其奖励概率分别为$$\{\theta_1,...,\theta_K\}$$
+- 在每一个时间步$$t$$，我们只能在一个赌博机上采取一次行动，得到收益$$r$$
+- $$A$$是一系列操作`action`，其中的每一个操作分别表示与某一台赌博机交互。`action `$$a$$的取值是期望收益`reward`，$$Q(a)=\mathbb{E}[r\mid a]=\theta$$。如果一个时间步中的操作$$a_t$$是与第$$i$$台设备交互，那么$$Q(a_t)=\theta_i$$
+- $$R$$是收益函数。在伯努利赌博机问题中，我们随机观测$$r$$。在时间步$$t$$中，$$r_t=R(a_t)$$可能依概率$$Q(a_t)$$返回`reward`$$1$$，或者相反返回$$0$$
 
+这是一个简化版的马尔科夫决策过程`Markov Decision Process`，因为这里并没有`state`$$S$$。
+
+我们的目标是最大化累计`reward`$$\sum\limits_{t=1}^Tr_t$$。如果我们知道了能获取最大奖励`reward`的最佳行动`action`，那么目标也可以说是最小化不选择最佳决策而产生的潜在遗憾`regret`。
+
+最佳操作$$a^*$$的最佳奖励概率$$\theta^*$$为
+
+$$
+\begin{equation*}
+\begin{split}
+\theta^*=Q(a^*)=\max\limits_{a\in A}Q(a)=\max\limits_{1\leq i\leq k}\theta_i
+\end{split}
+\tag{1}
+\end{equation*}
+$$
+
+损失函数`loss function`是我们所有时间步$$T$$的没有选择最优决策而可能产生的总遗憾`total regret`
+
+$$
+\begin{equation*}
+\begin{split}
+L_T=\mathbb E \left[ \sum\limits_{t=1}^T\left(\theta^*-Q\left(a_t\right)\right) \right]
+\end{split}
+\tag{2}
+\end{equation*}
+$$
+
+#### Bandit Strategies
+
+基于我们`exploration`方法的不同，我们有很多种方法解决多臂赌博机问题
+
+- 不进行`exploration`
+- 随机`exploration`
+- 对于不确定性进行优先`exploration`
+
+### $\varepsilon -Greedy\:Algorithm$
+
+$$\varepsilon$$贪婪算法大多数时间里能够取得最佳`action`，但是偶尔会进行随机`exploration`。我们通过以往的经验**估计**该`action`的`Q-val`的方法就是加权平均，通过返回$$1$$和$$0$$的数量，我们可以大致估计某一个`action`的收益。
+
+$$
+\begin{equation*}
+\begin{split}
+\hat Q_t(a)=\frac{1}{N_t(a)}\sum\limits_{\tau=1}^t r_\tau 1[a_r=a]
+\end{split}
+\tag{3}
+\end{equation*}
+$$
+
+其中$$1(\cdot)$$是一个函数，这个函数会返回一个操作的概率，这个被称为`indicator function`；$$N_t(a)$$是至今为止采取`action`的总次数，$$N_t(a)=\sum\limits_{\tau=1}^t1[a_\tau=a]$$
+
+根据$$\varepsilon$$贪婪算法，我们依一个很小的概率$$\varepsilon$$进行采取一个随机`action`，而其他情况下我们都采用目前已知的最佳决策方法（即依概率$$1-\varepsilon$$），即$$\hat a_t^* =arg\max\limits_{a\in A}\hat Q_t(a)$$
+
+### Upper Confidence Bounds(UCB)
+
+上述的随机探索让我们有机会尝试我们不了解的选项，但是正是由于随机性，我们很有可能尝试了一个已经证实的并不优秀的`action`。为了避免这样的低效率探索，一种随时间减少参数$$\varepsilon​$$，另一种方法就是对具有高度不确定度的选项持乐观态度，因此更倾向于尝试我们目前还不能完全确定估计收益的选项。换句话说我们应该更倾向于探索具有更大价值潜力的行动。
 
 
 
