@@ -106,8 +106,9 @@ categories: Notes
 
 简单介绍这个所谓的抉择问题。UCB介绍这个问题时采用的例子是，我们每天去吃饭都需要选择餐厅。假设我们面前有两个选择，一个是我们经常去的餐厅，另一个是我们从没有去过的餐厅。对于我们每天都去的餐厅，我们对于吃什么东西是非常了解的，因此我们一般来讲会吃的比较满意；但是对于从未去过的餐厅，这里可能并不好吃，但是也有可能有更佳选择。我们一直选择其中的一个都不是最佳决策，因此需要在两个选项之间权衡。
 
-<div style="text-align:center"”>
-    <img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/exploration_vs_exploitation.png" style="display: inline-block;" width="500"/>
+
+
+<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/exploration_vs_exploitation.png" style="display: inline-block;" width="500"/>
 </div>
 
 
