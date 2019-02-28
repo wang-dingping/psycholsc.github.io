@@ -143,7 +143,48 @@ UCB介绍这个问题时采用的例子是，我们每天去吃饭都需要选�
 
 ### Action - Value Methods
 
+#### Epsilon Greedy
 
+简单的看几个估值算法。一个`action`的真正`value`前面用$$q_*(a)$$进行表示，代表的是收益的期望。一种最简单的方式就是在计算的每一个时间步进行如下计算
+$$
+\begin{equation*}
+\begin{split}
+Q_t(a)= & \frac{sum\:of\:rewards\:when\:a\:is\:taken}{number\:of\:times\:when\:a\:is\:taken} \\= & \frac{\sum\limits_{i=1}^{t-1}R_i \mathbb{1}(A_i=a)}{\sum\limits_{i=1}^{t-1}\mathbb{1}(A_i=a)}
+\end{split}
+\tag{2}
+\end{equation*}
+$$
+
+其中的函数$$\mathbb{1}(\cdot)$$表示逻辑函数，当括号内为真时返回1，否则返回0。一般的初始值$$Q_1(a)$$均为$$0$$，当次数无穷多时，根据大数定律，被选择了无穷多次的`action`的`value`估计值$$\hat Q$$就会逼近$$q$$，即真值。这种方法被称为**采样平均法**（`sample-average method`）
+
+显然这种方法并不是最优方法，但是接下来我们就先利用这个方法进行`action`的选择。一般的为了短期最优`reward`回收，会采用一个`greedy action`，即估计值最高的`action`，如果此时同时存在若干相同取值的就随机在值最大的`action`中选取一个
+$$
+\begin{equation}
+\begin{split}
+A_t=\underset{a}{\operatorname{argmax}}Q_t(a)
+\end{split}
+\tag{3}
+\end{equation}
+$$
+这种方法就被称为`greedy action selection`。这种方法利用了现有的知识去最大化`immediate reward`
+
+当然以上操作只做了`exploit`，但是很明显这个方法是不好的，不做`exploration`的话我们可能永远也不会知道最好的那个选项是哪个。那么对上述算法的一点小小改进就是，在决策时依某一小概率$$\varepsilon$$进行选择`exploration`
+
+这样在大部分时候（$$1-\varepsilon$$）我们都进行`exploit`，利用现有知识进行决策，而少部分时候（$$\varepsilon$$）我们进行`explore`，探索是否存在更好的解决方案。这个方法被称为$$\varepsilon-greedy$$方法，其优点在于，在时间无限长的条件下，每一个选项都有无穷多被选中的次数，也因此$$\hat Q$$能够依**大数定律**正确地收敛到$$q$$。这也保证了我们能够在有限的时间内让结果更加接近最优解。
+
+当然这个结果也是一个渐近保证，实际应用中由于收敛速度较慢，优势也并不高。
+
+我们来简单看一下结果，代码在我的GitHub中有，过几天加个链接。以下测试结果是在一个`10 armed testbed`上进行的，这是一个十臂赌博机（或者说是十个赌博机），每个赌博机的输出都是以某个均值正态分布的，方差为1；每个赌博机输出的均值是零均值高斯分布的，我们最终选出的结果为
+
+<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/10armedtestbed.png" style="display: inline-block;" width="500"/>
+</div>
+
+这个是我们的赌博机配置，然后就要设计程序在没有先验知识的条件下，更快更好地找出最优决策方案。我们实验是基于$$1000$$个时间步进行的，然后借助各态历经性的思想，我们进行2000次反复试验，并将结果进行平均，得到结果如下
+
+<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/10armedbanditresult.png" style="display: inline-block;" width="500"/>
+</div>
+
+显然
 
 
 
