@@ -108,6 +108,13 @@ categories: Notes
 
 K臂赌博机问题实际上是一个循环决策问题，每个时间步面对一个`K-option`问题，每个选项都依一定的概率分布返回一个`reward`。该问题的目标就是最大化累计`reward`，是一个决策问题。
 
+对于最简单的赌博机模型，即`Bernoulli Bandit`模型，赌博机会根据预先设定的概率返回`reward`为$$1$$，否则返回$$0$$。但是这里并没有采用这种简单的情况，而是采用依正态分布的方式返回`reward`。一方面能让问题稍显复杂，也能更加接近实际的决策问题。
+
+最简单的赌博机模型如下
+
+<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/bern_bandit.png" style="display: inline-block;" width="500"/>
+</div>
+
 这个模型可以类比很多现实的决策问题，例如赌博问题，医生对病人治疗方案选择问题等。对本模型的介绍，就从`bandit`问题开始。在这个问题中，我们每一个时间步都会做一个唯一的决策`action`（即选择一台赌博机），每一个`action`都会得到一个对应的`reward`（赌博机给出收益）。我们用$$A_t,R_t$$分别表示$$t$$时刻的`action`和`reward`。对于每一台赌博机，我们**首先**都认为存在一个固定的期望收益（这种情况被称为`stationary`情况，大多数强化学习遇到的问题实际上都是`non-stationary`问题，这里只是最简化模型），用$$q_*(a)$$来表示，
 $$
 \begin{equation*}
@@ -183,36 +190,13 @@ $$
 
 <div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/10armedbanditresult.png" style="display: inline-block;" width="500"/>
 </div>
-
 显然
 
 
 
-多臂赌博机问题是一个诠释`Exploration vs Exploitation Dilemma`的经典问题，想象你正在一个有多个老虎机的赌场，每个老虎机都配置了一个位置概率，每次都有一定概率获得奖励，那么我们采取什么样的策略才能获取最高长期收益呢？
 
-此处我们只讨论无数次实验的情况，因为有限次数的实验会导致一个新的`exploration`问题，例如尝试次数少于老虎机的次数，我们甚至都不能估计所有老虎机的奖励概率。因此我们需要在有限的知识和资源（例如时间资源）的条件下进行决策。
 
-<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/bern_bandit.png" style="display: inline-block;" width="500"/>
-</div>
 
-一个简单的方法就是我们只玩其中的一个老虎机，玩到足够多的次数后我们就可以有效估计这个老虎机的奖励概率了。这个是所谓的“**大数定律**”。然而这个是一个相当浪费时间的做法，而且显然并不能让长期收益最佳。
-
-#### Definition
-
-科学地定义多臂赌博机问题如下
-
-一个伯努利多臂赌博机问题可以由一个元组$$\left \langle A,R \right \rangle$$来描述
-
-- 我们有$$K$$个赌博机，其奖励概率分别为$$\{\theta_1,...,\theta_K\}$$
-- 在每一个时间步$$t$$，我们只能在一个赌博机上采取一次行动，得到收益$$r$$
-- $$A$$是一系列操作`action`，其中的每一个操作分别表示与某一台赌博机交互。应用`action `$$a$$之后的取值是期望收益`reward`，$$Q(a)=\mathbb{E}[r\mid a]=\theta$$。如果一个时间步中的操作$$a_t$$是与第$$i$$台设备交互，那么$$Q(a_t)=\theta_i$$
-- $$R​$$是收益函数。在伯努利赌博机问题中，我们随机观测$$r​$$。在时间步$$t​$$中，$$r_t=R(a_t)​$$可能依概率$$Q(a_t)​$$返回`reward`$$1​$$，或者相反返回$$0​$$
-
-这是一个简化版的马尔科夫决策过程`Markov Decision Process`，因为这里并没有`state`$$S​$$。
-
-我们的目标是最大化累计`reward`$$\sum\limits_{t=1}^Tr_t$$。如果我们知道了能获取最大奖励`reward`的最佳行动`action`，那么目标也可以说是最小化不选择最佳决策而产生的潜在遗憾`regret`。
-
-最佳操作$$a^*​$$的最佳奖励概率$$\theta^*​$$为
 
 $$
 \begin{equation*}
