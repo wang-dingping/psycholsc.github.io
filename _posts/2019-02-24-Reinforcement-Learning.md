@@ -220,28 +220,31 @@ Q_n=\frac{R_1+R_2+...+R_{n-1}}{n-1}
 \tag{4}
 \end{equation}
 $$
+
 这个表示方法中，$$Q_n$$是某个`action`被选择$$n-1$$后的估计。这个公式就可以写作如下形式
+
 $$
 \begin{equation}
 \begin{split}
 Q_{n+1}=&\frac{1}{n}\sum\limits_{i=1}^{n}R_i\\=&\frac{1}{n}(R_n+\sum\limits_{i=1}^{n-1}R_i)\\=&\frac{1}{n}(R_n+(n-1)\frac{1}{n-1}\sum\limits_{i=1}^{n-1}R_i)\\=&\frac{1}{n}(R_n+(n-1)Q_n)\\=&Q_n+\frac{1}{n}(R_n-Q_n)
-
 \end{split}
 \tag{5}
 \end{equation}
 $$
+
 这个结果十分重要。我们可以看出，此时我们每一步只需要保留$$n$$和$$Q_n$$，接收到新的$$R_n$$之后就可以继续计算并更新上述的两个参数，等待下一轮时间步即可。
 
 该形式在后面将多次出现，其通用形式为
+
 $$
 \begin{equation}
 \begin{split}
 NewEstimation=OldEstimation+StepSize[Target-OldEstimation]
-
 \end{split}
 \tag{6}
 \end{equation}
 $$
+
 其中我们称$$Target-Estimation$$为`error`，上述$$Target$$也实际上就是`reward`。这里的$$StepSize$$的实际含义是每一次参数更新时步长大小，常用$$\alpha$$来表示，一般的$$\alpha_t(a)=\frac{1}{n}$$。
 
 > 注意这里说的$$t$$和$$n$$的含义，$$t$$就永远表示时间步，$$n$$代表的是选择指定`action`的次数。
@@ -249,6 +252,7 @@ $$
 ### Nonstationary Problems
 
 取样平均方法只在平稳问题中有效，但是假如问题并不是平稳问题，就需要考虑其他算法。这时候，简单来说，我们更应该考虑`recent reward`。由于情况总是发生改变，因此之前计算的结果就显得没有什么效果，我们更应该重视最近几次操作的经验，从而进行下一步决策。这时我们将估值的原式写作
+
 $$
 \begin{equation}
 \begin{split}
@@ -258,7 +262,9 @@ Q_{n+1}=Q_n+\alpha(R_n-Q_n)
 \tag{7}
 \end{equation}
 $$
+
 这个写法就和目前比较流行的机器学习方法对应了。这里我们首先考虑步长$$\alpha$$是一个常量，此时我们拆开表达式可以得到
+
 $$
 \begin{equation}
 \begin{split}
@@ -267,9 +273,11 @@ Q_{n+1}&=Q_n+\alpha(R_n-Q_n)\\&=(1-\alpha)^nQ_1+\sum_{i=1}^n\alpha(1-\alpha)^{n-
 \tag{8}
 \end{equation}
 $$
+
 这样我们就可以看出，随着执行次数的增加，之前执行的经验会被淡化，而近期的`action`得到的`reward`权重就比较大。这个过程实际上是一个加权过程，其随时间衰减是指数衰减的，因此也被称为**指数下降加权平均法**
 
 当我们的$$\alpha=\frac{1}{n}​$$时，表达式即上面推导的$$(5)​$$的形式，此时由前面我们推导的结论，最终估计值$$\hat Q​$$一定会依概率1收敛到$$q​$$，但实际上并不是所有的$$\{\alpha\}​$$都能保证收敛，收敛时必须满足两个条件
+
 $$
 \begin{equation}
 \begin{split}
