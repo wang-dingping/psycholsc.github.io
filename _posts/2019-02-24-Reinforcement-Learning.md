@@ -16,6 +16,12 @@ categories: Notes
 
 很久没更过了。2018年下半年过得很狗屎。十分难受。
 
+`2019-3-1 19:43:00`
+
+读这本书真的是有感而发，国外的教授写的书水平确实比较高，虽然看起来冗余内容比较多，但是仔细读一遍还是觉得这本书质量颇高，解释的很清晰，而且干净利落条理清楚，英文用词准确还不会过分复杂，内容高度自洽。
+
+真的强啊。
+
 # Reinforcement Learning
 
 `Reinforcement Learning`的正统翻译目前是**强化学习**，是所谓的机器学习的一个分支领域，强调如何基于环境而行动，以获取最大化的预期利益。其灵感来自于心理学中的行为主义理论，即有机体如何在环境基于的奖励或惩罚的刺激下，逐步形成对刺激的预期，产生能获得最大利益的习惯性行为。这个方法具有普适性，因此在其他许多领域都有研究，例如博弈论、控制论、运筹学、信息论、仿真优化等。在一些研究环境下，RL还被称为近似动态规划(`approximate dynamic programming, ADP`)。在最优控制理论中也有研究，主要研究方向为最优解的存在与特性，而非此学科的学习、近似等。该理论还被解释为在有限理性的条件下如何平衡。
@@ -190,68 +196,84 @@ $$
 
 <div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/10armedbanditresult.png" style="display: inline-block;" width="500"/>
 </div>
-显然
+显然我们可以看出以下结论
 
+- 仅贪婪的方法，前期上升很快，但是很快就被$$\varepsilon -greedy​$$方法超越，而且最终稳定在一个较低的取值
+- $$\varepsilon -greedy$$方法中，当$$\varepsilon =0.1$$时，上升速度比$$\varepsilon =0.01$$快，但是最终稳定值会小于$$\varepsilon =0.01$$的最终稳定值
 
+如果分析一下容易发现，$$\varepsilon =0.1$$时策略有$$90\%$$的时间在执行，其他时间都在探索，并没有选择最优的方案。这样下去，最终的最大值只有理论最大值的$$91\%$$，而$$\varepsilon =0.01$$时理论最大值能够达到$$99\%$$以上。
 
+如果赌博机输出方差更小，例如为$$0$$，那么普通的$$greedy$$决策就已经可以使用；如果方差很大，例如$$10$$，那还是$$\varepsilon-greedy$$方法更好。
 
+以上讨论都是基于`stationary`的条件进行的，若赌博机的收益是随时间发生变化的，则`explore`就是更加必要的，此时问题更加复杂，但是强化学习问题种绝大多数情况都是非平稳的。
 
+#### Incremential Implementation
 
+如果将每一次的`action`都记录在内存中，每次运算的时候都进行求和，那显然是没有效率的。这时随着时间的增加，算法所需要的时间与空间复杂度都会明显增加。目前为止讲的这俩都是每个时间步直接求和的暴力方法，这样效率就很低了，因此我们需要更加可靠更加有效的方式。
 
+对于单步`action`，实际上在执行前进行估值时，是可以这样描述的
 $$
-\begin{equation*}
+\begin{equation}
 \begin{split}
-\theta^*=Q(a^*)=\max\limits_{a\in A}Q(a)=\max\limits_{1\leq i\leq k}\theta_i
+Q_n=\frac{R_1+R_2+...+R_{n-1}}{n-1}
 \end{split}
-\tag{1}
-\end{equation*}
+\tag{4}
+\end{equation}
 $$
-
-损失函数`loss function`是我们所有时间步$$T$$的没有选择最优决策而可能产生的总遗憾`total regret`
-
+这个表示方法中，$$Q_n$$是某个`action`被选择$$n-1$$后的估计。这个公式就可以写作如下形式
 $$
-\begin{equation*}
+\begin{equation}
 \begin{split}
-L_T=\mathbb E \left[ \sum\limits_{t=1}^T\left(\theta^*-Q\left(a_t\right)\right) \right]
+Q_{n+1}=&\frac{1}{n}\sum\limits_{i=1}^{n}R_i\\=&\frac{1}{n}(R_n+\sum\limits_{i=1}^{n-1}R_i)\\=&\frac{1}{n}(R_n+(n-1)\frac{1}{n-1}\sum\limits_{i=1}^{n-1}R_i)\\=&\frac{1}{n}(R_n+(n-1)Q_n)\\=&Q_n+\frac{1}{n}(R_n-Q_n)
+
 \end{split}
-\tag{2}
-\end{equation*}
+\tag{5}
+\end{equation}
 $$
+这个结果十分重要。我们可以看出，此时我们每一步只需要保留$$n$$和$$Q_n$$，接收到新的$$R_n$$之后就可以继续计算并更新上述的两个参数，等待下一轮时间步即可。
 
-#### Bandit Strategies
-
-基于我们`exploration`方法的不同，我们有很多种方法解决多臂赌博机问题
-
-- 不进行`exploration`
-- 随机`exploration`
-- 对于不确定性进行优先`exploration`
-
-### $\varepsilon -Greedy\:Algorithm$
-
-$$\varepsilon$$贪婪算法大多数时间里能够取得最佳`action`，但是偶尔会进行随机`exploration`。我们通过以往的经验**估计**该`action`的`Q-val`的方法就是加权平均，通过返回$$1$$和$$0$$的数量，我们可以大致估计某一个`action`的收益。
-
+该形式在后面将多次出现，其通用形式为
 $$
-\begin{equation*}
+\begin{equation}
 \begin{split}
-\hat Q_t(a)=\frac{1}{N_t(a)}\sum\limits_{\tau=1}^t r_\tau 1[a_r=a]
+NewEstimation=OldEstimation+StepSize[Target-OldEstimation]
+
 \end{split}
-\tag{3}
-\end{equation*}
+\tag{6}
+\end{equation}
 $$
+其中我们称$$Target-Estimation$$为`error`，上述$$Target$$也实际上就是`reward`。这里的$$StepSize$$的实际含义是每一次参数更新时步长大小，常用$$\alpha$$来表示，一般的$$\alpha_t(a)=\frac{1}{n}$$。
 
-其中$$1(\cdot)$$是一个函数，这个函数会返回一个操作的概率，这个被称为`indicator function`；$$N_t(a)$$是至今为止采取`action`的总次数，$$N_t(a)=\sum\limits_{\tau=1}^t1[a_\tau=a]$$
+> 注意这里说的$$t$$和$$n$$的含义，$$t$$就永远表示时间步，$$n$$代表的是选择指定`action`的次数。
 
-根据$$\varepsilon$$贪婪算法，我们依一个很小的概率$$\varepsilon$$进行采取一个随机`action`，而其他情况下我们都采用目前已知的最佳决策方法（即依概率$$1-\varepsilon$$），即$$\hat a_t^* =arg\max\limits_{a\in A}\hat Q_t(a)​$$
+#### Nonstationary Problems
+
+取样平均方法只在平稳问题中有效，但是假如问题并不是平稳问题，就需要考虑其他算法。这时候，简单来说，我们更应该考虑`recent reward`。由于情况总是发生改变，因此之前计算的结果就显得没有什么效果，我们更应该重视最近几次操作的经验，从而进行下一步决策。这时我们将估值的原式写作
+$$
+\begin{equation}
+\begin{split}
+Q_{n+1}=Q_n+\alpha(R_n-Q_n)
+
+\end{split}
+\tag{7}
+\end{equation}
+$$
+这个写法就和目前比较流行的机器学习方法对应了。这里我们首先考虑步长$$\alpha$$是一个常量，此时我们拆开表达式可以得到
+$$
+\begin{equation}
+\begin{split}
+Q_{n+1}&=Q_n+\alpha(R_n-Q_n)\\&=(1-\alpha)^nQ_1+\sum_{i=1}^n\alpha(1-\alpha)^{n-i}R_i
+\end{split}
+\tag{8}
+\end{equation}
+$$
+这样我们就可以看出，随着执行次数的增加，之前执行的经验会被淡化，而近期的`action`得到的`reward`权重就比较大。这个过程实际上是一个加权过程，其随时间衰减是指数衰减的，因此也被称为**指数下降加权平均法**
 
 
 
 
 
-
-
-
-
-### Upper Confidence Bounds(UCB)
+#### Upper Confidence Bounds(UCB)
 
 上述的随机探索让我们有机会尝试我们不了解的选项，但是正是由于随机性，我们很有可能尝试了一个已经证实的并不优秀的`action`。为了避免这样的低效率探索，一种方法是随时间减少参数$$\varepsilon$$，另一种方法就是对具有高度不确定度的选项持乐观态度，因此更倾向于尝试我们目前还不能完全确定估计收益的选项。换句话说我们应该更倾向于探索具有更大价值潜力的行动。
 
