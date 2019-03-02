@@ -318,15 +318,22 @@ $$
 
 
 
+### Upper-Conﬁdence-Bound Action Selection
+
+我们的`explore`是必要的，因为估计值始终存在不确定性。前面说到的`greedy action`在一开始的时候表现较好，但是长期来看他的表现就一直是那个样子，常常会忽略许多可能更好地`non-greedy action`。虽然我们后来设置了一个小概率$$\varepsilon$$来强制进行`explore`，但是这个是真实随机，从来不会考虑对某些选项做出偏袒。但是实际上我们选择的时候应该基于每一个`non-greedy action`的潜在价值进行，一种简单的方式就是通过以下方式进行
 
 
+$$
+\begin{equation}
+\begin{split}
+A_t=\underset{a}{\operatorname{argmax}}\left[ Q_t\left(a\right) +c\sqrt{\frac{\ln t}{N_t(a)}} \right]
+\end{split}
+\tag{11}
+\end{equation}
+$$
+其中$$\ln$$是自然对数，$$N_t(a)$$仍然是某个指定`action`在时间步$$t$$之前被选择的次数，因子$$c$$控制了`explore`的程度。如果 $$N_t(a)=0$$，那么`a`的决策就是贪婪方法。
 
 
-
-
-### Upper Confidence Bounds(UCB)
-
-上述的随机探索让我们有机会尝试我们不了解的选项，但是正是由于随机性，我们很有可能尝试了一个已经证实的并不优秀的`action`。为了避免这样的低效率探索，一种方法是随时间减少参数$$\varepsilon$$，另一种方法就是对具有高度不确定度的选项持乐观态度，因此更倾向于尝试我们目前还不能完全确定估计收益的选项。换句话说我们应该更倾向于探索具有更大价值潜力的行动。
 
 `2019-2-25 15:51:38`
 
