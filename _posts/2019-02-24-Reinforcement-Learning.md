@@ -320,8 +320,9 @@ $$
 
 ### Upper-Conﬁdence-Bound Action Selection
 
-我们的`explore`是必要的，因为估计值始终存在不确定性。前面说到的`greedy action`在一开始的时候表现较好，但是长期来看他的表现就一直是那个样子，常常会忽略许多可能更好地`non-greedy action`。虽然我们后来设置了一个小概率$$\varepsilon$$来强制进行`explore`，但是这个是真实随机，从来不会考虑对某些选项做出偏袒。但是实际上我们选择的时候应该基于每一个`non-greedy action`的潜在价值进行，一种简单的方式就是通过以下方式进行
+这个算法叫做上置信界算法。
 
+我们的`explore`是必要的，因为估计值始终存在不确定性。前面说到的`greedy action`在一开始的时候表现较好，但是长期来看他的表现就一直是那个样子，常常会忽略许多可能更好的`non-greedy action`。虽然我们后来设置了一个小概率$$\varepsilon$$来强制进行`explore`，但是这个是真实随机，从来不会考虑对某些选项做出偏袒。但是实际上我们选择的时候应该基于每一个`non-greedy action`的潜在价值进行，一种简单的方式就是通过以下方式进行
 
 $$
 \begin{equation}
@@ -333,60 +334,17 @@ A_t=\underset{a}{\operatorname{argmax}}\left[ Q_t\left(a\right) +c\sqrt{\frac{\l
 $$
 其中$$\ln$$是自然对数，$$N_t(a)$$仍然是某个指定`action`在时间步$$t$$之前被选择的次数，因子$$c$$控制了`explore`的程度。如果 $$N_t(a)=0$$，那么`a`的决策就是贪婪方法。
 
+上置信界`action`的主要想法是，这个平方根项代表了对行动`a`的不确定性（或方差）的度量。算式中被最大化的就是行为`a`可能的真实值的上限，其中`c`决定了置信水平。每当`a`被选择的时候，这个不确定性就会下降。直观上来看，每一个时间步中，如果我们没有选择`a`这个行为，那么分母就不会改变，但是分子就会增加，如此一来增加了不确定性度量值；如果我们选择了，那么分母会更快增加，降低了不确定性度量。这个与直观的理解是相同的。我们可以看到，分母采用的是自然对数，这个增长是逐渐减缓的，但是分母的增长永远是线性的。实际上这个算法有严格的推导过程，但是这里并不想展开描写。
 
+如果只看测试结果的话，我们可以看出，`UCB`算法的效果显然更好一些，但是如果要将结果扩展到本书其余部分的更加普遍的强化学习问题中，这个算法的实现会更加困难。
 
-`2019-2-25 15:51:38`
+- 非平稳问题处理上会更加困难，需要比上述解决方法中更为困难的解决方法。
+- 状态空间较大时，例如使用函数近似的时候，这个算法往往是不实用的。
 
-> 隔了一天，我们先来复习一下。首先是赌博机`bandit`，依一定概率$$\theta_i$$给出`reward=1`或相反依概率$$1-\theta_i$$给出`reward=0`
->
-> 然后我们在对环境不够了解的情况下会使用$$Q$$来估计$$\theta$$，前面给了详细的计算方式，$$Q(a)=\mathbb{E}[r\mid a]=\theta$$，这里说的$$Q$$是对一个操作选择时的依据，我们对概率的估计就是$$Q$$
->
-> 目标是最大化累计收益，或者是最小化总`regret`
->
-> 决策时有`exploration`和`exploitation`两个选项，最简单的方法就是$$\varepsilon$$贪婪算法，依某概率$$\varepsilon$$进行其中某一个操作，否则进行另一个。
->
-> 对该算法的改进是随时间降低$$\varepsilon$$，还有一些其他方法，接下来就要讲这些。
+<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/UCBresult.png" style="display: inline-block;" width="500"/>
+</div>
 
-`UCB`算法通过`reward`值的上置信度来表达这个决策方案的价值潜力，因此真实值依一个很高的概率是低于该置信上界的。
-
-> 这里简单看了一天上置信界相关算法，感觉本科白学。
->
-> 这个标题的正统翻译方法是“**上置信边界**”算法，或“**置信上界**”算法。这个算法克服了基于`exploration`策略的所有局限性，包括了解水平和次优性差距。根据噪声分布的假设，该算法有多种不同的形式。
->
-> 该算法基于面对不确定性时的乐观原则，选择行动时相信未知的环境是好的。选择这样的原则的直接原因是，当我们乐观地行动时，以下两件事总有一件会发生，即要么乐观是对的，在这种情况下，学习者的未知环境是确实是优于已知部分的；另一种则是乐观并不正当，未知的环境往往更加险恶。在后面这种情况下，`agent`选择一个可能会得到很高`reward`的`action`，然而实际上可能并没有。当这种情况经常发生的时候，我们的决策者就会发现这个收益并不高，进而不再选择。
->
-> 这个算法可能会得到一个较好的结果（eventually get things right），但是并不能直观看出这个算法将得到最优结果（actually be a good algorithm among all consistent ones）。
->
-> 首先我们回忆一下，如果一组随机变量$$X_1,X_2,...,X_n$$是相互独立的零均值1-亚高斯变量（这里说到的亚高斯分布到底有啥用我是不知道的，听都是第一次听说这个词），我们估计他们的均值为
-> $$
-> \begin{equation*}
-> \begin{split}
-> \hat\mu=\sum\limits_{t=1}^n\frac{X_t}{n}
-> \end{split}
-> \tag{4.1}
-> \end{equation*}
-> $$
-> 那么
-> $$
-> \begin{equation*}
-> \begin{split}
-> \mathbb P(\hat\mu\geq \varepsilon)\leq e^{-\frac{n\varepsilon^2}{2}}
-> \end{split}
-> \tag{4.2}
-> \end{equation*}
-> $$
-> 我们令等式右侧为$$\delta$$，并解出$$\varepsilon$$得到
-> $$
-> \begin{equation*}
-> \begin{split}
-> \mathbb P\left(\hat\mu\geq \sqrt{\frac{2}{n}\log\left(\frac{1}{\delta}\right)}\right)\leq \delta
-> \end{split}
-> \tag{4.3}
-> \end{equation*}
-> $$
-> 当我们的
-
-
+### Gradient Bandit Algorithm
 
 
 
