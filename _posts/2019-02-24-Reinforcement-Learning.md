@@ -346,11 +346,34 @@ $$
 
 ### Gradient Bandit Algorithm
 
+目前为止本章已经讲了估计行动的`value`并利用这些值来选择`action`的方法。这通常是一种不错的方法，但是却不是唯一方法。在本节中，我们将考虑每一个`action`的数字偏好（`Numerical Preference`），我们将其表示为$$H_t(a)$$。这个偏好越大，采取行动的次数越多，但这个偏好值对于`reward`没有代表性，只有两个`action`之间的相对偏好才是选择`action`的关键——假如我们将所有的偏好都加$$1000$$，这个对于选择哪个`action`的概率其实没有什么卵影响。选择`action`的概率是由`Softmax`分布决定的，也称为`Gibbs`分布或`Boltzmann`分布
+$$
+\begin{equation}
+\begin{split}
+Pr\{A_t=a\}=\frac{e^{H_t(a)}}{\sum\limits_{b=1}^k e^{H_t(b)}}=\pi_t(a)
+\end{split}
+\tag{12}
+\end{equation}
+$$
+在这里我们引入了一个$$\pi_t(a)$$符号，表示在时间步`t`采取行动的概率分布。最初所有动作的偏好值$$H_t(a)$$都是相同的，例如全部为$$0$$，使得所有动作都有相同的被选择的概率。
 
+基于梯度上升的思路，我们自然提出了一种算法，即在每一个时间步中，当我们选择了`action`$$A_t$$并收获了`reward`$$R_t$$之后，我们对偏好值作如下更新：
 
+$$
+\begin{equation}
+\begin{split}
+H_{t+1}(A_t)=&H_t(A_t)+\alpha(R_t-\overline{R_t})(1-\pi_t(A_t))\\
+H_{t+1}(a)=&H_t(a)-\alpha(R_t-\overline{R_t})\pi_t(a)
+\end{split}
+\tag{13}
+\end{equation}
+$$
+上式对当前时间步的`action`操作，下式对该时间步没有选择的`action`做更新。$$\alpha​$$是一个尺度参数，仍然是前面描述的学习率。其中我们又定义了一个新的符号$$\overline{R}_t​$$，代表目前所有`reward`的平均值（包括时间步`t`的）。该参数的计算可以通过前面说的增量法计算（对于非平稳问题还可以采用前面说的改进方法）。这一项的意义是，作为一个参考基准线。如果当前时间的`reward`高于这个参考值，那我们认为这个选项是更有潜力的，我们在后续概率选择的时候会更加优先选择这一项，因此我们增加它的偏好值$$H_t(A_t)​$$；如果当前的`reward`比这个参考值低，我们就会做相反的操作。在做这些操作的同时，本时间步没有选择的`action`与选择的$$A_t​$$做反向更新。
 
+我们可以尝试为赌博机做出一定的修改，例如我们将赌博机输出的概率分布改成均值为$$4$$单位方差的正态分布，实际结果没有任何变化——`Gradient Bandit Algorithm`可以适应这种情况，而不是因为均值提高就变了结果。如果我们将算式中的$$\overline{R}_t$$改成$$0$$，实际效率会低得多
 
-
+<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/GradientBanditResult.png" style="display: inline-block;" width="500"/>
+</div>
 
 
 
@@ -360,4 +383,4 @@ $$
 
 [1]  [Reinforcement Learning: An Introduction](https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/RLIntro2nd2018.pdf)
 
-[2] [UCB Algorithm](http://banditalgs.com/2016/09/18/the-upper-confidence-bound-algorithm/)
+[2]  [UCB Algorithm](http://banditalgs.com/2016/09/18/the-upper-confidence-bound-algorithm/)
