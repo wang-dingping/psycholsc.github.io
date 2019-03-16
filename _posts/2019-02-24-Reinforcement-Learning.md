@@ -428,13 +428,31 @@ $$
 \tag{19}
 \end{equation}
 $$
-这里我们选择`baseline`为一个特定值了，并且用$$R_t$$代替了之前的$$q_*$$项。毕竟这也是很显然的。然后我们带入$$\frac{\partial \pi_t(x)}{\partial H_t(a)}=\pi_t(x)(\mathbb{1}_{a=x}-\pi_t(a))$$。这个$$\mathbb{1}(\cdot )$$我们前面已经定义过了。
+这里我们选择`baseline`为一个特定值了，并且用$$R_t​$$代替了之前的$$q_*​$$项。毕竟这也是很显然的。然后我们带入$$\frac{\partial \pi_t(x)}{\partial H_t(a)}=\pi_t(x)(\mathbb{1}(a=x)-\pi_t(a))​$$。这个$$\mathbb{1}(\cdot )​$$我们前面已经定义过了。
+
+> 这里插一句，这个求导实际上是对`softmax`函数的求导，其过程我懒得打公式了，大家随便一推就出来了。注意这里加了判断条件，判断$$a=x$$，这个在求导过程很重要。
+
+那么我们就可以把这个结果带入到$$(14)$$中，得到
+$$
+\begin{equation}
+\begin{split}
+H_{t+1}(a)=&H_t(a)+\alpha(R_t-\overline R_t)(\mathbb{1}(a=x)-\pi_t(a))
+\end{split}
+\tag{20}
+\end{equation}
+$$
+我们刚刚表明，`Gradient Bandit Algorithm`的偏好值更新等于其梯度，因此该算法是随机梯度上升的实例。 这确保了该算法具有稳健的收敛特性。
+
+需要提到的是，我们这里不对所选的`action`以及`reward baseline`做任何属性的要求。例如我们可以将它们设置为$$1000$$，也可以设置为$$0$$，他们仍然是随机梯度上升算法，这些取值不会影响到参数更新的期望，但是会影响到方差，也会因此影响到收敛速度，这一点在以后会说明。将其取值为`reward`的期望值可能并不是最优选择，但是实际中很好用。
 
 ### Associative Search（Contextual Bandits）
 
+
+
 ### Summary
 
-
+<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/SummaryII.png" style="display: inline-block;" width="500"/>
+</div>
 
 
 
