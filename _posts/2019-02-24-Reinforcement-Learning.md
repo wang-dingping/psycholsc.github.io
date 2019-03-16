@@ -1,5 +1,5 @@
 ---
-layout: Reinforcement Learning
+layout: post
 comments: true
 title:  "Reinforcement Learning: The Multi-Armed Bandit"
 excerpt: "-"
