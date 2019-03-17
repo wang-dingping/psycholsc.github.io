@@ -1,7 +1,7 @@
 ---
 layout: post
 comments: true
-title:  "Reinforcement Learning: The Multi-Armed Bandit"
+title:  "Reinforcement Learning: Finite Markov Decision Process"
 excerpt: "-"
 date:   2019-03-17 14:42:24 +0000
 categories: Notes
