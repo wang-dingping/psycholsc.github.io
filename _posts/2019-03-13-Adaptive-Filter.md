@@ -176,8 +176,8 @@ $$
     \end{equation}
     $$
     
-
-    假如此时$$x=Cy$$，那么
+假如此时$$x=Cy$$，那么
+    
 
     
     $$
@@ -220,36 +220,34 @@ $$
 $$
 \begin{equation}
 \begin{split}
-
 \hat {\overrightarrow R}(k)=\overrightarrow x(k)\overrightarrow x^T(k)\\
 \hat {\overrightarrow p}(k)=\overrightarrow d(k)\overrightarrow x(k)
-
 \end{split}
 \tag{9}
 \end{equation}
 $$
 
 以当前次的估计值代替实际值。而我们采用的最陡下降法，计算时
+
 $$
 \begin{equation}
 \begin{split}
-
 w(k+1)=w(k)-\mu \hat g_w(k)
-
 \end{split}
 \tag{10}
 \end{equation}
 $$
-按照梯度的反方向进行更新，每次更新步长为$$\mu$$。如果错误仍然定义为$$e=d-y\:$$这样的方式，则错误平方的梯度估计值可以写作
+
+按照梯度的反方向进行更新，每次更新步长为$$\mu​$$。如果错误仍然定义为$$e=d-y\:​$$这样的方式，则错误平方的梯度估计值可以写作
+
 $$
 \begin{equation}
 \begin{split}
-
 \hat g_w(k)=-2e(k)x(k)
-
 \end{split}
 \tag{11}
 \end{equation}
 $$
+
 注意这个估计值是通过
 
