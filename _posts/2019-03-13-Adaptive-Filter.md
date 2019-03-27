@@ -145,54 +145,51 @@ $$
 
 关于特征值和特征向量，这里给出解释（参考资料为同济大学《线性代数》）
 
-- 如果满秩矩阵$$R$$特征值是$$\lambda_i$$，那么必然存在以下关系
+如果满秩矩阵$$R$$特征值是$$\lambda_i$$，那么必然存在以下关系
 
 
-    $$
-    \begin{equation}
-    \begin{split}
-    
-    diag\{ \lambda_i \}=\Lambda=P^{-1}AP
-    
-    \end{split}
-    \tag{6}
-    \end{equation}
-    $$
+$$
+\begin{equation}
+\begin{split}
+diag\{ \lambda_i \}=\Lambda=P^{-1}AP
+\end{split}
+\tag{6}
+\end{equation}
+$$
+
+一定能找到一个矩阵$$P$$使上式成立，这个矩阵正是按特征值顺序排列的特征向量。
+
+二次型
 
 
-    一定能找到一个矩阵$$P$$使上式成立，这个矩阵正是按特征值顺序排列的特征向量。
+$$
+\begin{equation}
+\begin{split}
 
-- 二次型
+f(x)=x^T Ax
 
-  
-    $$
-    \begin{equation}
-    \begin{split}
-    
-    f(x)=x^T Ax
-    
-    \end{split}
-    \tag{7}
-    \end{equation}
-    $$
-    
+\end{split}
+\tag{7}
+\end{equation}
+$$
+
 假如此时$$x=Cy$$，那么
-    
 
-    
-    $$
-    \begin{equation}
-    \begin{split}
-    
-    f(x)=y^TC^T A Cy=y^T \Lambda y
-    
-    \end{split}
-    \tag{8}
-    \end{equation}
-    $$
-    
 
-    若$$A$$是一个对角阵，则$$C$$是一个正交矩阵，满足$$C^T AC=C^{-1}AC$$
+
+$$
+\begin{equation}
+\begin{split}
+
+f(x)=y^TC^T A Cy=y^T \Lambda y
+
+\end{split}
+\tag{8}
+\end{equation}
+$$
+
+
+若$$A$$是一个对角阵，则$$C$$是一个正交矩阵，满足$$C^T AC=C^{-1}AC$$
 
 - 待续
 
@@ -249,5 +246,5 @@ $$
 \end{equation}
 $$
 
-注意这个估计值是通过
+注意这个估计值是通过直接带入$$g_w(k)=-2p(k)+2R(k)w(k)$$，这个式子实际上就是我们在推导维纳解的时候通过对`MSE`求导得到的。
 
