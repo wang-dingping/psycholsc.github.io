@@ -92,6 +92,7 @@ $$
 线性组合器就是按照不同权重将不同信号进行线性加权的设备。实在是不想解释了。根据其计算特点，输出可以表示为
 
 
+
 $$
 \begin{equation}
 \begin{split}
@@ -100,11 +101,15 @@ y(k)=w^T(k)x(k)
 \tag{3}
 \end{equation}
 $$
-这里$$x(k)​$$是不同信号
+
+
+这里$$x(k)$$是不同信号
 
 **2. FIR横向滤波器**
 
 嘿呀这个好像也没什么说的必要。横向滤波器的结构有机会的话这里补一张图说明一下。实际上是同一个信号的不同延迟送入线性组合器中，写成表达式也是
+
+
 $$
 \begin{equation}
 \begin{split}
@@ -113,21 +118,28 @@ y(k)=w^T(k)x(k)
 \tag{4}
 \end{equation}
 $$
+
+
 这里的$$x(k)$$是同一信号的不同延迟。
 
 ---
 
+
+
 然后此处介绍信号的相关矩阵。信号的相关矩阵一般定义为
+
+
+
 $$
 \begin{equation}
 \begin{split}
-
 R=E \left[ XX^H \right]
-
 \end{split}
 \tag{5}
 \end{equation}
 $$
+
+
 
 出来是一个矩阵。该矩阵是一个半正定矩阵，且是一个厄米特矩阵，满足共轭转置等于自身。
 
@@ -135,7 +147,7 @@ $$
 
 - 如果满秩矩阵$$R$$特征值是$$\lambda_i$$，那么必然存在以下关系
 
-    
+
     $$
     \begin{equation}
     \begin{split}
@@ -144,15 +156,15 @@ $$
     
     \end{split}
     \tag{6}
-    \end{equation}
+    \end{equation}
     $$
-    
+
 
     一定能找到一个矩阵$$P$$使上式成立，这个矩阵正是按特征值顺序排列的特征向量。
 
 - 二次型
 
-    
+  
     $$
     \begin{equation}
     \begin{split}
@@ -204,3 +216,40 @@ $$
 
 - 维纳滤波器采用的是均方误差，但是实际应用中我们根本得不到统计平均值，只能通过测量得到当前值。
 - 无法计算统计平均，只能利用当前值，就需要使用估计值替代。涉及的量有相关矩阵和我们定义的向量$$p$$
+
+$$
+\begin{equation}
+\begin{split}
+
+\hat {\overrightarrow R}(k)=\overrightarrow x(k)\overrightarrow x^T(k)\\
+\hat {\overrightarrow p}(k)=\overrightarrow d(k)\overrightarrow x(k)
+
+\end{split}
+\tag{9}
+\end{equation}
+$$
+
+以当前次的估计值代替实际值。而我们采用的最陡下降法，计算时
+$$
+\begin{equation}
+\begin{split}
+
+w(k+1)=w(k)-\mu \hat g_w(k)
+
+\end{split}
+\tag{10}
+\end{equation}
+$$
+按照梯度的反方向进行更新，每次更新步长为$$\mu$$。如果错误仍然定义为$$e=d-y\:$$这样的方式，则错误平方的梯度估计值可以写作
+$$
+\begin{equation}
+\begin{split}
+
+\hat g_w(k)=-2e(k)x(k)
+
+\end{split}
+\tag{11}
+\end{equation}
+$$
+注意这个估计值是通过
+
