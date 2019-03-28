@@ -330,7 +330,81 @@ $$
 
 ### 误差信号的特性
 
-如果测量噪声是加性噪声
+如果测量噪声是加性噪声，我们就可以在实际测量结果后面直接叠加一个$$n(k)$$。这个结果实际上影响不大，因为后面的相乘只要涉及统计平均就会被消除。我们这里主要希望讨论的问题是，如果我们使用的是`FIR`自适应滤波器辨识一个`IIR`系统，会发生什么样的事情。实际上此处没加证明地认为，如果`FIR`建模不足，就会出现残留误差，即因为`FIR`点数不够多而只能辨识`IIR`系统的前几个点。
+
+我们认为结果是这样的
+$$
+\begin{equation}
+\begin{split}
+E[e(k)]=E\left[ \sum_{i=N+1}^{\infty}h(i)x(k-i) \right]+E[n(k)]
+\end{split}
+\tag{18}
+\end{equation}
+$$
+前一部分是目标信号中未被辨识的部分，如果输入信号的均值为$$0$$，那么我们就可以认为上述结果为$$0$$。即如果我们输入信号是一个均值为$$0$$的信号，那么我们认为`FIR`的估计是无偏的。（这么说对么）
+
+### 最小均方误差（实际上是二阶统计量）
+
+上一部分计算了误差信号的一阶统计量，即均值，此处要计算二阶统计量，均方误差`MSE`了。计算方式就是$$E[e^2(k)]$$
+
+我们针对建模不充分（即上述的条件）与存在加性噪声的环境下。我们认为实际上参考信号可以表示为$$\boldsymbol h^T\boldsymbol x_\infty(k)$$。实际上这里的$$\boldsymbol h^T$$是一个无限长的函数，而$$\boldsymbol x_\infty$$也是一个无限长序列。我们利用矩阵巧妙将其分离为`FIR`可以识别和不能识别的两部分。计算`MSE`可得，最小均方误差为
+$$
+\begin{equation}
+\begin{split}
+\xi_{min}=&E[e^2(k)]_{min}=\sum_{i=N+1}^\infty h^2(i)E[x^2(k-i)]+E[n^2(k)]\\=&\sum_{i=N+1}^\infty h^2(i)\sigma_x^2+\sigma_n^2
+\end{split}
+\tag{19}
+\end{equation}
+$$
+
+- 当自适应滤波器具有充分的阶数的时候，可以输出一个接近$$d(k)$$的信号，得到最小`MSE`
+- 非充分建模的时候，我们会得到额外的`MSE`（如上第一项）以及（测量）噪声的方差
+
+以上两小节就是对误差信号的一二阶统计量的分析结果。
+
+### 超量均方误差与失调
+
+这个翻译的很差劲，中文版的课本一点也看不懂，绝了。这个主要说的是啥问题呢，就是说梯度下降计算的时候，我们的结果可能收敛到维纳解，但也有可能收敛不到。如果收敛到了维纳解，我们就说这个误差是最优误差信号，如果没有，这个误差就会是最优误差信号与抽头偏差导致的误差之和，即
+$$
+\begin{equation}
+\begin{split}
+e(k)=e_0(k)-\Delta \boldsymbol w^T(k)\boldsymbol x(k)
+\end{split}
+\tag{20}
+\end{equation}
+$$
+此时`MSE`的超量是可以计算的。这里计算的思想还需要亲自去体会一下，因为计算过程中涉及特征矩阵的部分全部采用对角变换将其变换成特征值对角阵，此时采用的对角变换阵是特征向量正交矩阵$$Q$$。这里继续计算推导可以得出
+$$
+\begin{equation}
+\begin{split}
+\Delta \xi(k)=\sum_{i=0}^{N}\lambda_i\nu_i'(k)
+\end{split}
+\tag{21}
+\end{equation}
+$$
+这里给出的$$\nu$$其实是一个复杂表达式的简化。带入前面计算过的结果可以知道，超量误差为
+$$
+\begin{equation}
+\begin{split}
+\xi_{exc}=\lim_{k\to \infty}\Delta \xi(k)\approx \frac{\mu\sigma_n^2 tr[\boldsymbol R]}{1-\mu tr[\boldsymbol R]}\approx \mu\sigma_n^2 tr[\boldsymbol R]=\mu(N+1)\sigma_n^2\sigma_x^2
+\end{split}
+\tag{22}
+\end{equation}
+$$
+如果是采用比值的形式，这个量就被称为是失调，结论为
+$$
+\begin{equation}
+\begin{split}
+M=\frac{\xi_{exc}}{\xi_{min}}\approx \frac{\mu tr[\boldsymbol R]}{1-\mu tr[\boldsymbol R]}
+\end{split}
+\tag{23}
+\end{equation}
+$$
+可以看出，如果我们采用的$$\mu$$越小，则最后就会产生越小的失调（或超量误差）。但是这样也会导致收敛更慢。
+
+### 瞬态特征
+
+
 $$
 \boldsymbol a
 $$
