@@ -241,7 +241,7 @@ $$
 \begin{split}
 \xi\:=&\:E\left\{ [\boldsymbol h^T\boldsymbol x_\infty(k)-\boldsymbol w^T\boldsymbol x_{N+1}(k)]^2 \right\}\\ \:=&\:\sigma_x^2\sum_{i=0}^\infty h^2(i)-2\sigma_x^2 \boldsymbol h^T \left[ \begin{matrix} \boldsymbol I_{N+1}\\\boldsymbol 0_\infty \end{matrix}\right]\boldsymbol w+\boldsymbol w^T \boldsymbol R_N\boldsymbol w
 \end{split}
-\tag{1.1}
+\tag{1.2}
 \end{equation}
 $$
 如果计算导数也可以得到最优匹配为$$\boldsymbol w_0=\boldsymbol h_{N+1}$$，这个是$$N$$阶自适应滤波器的极限，其中后面这个$$\boldsymbol h_{N+1}$$是指$$\boldsymbol h$$的前$$N+1$$项，后面补零。
@@ -250,9 +250,75 @@ $$
 
 ### 信号增强
 
+滤波器常用的领域往往自适应滤波器也是常用的。信号增强的框图如下
 
+<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/2.10.se.png" style="display: inline-block;" width="500"/>
+</div>
 
+在信号增强中，参考信号是受到加性噪声$$n_1(k)$$污染的信号，如图所示，而自适应滤波器的输入是另一个噪声信号$$n_2(k)$$。我们说这个噪声是与上一个噪声信号相关的，但是与$$x(k)$$无关。这种结构常被用在电源线干扰消除等应用中，在通信系统中消除杂波引起的回音也被认为是增强问题。此时误差信号就是
+$$
+\begin{equation}
+\begin{split}
+e(k)=& d(k)-y(k)\\=& x(k)+n_1(k)-\sum_{i=0}^N w_1n_2(k-l)=x(k)+n_1(k)-y(k)
+\end{split}
+\tag{1.3}
+\end{equation}
+$$
+此时的`MSE`为
+$$
+\begin{equation}
+\begin{split}
+E[e^2(k)]=E[x^2(k)]+E\{ [n_1(k)-y(k)]^2 \}
+\end{split}
+\tag{1.4}
+\end{equation}
+$$
+由于待增强信号与另一路噪声无关，因此认为这路噪声经过线性滤波后与待增强信号仍然无关。这样就可以轻易地消除掉交叉项。
 
+如果我们将$$n_2$$作为输入信号，就可以通过某种方式预测到$$n_1$$，这取决于两者相关性。这样就能最大化输入信号，此时我们最小化`MSE`为
+$$
+\begin{equation}
+\begin{split}
+\xi_{min}=E[x^2(k)]
+\end{split}
+\tag{1.5}
+\end{equation}
+$$
+
+### 信号预测
+
+一般来说信号预测的滤波器结构为
+
+<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/2.10.sp.png" style="display: inline-block;" width="500"/>
+</div>
+
+显然可以知道`MSE`
+$$
+\begin{equation}
+\begin{split}
+\xi=E\{ [x(k)-\boldsymbol w^T \boldsymbol x(k-L)]^2 \}
+\end{split}
+\tag{1.6}
+\end{equation}
+$$
+最小化这个值可以得到一个`FIR`滤波器，可以通过过去的样本值预测当前样值。如果我们将`MSE`优化到足够小的水平，我们甚至可以认为这个`FIR`滤波器就是信号的模型。最小`MSE`的理论值为
+$$
+\begin{equation}
+\begin{split}
+\xi_{min}=r(0)-\boldsymbol w^T\left[\begin{matrix}r(L)\\r(L-+1)\\ \cdot\\\cdot \\r(L+N)\end{matrix}\right]
+\end{split}
+\tag{1.7}
+\end{equation}
+$$
+
+### 信道均衡
+
+上学期通信原理就学过信道均衡这个东西，当时用的就是横向滤波器，最简单的`FIR`结构。自适应信道均衡如下
+
+<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/2.10.ce.png" style="display: inline-block;" width="500"/>
+</div>
+
+这个就是模拟了一个信道模型和一个直接延迟模型，设计延迟是因为`FIR`滤波器阶数导致的必要的延迟。
 
 ## LMS算法
 
