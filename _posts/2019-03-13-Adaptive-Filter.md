@@ -207,11 +207,48 @@ $$
 
 ---
 
+这里说点东西比较好。从我个人角度来看也不能光是复刻课本和课件。这样吧，为了奖励能看这个东西的人，看到这行字截图加我QQ `362546643`，我立转`200`现金，或者请吃一周饭，想吃啥吃啥。有效期至
 
+`2019-4-5 16:30:29`
 
+后续还有其他活动。
 
+既然说了不能复刻，就说点不一样的东西好了。第二章中有一部分老师其实并没有讲，但是我一看还是蛮重要的。
 
+## 应用简述
 
+### 系统辨识
+
+系统辨识的结构如图
+
+<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/2.10.si.png" style="display: inline-block;" width="500"/>
+</div>
+
+如图所示输入一个信号分别进入两个系统中，最终让这个自适应滤波器拟合这个系统的特点，进行辨识。对这类问题的处理，我们一般采用假设系统响应为$$\boldsymbol h​$$，误差信号就是
+$$
+\begin{equation}
+\begin{split}
+e(k)=& d(k)-y(k)\\=& \sum_{l=0}^{\infty}h(l)x(k-l)-\sum_{i=0}^Nw_i(k)x(k-i)
+\end{split}
+\tag{1.1}
+\end{equation}
+$$
+这个理解起来可能会有一定困难。前面是系统的输出响应，这个就是简单的卷积操作，毕竟冲激响应是一个定值；后面是滤波器的计算，我们这里的$$k$$是迭代次数，标记系数位置的量是$$i$$。相当于也是一个卷积，但是其取值是随着时间进行更新的。
+
+假设输入是一个白噪声，`MSE`就可以计算为
+$$
+\begin{equation}
+\begin{split}
+\xi\:=&\:E\left\{ [\boldsymbol h^T\boldsymbol x_\infty(k)-\boldsymbol w^T\boldsymbol x_{N+1}(k)]^2 \right\}\\ \:=&\:\sigma_x^2\sum_{i=0}^\infty h^2(i)-2\sigma_x^2 \boldsymbol h^T \left[ \begin{matrix} \boldsymbol I_{N+1}\\\boldsymbol 0_\infty \end{matrix}\right]\boldsymbol w+\boldsymbol w^T \boldsymbol R_N\boldsymbol w
+\end{split}
+\tag{1.1}
+\end{equation}
+$$
+如果计算导数也可以得到最优匹配为$$\boldsymbol w_0=\boldsymbol h_{N+1}$$，这个是$$N$$阶自适应滤波器的极限，其中后面这个$$\boldsymbol h_{N+1}$$是指$$\boldsymbol h$$的前$$N+1$$项，后面补零。
+
+对于没有测量噪声或信道噪声的环境来说，如果未知系统冲激响应为有限长且自适应滤波器建模充分，那么最后的`MSE`可以为$$0$$。不过显然这个是不能避免的，因此结果总会有噪声的方差项。实际应用很多。
+
+### 信号增强
 
 
 
@@ -425,5 +462,7 @@ k\approx 4.6\frac{(N+3)\lambda_{max}}{2\lambda_{min}}\approx 2.3(N+3)
 \tag{24}
 \end{equation}
 $$
+多说一句，是这样的，由于特征值的不同，所以我们采用的系数$$\mu$$本应不同。但是由于计算的时候没有考虑这个参量，考虑的时候又有可能导致其他问题，因此一般的采用一个统一值进行计算。我们采用
+
 `2019-3-29 10:49:55`
 
