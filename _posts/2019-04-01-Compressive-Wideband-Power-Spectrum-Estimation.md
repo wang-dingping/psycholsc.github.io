@@ -41,8 +41,52 @@ categories: Notes
 
 另一种被称为是互质采样的方法在[16]被提出，该方法目标是通过两个均匀的亚奈奎斯特采样器来估计埋在噪声中的正弦信号的频率，采样周期是奈奎斯特周期的互质倍数。
 
+本文重点研究了有效的功率谱重建技术，并以为此设计有效的周期性亚奈奎斯特采样过程。在[17]中也被称为是功率谱盲采样`PSBS`。理论上讲这种方法能够利用最小二乘法通过周期采样装置不同的输出之间的互相关来完美地重建宽平稳信号的未知功率谱。最小二乘法需要一些秩的条件，这将是指导采样装置实现的重要条件。本文中，可以采用基于随机调制波形的采样技术，但是主要关注的仍然是多陪集方法。我们基于最小稀疏标尺问题设计了一种新的多陪集采样的实现，还调查研究了估计的功率谱的理论统计特性，用于分析均值与协方差，这对于分析指定`NMSE`是有效的。此外，还可以通过假设接受信号仅是圆形复数零均值高斯噪声来导出用于评估特定频率的信号的存在与否的检测阈值。所有提出的方案都是通过分析与仿真来比较的。通常，我们开发的采样过程可以通过利用频谱互相关性显著地降低采样速率需求，而不对功率谱做任何的稀疏性约束。
+
+## II - System Model and Problem Statement
+
+`2019-4-2 10:18:02`今天写完这部分就不写了！
+
+定义$$x(t)$$是宽平稳模拟信号，并认为是一个复数值。这个信号是带限的，带宽是$$\frac{1}{T}$$（这个就是奈奎斯特频率，大小等于采样频率的一半）。我们考虑这样一个频谱感知的应用场景，任务是感知$$x(t)$$的功率谱密度。图1描绘了部署的采样设备，可以被认为是压缩采样中一种模拟信息转换器（`Analog to Information Converter, AIC`）。
+
+<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/XDPFig1.png" style="display: inline-block;" width="500"/>
+</div>
+
+<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/XDPFig2.png" style="display: inline-block;" width="500"/>
+</div>
+
+但是请注意这个采样设备能够对任何`AIC`实现建模，例如[18]和[19]中提出的那些。采样装置此处有$$M$$个分支，其中分支使用复值周期性波形$$p_i(t)$$来调制$$x(t)$$，后面接周期性积分转储装置（因此速率等于奈奎斯特速率的$$\frac{1}{N}$$倍）。第$$i$$个分支的第$$k$$个采样索引可以被描述为
+$$
+\begin{equation}
+\begin{split}
+y_i[k]=&\frac{1}{NT}\int_{kNT}^{(k+1)NT}p_i(t)x(t)dt\\=&\frac{1}{T}\int_{kNT}^{(k+1)NT}c_i(t-kNT)x(t)dt
+\end{split}
+\tag{1}
+\end{equation}
+$$
+
+这里的$$c_i(t)$$是$$\frac{1}{N}p_i(t)$$的单个周期，比如
+
+$$c_i(t)=\frac{1}{N}p_i(t)\:for\:0\leq t \leq NT\:and \:c_i(t)=0\: elsewhere$$
+
+假设$$c_i(t)$$是一个分段常数函数，每隔长度$$T$$取值改变，上式可以改写为
+$$
+\begin{equation}
+\begin{split}
+y_i[k]=&\sum_{n=0}^{N-1}c_i[-n]\frac{1}{T}\int_{kNT}^{(k+1)NT}x(t)dt\\=&\sum_{n=0}^{N-1}c_i[-n]x[kN+n]\\=&\sum_{n=1-N}^{0}c_i[-n]x[kN-n]
+\end{split}
+\tag{1}
+\end{equation}
+$$
+其中$$x[n]$$可以被看作是周期$$T$$内的积分转储过程的输出，由于其高度复杂性，此处并未明确计算。此周期性采样的平均采样率是奈奎斯特频率与$$\frac{M}{N}$$的乘积，我们一般都会取$$M<N$$来保证复杂性更低。这个采样设备实际上与[8]中提到的调制宽带转换器相似，其中$$c_i[n]​$$的取值是随机生成的，例如采用复数高斯采样或者随机二进制采样。
+
+
+
+
+
 
 
 ## Reference
 
 [1] 
+
