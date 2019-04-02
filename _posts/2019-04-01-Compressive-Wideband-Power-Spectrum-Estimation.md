@@ -52,10 +52,10 @@ categories: Notes
 <div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/XDPFig1.png" style="display: inline-block;" width="500"/>
 </div>
 
-<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/XDPFig2.png" style="display: inline-block;" width="500"/>
-</div>
 
-但是请注意这个采样设备能够对任何`AIC`实现建模，例如[18]和[19]中提出的那些。采样装置此处有$$M$$个分支，其中分支使用复值周期性波形$$p_i(t)$$来调制$$x(t)$$，后面接周期性积分转储装置（因此速率等于奈奎斯特速率的$$\frac{1}{N}$$倍）。第$$i$$个分支的第$$k$$个采样索引可以被描述为
+但是请注意这个采样设备能够对任何`AIC`实现建模，例如[18]和[19]中提出的那些。采样装置此处有$$M$$个分支，其中分支使用复值周期性波形$$p_i(t)$$来调制$$x(t)$$，后面接周期性积分转储装置（因此速率等于奈奎斯特速率的$$\frac{1}{N}$$倍）。请注意观察输出是数字形式，因为每隔$$NT$$积分输出就相当于每隔$$NT$$给了一个采样点。这个采样方式可能会保存更多的信息。
+
+第$$i$$个分支的第$$k$$个采样索引可以被描述为
 $$
 \begin{equation}
 \begin{split}
@@ -67,7 +67,7 @@ $$
 
 这里的$$c_i(t)$$是$$\frac{1}{N}p_i(t)$$的单个周期，比如
 
-$$c_i(t)=\frac{1}{N}p_i(t)\:for\:0\leq t \leq NT\:and \:c_i(t)=0\: elsewhere$$
+$$c_i(t)=\frac{1}{N}p_i(t)\:for\:0\leq t \leq NT\:and \:c_i(t)=0\: elsewhere​$$
 
 假设$$c_i(t)$$是一个分段常数函数，每隔长度$$T$$取值改变，上式可以改写为
 $$
@@ -75,10 +75,178 @@ $$
 \begin{split}
 y_i[k]=&\sum_{n=0}^{N-1}c_i[-n]\frac{1}{T}\int_{kNT}^{(k+1)NT}x(t)dt\\=&\sum_{n=0}^{N-1}c_i[-n]x[kN+n]\\=&\sum_{n=1-N}^{0}c_i[-n]x[kN-n]
 \end{split}
-\tag{1}
+\tag{2}
 \end{equation}
 $$
 其中$$x[n]$$可以被看作是周期$$T$$内的积分转储过程的输出，由于其高度复杂性，此处并未明确计算。此周期性采样的平均采样率是奈奎斯特频率与$$\frac{M}{N}$$的乘积，我们一般都会取$$M<N$$来保证复杂性更低。这个采样设备实际上与[8]中提到的调制宽带转换器相似，其中$$c_i[n]​$$的取值是随机生成的，例如采用复数高斯采样或者随机二进制采样。
+
+<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/XDPFig2.png" style="display: inline-block;" width="500"/>
+</div>
+这个图示结构是第一个图的数字实现方式之一，含有高速积分转储过程，后接$$M$$分支，每个分支都有一个数字滤波操作，然后是降采样部分。这个图抢掉了一个事实，即第二个流程相当于数字滤波过程，滤波器就是$$c_i[n]$$，后接$$N$$倍抽取。滤波器原理我就懒得写了。就是卷积。
+
+本文的目标就是重建$$x(t)$$的功率谱密度，基于我们上述采样得到的$$\{y_i[k]\}$$。由于$$x[n]$$是$$x(t)$$经过奈奎斯特频率积分转储设备得到的，那么$$x[n]$$的功率谱密度仅仅是原功率谱密度的周期性延拓而没有产生混叠。因此，我们说两者之间是互相决定的。那么接下来我们主要讨论的就是如何重建$$x[n]$$的功率谱密度。功率谱密度定义式
+
+$$P_x(\omega)=\sum\limits_{n=-\infty}^{\infty}r_x[n]e^{-jn\omega}$$
+
+
+
+这个定义式我不再进行详细介绍了。这个的主要贡献在于我们利用了$$y​$$的所有$$M^2​$$个不同的互谱，折将实现速率压缩而不会在$$x(t)​$$引入任何的稀疏性约束。互谱密度在下面定义
+
+$$P_{y_i,y_j}(\omega)=\sum\limits_{k=-\infty}^{\infty}r_{y_i,y_j}[k]e^{-jk\omega}$$
+
+这些$$r_{y_i,y_j}$$集合量可以通过它们的样本平均值来计算，这还可以让我们计算出$$P_{y_i,y_j}​$$。下面我们将介绍一种时域方法，在给出输出互相关序列的情况下重建出输入自相关序列。然后我们使用频域上的估计方法就可以估计出功率谱密度，同样在给定采样输出互谱密度的条件下。
+
+## III - Time-Domain Reconstruction Approach
+
+时域重建方法概述
+
+### A. Reconstruction Analysis
+
+这一部分我们提出一种方法来根据采样输出互相关序列重建输入自相关序列。由于我们已知$$y_i[k]=z_i[kN]$$，则经过推导容易知道
+$$
+\begin{equation}
+\begin{split}
+r_{y_i,y_j}[k]=r_{z_i,z_j}[kN]
+\end{split}
+\tag{3}
+\end{equation}
+$$
+显然又有
+$$
+\begin{equation}
+\begin{split}
+r_{z_i,z_j}[n]=r_{c_i,c_j}[n]\star r_x[n]=\sum_{m=-N+1}^{N-1}r_{c_i,c_j}[m]r_x[n-m]
+\end{split}
+\tag{4}
+\end{equation}
+$$
+实际上在已知$$c_i[n]$$序列的条件下，这里的$$r_{c_i,c_j}[n]$$序列也是很容易得到的
+$$
+\begin{equation}
+\begin{split}
+r_{z_i,z_j}[n]=c_i[n]\star c^*_j[-n]=\sum_{m=-N+1}^{0}c_i[m]\star c^*_j[m-n]
+\end{split}
+\tag{5}
+\end{equation}
+$$
+这样就可以建立$$r_{y_i,y_j}$$与$$r_x​$$之间的关系
+$$
+\begin{equation}
+\begin{split}
+r_{y_i,y_j}[k]=\sum_{l=0}^1\boldsymbol{r}_{c_i,c_j}^T[l]\boldsymbol{r}_x[k-l]
+\end{split}
+\tag{6}
+\end{equation}
+$$
+其中定义
+$$
+\begin{equation}
+\begin{split}
+\boldsymbol{r}_{c_i,c_j}[0]=&\left[ r_{c_i,c_j}[0],r_{c_i,c_j}[-1],...,r_{c_i,c_j}[-N+1] \right]^T\\
+\boldsymbol{r}_{c_i,c_j}[1]=&\left[ r_{c_i,c_j}[N],r_{c_i,c_j}[N-1],...,r_{c_i,c_j}[1] \right]^T\\
+\boldsymbol{r}_{x}[k]=&\left[ r_{x}[kN],r_{x}[kN+1],...,r_{x}[(k+1)N-1] \right]^T
+\end{split}
+\tag{7}
+\end{equation}
+$$
+通过级联$$M^2​$$个不同的互相关函数$$r_{y_i,y_j}[k]​$$，我们获得了$$M^2\times 1​$$的向量$$\boldsymbol{r}_y[k]​$$。这样就可以继续改写$$(6)​$$中的结果。这里要不就先不写了。
+
+考虑到$$x[n]$$的带限性，$$\boldsymbol{r}_y[k]$$基本上没有限制。然而在许多实际的场景中，只有在$$-L\leq k\leq L$$的范围内的时候才有较为显著的取值，其他地方的取值都是接近零的。这里的$$L$$是一个可自定义调整的参数，我们想取多大就取多大。于是我们稍微放松一点对带限的条件，并假设$$\boldsymbol{r}_y[k]$$是严格限制在$$-L\leq k\leq L$$范围内的。此时我们认为$$\boldsymbol{r}_x[k]$$有着与$$\boldsymbol{r}_y[k]$$相同的限制条件，$$-L\leq k\leq L$$。
+
+不如咱们就把这些都收纳到一个矩阵里面
+$$
+\begin{equation}
+\begin{split}
+\boldsymbol{r}_{y}=&\left[ \boldsymbol{r}^T_{y}[0],\boldsymbol{r}^T_{y}[1],...,\boldsymbol{r}^T_{y}[L],\boldsymbol{r}^T_{y}[-L],...,\boldsymbol{r}^T_{y}[-1] \right]^T\\
+\boldsymbol{r}_{x}=&\left[ \boldsymbol{r}^T_{x}[0],\boldsymbol{r}^T_{x}[1],...,\boldsymbol{r}^T_{x}[L],\boldsymbol{r}^T_{x}[-L],...,\boldsymbol{r}^T_{x}[-1] \right]^T
+\end{split}
+\tag{8}
+\end{equation}
+$$
+标记一下，输出自相关矩阵的大小为$$(2L+1)M^2​$$，输入阵大小为$$(2L+1)N​$$。我们再深入一点介绍另一个观察值，其中一个是基于上述$$(7)​$$的定义，我们根据$$0​$$值的分布，可以得出
+$$
+\begin{equation}
+\begin{split}
+\boldsymbol{r}_{y}=\boldsymbol{R}_{c}\boldsymbol{r}_{x}
+\end{split}
+\tag{9}
+\end{equation}
+$$
+其中这个$$\boldsymbol{R}_{c}$$是一个$$(2L+1)M^2\times (2L+1)N$$矩阵，定义为
+$$
+\begin{equation}
+\begin{split}
+\boldsymbol{R}_{c}=\left[\begin{matrix} \boldsymbol{R}_{c}[0]& & & &\boldsymbol{R}_{c}[1] \\\boldsymbol{R}_{c}[1]&\boldsymbol{R}_{c}[0]\\ & \boldsymbol{R}_{c}[1]&\boldsymbol{R}_{c}[0]\\ & &...&...\\ & & & \boldsymbol{R}_{c}[1]&\boldsymbol{R}_{c}[0] \end{matrix}\right]
+\end{split}
+\tag{10}
+\end{equation}
+$$
+
+
+如果$$\boldsymbol{R}_{c}$$是一个满秩的矩阵，这个矩阵就是可以解的。显然这个时候需要$$M^2\geq N​$$。
+
+上述定义$$(9)$$的逆问题可以被进一步简化，观察$$\boldsymbol{R}_{c}$$可以知道这是一个循环矩阵，块大小为$$M^2\times N$$，很容易被转化为一个块对角矩阵。这个可以用$$2L+1$$点离散傅里叶变换完成。
+$$
+\begin{equation}
+\begin{split}
+\boldsymbol{R}_{c}=(\boldsymbol{F}_{2L+1}^{-1}\otimes \boldsymbol{I}_{M^2})\boldsymbol{Q}_{c}(\boldsymbol{F}_{2L+1}\otimes \boldsymbol{I}_{N})
+\end{split}
+\tag{11}
+\end{equation}
+$$
+这里的$$\boldsymbol{F}_{2L+1}​$$是$$(2L+1)\times (2L+1)​$$的离散傅里叶变换矩阵。$$\boldsymbol{Q}_{c}=diag\{\boldsymbol{Q}_{c}(0),\boldsymbol{Q}_{c}(2\pi\frac{1}{2L+1}),...,\boldsymbol{Q}_{c}(2\pi\frac{2L}{2L+1})\}​$$，其中
+$$
+\begin{equation}
+\begin{split}
+\boldsymbol{Q}_{c}(\omega)=\sum_{k=0}^1\boldsymbol{R}_{c}[k]e^{-jk\omega}
+\end{split}
+\tag{12}
+\end{equation}
+$$
+如果我们定义一个$$\boldsymbol{q}_{x}=(\boldsymbol{F}_{2L+1}^{-1}\otimes \boldsymbol{I}_{N})\boldsymbol{r}_{x}​$$和$$\boldsymbol{q}_{y}=(\boldsymbol{F}_{2L+1}^{-1}\otimes \boldsymbol{I}_{M^2})\boldsymbol{r}_{y}​$$，那么就可以得到
+$$
+\begin{equation}
+\begin{split}
+\boldsymbol{q}_{y}=\boldsymbol{Q}_{c}\boldsymbol{q}_{x}
+\end{split}
+\tag{13}
+\end{equation}
+$$
+相当于完成了一个归一化。
+
+这里我们的$$\boldsymbol{q}_{y}$$是一个$$\boldsymbol{r}_{y}[k]$$的样本平均，而$$\boldsymbol{r}_{x}[k]$$和$$\boldsymbol{q}_{x}$$就是一个待估计量。注意这里我们通过一些数学手段将时域上的任务无意间转化到了频域上。不过考虑到方法的问题，实际上仍然是时域上的处理。实际上我们也可以认为这个是频域处理，至于为什么我们称其为时域处理，是因为要与后面的频域处理作出区分。当我们能够估计$$\boldsymbol{q}_{x}$$之后，我们就可以根据上面的结果来估计$$\boldsymbol{r}_{x}$$，进而得到功率谱密度
+$$
+\begin{equation}
+\begin{split}
+\boldsymbol{s}_{x}=\boldsymbol{F}_{(2L+1)N}\boldsymbol{r}_{x}
+\end{split}
+\tag{14}
+\end{equation}
+$$
+这里$$\boldsymbol{s}_{x}=\left[ P_x(0),P_x(2\pi\frac{1}{(2L+1)N}),...,P_x(2\pi\frac{(2L+1)N-1}{(2L+1)N}) \right]^T$$
+
+### B. Alternative Time-domain Approach
+
+在这一小节里面，我们提出了另一个不同的时域重建方法。我们从重写矩阵表达$$(2)$$开始
+$$
+\begin{equation}
+\begin{split}
+\boldsymbol{y}[k]=\boldsymbol{C}\boldsymbol{x}[k]
+\end{split}
+\tag{15}
+\end{equation}
+$$
+我们把图再看一下
+
+<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/XDPFig2.png" style="display: inline-block;" width="500"/>
+</div>
+
+这里很显然把$$x,y$$都用向量表示了，不过这个表示只是加权平均的含义而已。我们这里还给$$\boldsymbol{C}$$起了一个牛逼的名字，叫压缩采样矩阵。
+
+
+
+
+
 
 
 
