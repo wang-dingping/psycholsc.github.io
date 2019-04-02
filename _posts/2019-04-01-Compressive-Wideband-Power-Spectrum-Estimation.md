@@ -241,9 +241,31 @@ $$
 <div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/XDPFig2.png" style="display: inline-block;" width="500"/>
 </div>
 
-这里很显然把$$x,y$$都用向量表示了，不过这个表示只是加权平均的含义而已。我们这里还给$$\boldsymbol{C}$$起了一个牛逼的名字，叫压缩采样矩阵。
+这里很显然把$$x,y$$都用向量表示了。我们这里还给​$$\boldsymbol{C}$$起了一个牛逼的名字，叫压缩采样矩阵。从这个图捋一下过程，输入的是一个模拟信号$$x(t)$$，经过积分转储之后得到的是一段离散序列，离散序列经过不同的成型滤波器之后，得到序列做$$N$$倍下采样就得到了$$M$$个输出序列$$y$$。接下来计算互相关序列，得到
+$$
+\begin{equation}
+\begin{split}
+\boldsymbol{R}_{y}[0]=\boldsymbol{C}\boldsymbol{R}_x^a\boldsymbol{C}^H
+\end{split}
+\tag{16}
+\end{equation}
+$$
+由于我们分析的是宽平稳信号，因此相关阵有`Toeplitz`结构。不过输出就已经不能说是宽平稳信号了，因此就未必有这种特性了——压缩采样的特性。因此理论上利用$$\boldsymbol{R}_{y}[0]$$的每一列来估计$$\boldsymbol{R}_x^a$$的其中一列就是可能的了。
 
+基于上式，我们可以得到
+$$
+\begin{equation}
+\begin{split}
+\boldsymbol{r}_{y}[0]=vec(\boldsymbol{R}_{y}[0])=(\boldsymbol{C}^*\otimes \boldsymbol{C})vec(\boldsymbol{R}_{x}^a)
+\end{split}
+\tag{17}
+\end{equation}
+$$
+其中这个$$\otimes$$代表克罗内克积。这个运算相当复杂。后面矩阵运算实在是看不懂了，有机会再说吧。
 
+## IV - Frequency-Domain Reconstruction Approach
+
+这里直接讲频域重建方法了。提出频域重建方法主要是因为频谱盲采样`SBS`。`SBS`也是从频域出发，不过主要是面向频谱重建而不是功率谱重建。
 
 
 
