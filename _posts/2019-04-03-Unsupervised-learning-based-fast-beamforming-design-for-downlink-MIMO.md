@@ -122,7 +122,7 @@ $$
 
 这一段简单写写得了。
 
-<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/0403fig2.png" style="display: inline-block;" width="500"/>
+<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/0403fig2.png" style="display: inline-block;" width="800"/>
 </div>
 
 
