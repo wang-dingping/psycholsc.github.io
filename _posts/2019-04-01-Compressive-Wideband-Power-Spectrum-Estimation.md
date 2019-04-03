@@ -47,13 +47,13 @@ categories: Notes
 
 `2019-4-2 10:18:02`今天写完这部分就不写了！
 
-定义$$x(t)$$是宽平稳模拟信号，并认为是一个复数值。这个信号是带限的，带宽是$$\frac{1}{T}$$（这个就是奈奎斯特频率，大小等于采样频率的一半）。我们考虑这样一个频谱感知的应用场景，任务是感知$$x(t)$$的功率谱密度。图1描绘了部署的采样设备，可以被认为是压缩采样中一种模拟信息转换器（`Analog to Information Converter, AIC`）。
+定义$$x(t)$$是宽平稳模拟信号，并认为是一个复数值。这个信号是带限的，带宽是$$\frac{1}{T}$$（这个就是奈奎斯特频率，大小等于采样频率的一半）。我们考虑这样一个频谱感知的应用场景，任务是感知$$x(t)​$$的功率谱密度。图1描绘了部署的采样设备，可以被认为是压缩采样中一种模拟信息转换器（`Analog to Information Converter, AIC`）。
 
 <div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/XDPFig1.png" style="display: inline-block;" width="500"/>
 </div>
 
 
-但是请注意这个采样设备能够对任何`AIC`实现建模，例如[18]和[19]中提出的那些。采样装置此处有$$M$$个分支，其中分支使用复值周期性波形$$p_i(t)$$来调制$$x(t)$$，后面接周期性积分转储装置（因此速率等于奈奎斯特速率的$$\frac{1}{N}$$倍）。请注意观察输出是数字形式，因为每隔$$NT$$积分输出就相当于每隔$$NT$$给了一个采样点。这个采样方式可能会保存更多的信息。
+但是请注意这个采样设备能够对任何`AIC`实现建模，例如[18]和[19]中提出的那些。采样装置此处有$$M$$个分支，其中分支使用复值周期性波形$$p_i(t)$$来调制$$x(t)$$，后面接周期性积分转储装置（因此速率等于奈奎斯特速率的$$\frac{1}{N}$$倍）。请注意观察输出是数字形式，因为每隔$$NT$$积分输出就相当于每隔$$NT​$$给了一个采样点。这个采样方式可能会保存更多的信息。
 
 第$$i$$个分支的第$$k$$个采样索引可以被描述为
 $$
@@ -203,7 +203,7 @@ $$
 \tag{12}
 \end{equation}
 $$
-如果我们定义一个$$\boldsymbol{q}_{x}=(\boldsymbol{F}_{2L+1}^{-1}\otimes \boldsymbol{I}_{N})\boldsymbol{r}_{x}​$$和$$\boldsymbol{q}_{y}=(\boldsymbol{F}_{2L+1}^{-1}\otimes \boldsymbol{I}_{M^2})\boldsymbol{r}_{y}​$$，那么就可以得到
+如果我们定义一个$$\boldsymbol{q}_{x}=(\boldsymbol{F}_{2L+1}^{-1}\otimes \boldsymbol{I}_{N})\boldsymbol{r}_{x}$$和$$\boldsymbol{q}_{y}=(\boldsymbol{F}_{2L+1}^{-1}\otimes \boldsymbol{I}_{M^2})\boldsymbol{r}_{y}$$，那么就可以得到
 $$
 \begin{equation}
 \begin{split}
