@@ -124,6 +124,86 @@ $$
 
 <div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/0403fig2.png" style="display: inline-block;" width="800"/>
 </div>
+我就直接说了，这个网络结构真的是简单的不行，基本上没有什么需要说明的。就是通过用户的信道矩阵输入，通过全连接层传递和`LeakyReLU+Dropout`层进行激活和剪枝，最终输出估计结果，然后根据功率限制要求输出一个期望的结果。中间的隐藏层神经元数量分别为$$200,300,200$$，三层。由于考虑到可能存在负值，这里没有直接采用`ReLU`，而是`LeakyReLU`作为激活函数。
+
+### B. Learning Policy
+
+这一部分介绍非监督学习训练策略。为了凸显非监督学习的优越性，监督学习的方式也会简单介绍一下。
+
+#### Supervised Learning(DNN-Supervised)
+
+监督学习的工作方式就像是一个函数拟合器，主要是训练神经网络尽可能去近似`WMMSE`的正确结果。监督学习的样本集为$$\Gamma$$，则训练数据表示为$$(\boldsymbol H^{(i)},\boldsymbol W^{(i)})_{i\in\Gamma}$$，即信道矩阵和波束成形阵。在数据初始化的阶段，我们采用发送匹配滤波器去初始化。使用一个常系数去保证功率能够满足限制。我们选择的损失函数是均方误差损失函数。采用`Adam`优化器，来保证即使问题是非凸优化问题也能正常解决。
+
+#### UNsupervised Learning(DNN-Unsupervised)
+
+监督学习问题中的输出是我们采用`WMMSE`计算的正确结果，输入输出是相互一一对应的；非监督学习问题则不同，这里的训练是不需要标记的。我们构造一个如下的损失函数
+$$
+\begin{equation}
+\begin{split}
+\boldsymbol{l}(\boldsymbol{\theta};\boldsymbol{h};\boldsymbol{\hat w})=&-\sum_{k=1}^K \log \det(\boldsymbol I_k + \boldsymbol {\widehat W}_k^H\boldsymbol W_k^H\boldsymbol {\widehat J}_{\widetilde{v}_k\widetilde{v}_k}^{-1}\boldsymbol H_k\boldsymbol {\widehat W}_k)\\=&-\sum_{k=1}^K\widehat{R}_k
+\end{split}
+\tag{7}
+\end{equation}
+$$
+这里$$\boldsymbol{\theta},\boldsymbol{\hat w}​$$分别是深度神经网络的参数和输出。$$\boldsymbol {\widehat J}_{\widetilde{v}_k\widetilde{v}_k}=\boldsymbol I_k+\sum_{i=1,i\neq k}^{K} \boldsymbol H_k \boldsymbol {\widehat W}_i \boldsymbol {\widehat W}_i^H \boldsymbol H_k^H​$$代表的是对原来准确值的估计。考虑到约束条件，我们重写损失函数，增加一个惩罚项
+$$
+\begin{equation}
+\begin{split}
+\mathfrak{L}(\boldsymbol{\theta};\boldsymbol{h};\boldsymbol{\hat w})=\boldsymbol{l}(\boldsymbol{\theta};\boldsymbol{h};\boldsymbol{\hat w})+\lambda \mid \Omega(\widehat{w}) \mid
+\end{split}
+\tag{8}
+\end{equation}
+$$
+我们说$$\lambda$$是一个超参数，需要谨慎选择；$$\Omega(\widehat w)=\sum_{k=1}^K Tr(\boldsymbol {\widehat W}_i \boldsymbol {\widehat W}_i^H)<p_{max}$$。然后深度神经网络需要解决的问题就变成了
+$$
+\begin{equation}
+\begin{split}
+\boldsymbol \theta^*=\underset{\boldsymbol \theta}{argmin}\mathfrak{L}(\boldsymbol{\theta};\boldsymbol{h};\boldsymbol{\hat w})
+\end{split}
+\tag{9}
+\end{equation}
+$$
+略微进行一点变形可以得到
+$$
+\begin{equation}
+\begin{split}
+\boldsymbol \theta^*=\underset{\boldsymbol \theta}{argmin}\mathfrak{L}(\boldsymbol{\theta};\boldsymbol{h};NET(\boldsymbol \theta,\boldsymbol h))
+\end{split}
+\tag{10}
+\end{equation}
+$$
+这样约束条件就转化成了一个函数优化问题，这个形式与正则化训练相同（这里可以看前面的机器学习中的介绍，正则化是为了降低高次项的影响，突出强调其他变量的重要性的）。这里就可以采用反向传播和`Adam`优化器了。
+
+那么无论是使用了监督学习还是非监督学习，最终我们都要再进行一个归一化操作，即
+$$
+\begin{equation}
+\begin{split}
+\boldsymbol {\widehat W^{DNN}}=b\boldsymbol {\widehat W}
+\end{split}
+\tag{10}
+\end{equation}
+$$
+其中$$b=\sqrt{\frac{p_{max}}{Tr(\boldsymbol {\widehat W} \boldsymbol {\widehat W}^H)}}$$，这样就可以将功率规定化到指定的约束条件。
+
+这个网络中首先输入的是信道矩阵，通过信道矩阵估计出成形滤波器的取值，然后通过这两个结果计算出有效噪声与干扰，并可以根据这个结果计算出速率。我们要让速率最大化，那么就让负速率最小化。后面再加一个功率约束条件，然后搜索在这个情况下的最小值即可。
+
+我个人认为这个问题的解肯定存在问题，我们不应该使用`Adam`优化器简单地搜索解，而是应该尽可能地搜索出最优解的位置。然而我并没有办法做到这个，目前最有效的方法仍然是简单的暴力搜索。
+
+### C. Network Pruning
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
