@@ -21,7 +21,7 @@ categories: Notes
 
 在下行链路传输场景中，若使用多天线阵列，在发射机上的功率分配和波束成形设计是十分重要的。本文考虑了一个`MIMO`广播信道在系统功率约束条件下来最大化加权`sum-rate`。传统的加权最小化均方误差算法`WMMSE`可能会获得次优解，但是涉及较高的计算复杂度。为了降低这个复杂度，我们提出了一个基于非监督学习的快速波束成形设计方法，该方法离线训练深度神经网络并实时在线提供服务。训练过程是基于一种端到端方法，不需要人为标记样本，从而避免了打标的复杂过程。此外我们使用了基于`APoZ`剪枝算法来压缩神经网络的容量，从而可以部署到低运算容量的设备中。最后的实验结果显示这个方法显著提高了运算速度，而性能表现接近`WMMSE`算法。
 
-### INDEX TERMS
+## INDEX TERMS
 
 多入多出，波束成形，深度学习，无监督学习，网络剪枝
 
@@ -154,7 +154,7 @@ $$
 \tag{8}
 \end{equation}
 $$
-我们说$$\lambda$$是一个超参数，需要谨慎选择；$$\Omega(\widehat w)=\sum_{k=1}^K Tr(\boldsymbol {\widehat W}_i \boldsymbol {\widehat W}_i^H)<p_{max}$$。然后深度神经网络需要解决的问题就变成了
+我们说$$\lambda​$$是一个超参数，需要谨慎选择；$$\Omega(\widehat w)=\sum_{k=1}^K Tr(\boldsymbol {\widehat W}_i \boldsymbol {\widehat W}_i^H)<p_{max}​$$。然后深度神经网络需要解决的问题就变成了
 $$
 \begin{equation}
 \begin{split}
