@@ -71,7 +71,6 @@ $$
 x^{t+1}&=D_{\hat \sigma^t}(x^t+\boldsymbol A^*z^t) \\
 z^t&=y-\boldsymbol Ax^t+z^{t-1}div D_{\hat \sigma^{t-1}}(x^{t-1}+A^*z^{t-1})/m\\
 (\hat\sigma^t)^2&=\frac{\left\| z^t \right\|_2^2}{m}
-
 \end{split}
 \tag{2}
 \end{equation}
@@ -127,14 +126,57 @@ $$
 </div>
 我们知道，解在投影子空间$$\{ x\mid y=\boldsymbol Ax \}$$，因此我们从$$x_0=0$$开始，向与子空间正交的方向移动，例如$$\boldsymbol A^*y$$。这个方向与子空间较为接近，但是却不一定是接近$$C$$的，于是，我们利用去噪（或者说投影）去获取一个估计来满足信号分类$$C$$的结构。整个原理就像图里所说的。
 
+经过以上步骤我们得到了$$D(A^*y)$$。就像我们用图像表示的一样，重复以上两个步骤，在梯度方向移动并向$$C$$投影，我们的估计最终收敛到$$x_0$$。算法表示为
+$$
+\begin{equation}
+\begin{split}
+x^{t+1}&=D_{\hat \sigma}(x^t+\boldsymbol A^*z^t) \\
+z^t&=y-\boldsymbol Ax^t\\
+\end{split}
+\tag{3}
+\end{equation}
+$$
 
+为了便于表示，我们引入了估计残差的向量，即$$z^t$$，我们称这种算法为基于去噪的迭代阈值处理（`denoising-based iterative thresholding, D-IT`）。如果我们改变去噪器（在上图中仅相当于一个到$$C$$的投影），让他是一个真正的去噪函数，我们隐含地假设$$x^t+\boldsymbol A^*z^t$$可以表示为$$x_0+v^t$$，其中$$v^t\sim N(0,(\sigma^t)^2I)$$，而且与$$x_0$$相互独立。于是通过采用一个去噪器，我们获得了一个更为接近$$x_0$$的信号。不幸的是，这种假设对于`D-IT`而言并不成立，这与我们在前文中观察到的用于迭代软阈值处理的现象相同。
 
+在迭代阈值算法的条件下，我们提出的避免噪声的非高斯性解决方案是采用消息传递/近似消息传递。遵循相同的路径，我们提出以下算法。
 
+$$
+\begin{equation}
+\begin{split}
+x_{\cdot \to a}^{t+1}&=D_{\hat \sigma^t}\left(\left[ \begin{matrix} \sum_{b\neq a}\boldsymbol A_{b1}z_{b\to 1}^t \\ \sum_{b\neq a}\boldsymbol A_{b2}z_{b\to 2}^t \\ ...\\ \sum_{b\neq a}\boldsymbol A_{bn}z_{b\to n}^t \end{matrix} \right]\right)\\
+z_{a\to i}^t&=y_a-\sum_{j\neq i}\boldsymbol A_{aj}x_{j\to n}^t
+\end{split}
+\tag{4}
+\end{equation}
+$$
+在这里，$$\hat x$$提供了一个$$x_0$$的估计。$$\hat \sigma^t$$表示下式标准差。
+$$
+\begin{equation}
+\begin{split}
+v_{\cdot \to a}^t=\left(\left[ \begin{matrix} \sum_{b\neq a}\boldsymbol A_{b1}z_{b\to 1}^t \\ \sum_{b\neq a}\boldsymbol A_{b2}z_{b\to 2}^t \\ ...\\ \sum_{b\neq a}\boldsymbol A_{bn}z_{b\to n}^t \end{matrix} \right]\right)-x_0
+\end{split}
+\tag{5}
+\end{equation}
+$$
+我们在上面总结过，上式在高维中与高斯噪声很接近（此时`m`和`n`都很大 ）。对于一类标量去噪器，这一结果已经得到了严格证明，并且也可以用于块状去噪器。
 
+尽管它们在避免有效噪声向量$$v$$的非高斯性方面有一定的优势，但是消息传递算法有$$m$$次测量，也因此给出了这么多不同的$$x_0$$估计；相似的，每一个噪声向量都有$$n$$个估计结果。这些需要很高的计算量，但是幸运的是，如果问题是高维的，我们可以近似消息传递算法的迭代过程，并获得基于去噪的近似消息传递算法
+$$
+\begin{equation}
+\begin{split}
+x^{t+1}&=D_{\hat \sigma^t}(x^t+\boldsymbol A^*z^t)\\
+z^t&=y-\boldsymbol Ax^t+z^{t-1}\frac{div D_{\hat \sigma^{t-1}}(x^{t-1}+\boldsymbol A^*z^{t-1})}{m}
+\end{split}
+\tag{6}
+\end{equation}
+$$
+上述的`D-IT`与`D-AMP`算法的唯一不同在于修正项$$z^{t-1}\frac{div D_{\hat \sigma^{t-1}}(x^{t-1}+\boldsymbol A^*z^{t-1})}{m}$$。
 
+有关`D-AMP`从`D-MP`的推导与`MP`中推导`AMP`相似。与`D-IT`相似，`D-AMP`依赖于有效噪声$$v^t=x^t+\boldsymbol A^*z^t-x_0$$近似于独立同分布高斯噪声的假设。我们的经验结果证明了这一个假设，如图所示`D-AMP`迭代，使用的降噪算法是`BM3D`。
 
-
-
+<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/dfig5.jpg" style="display: inline-block;" width="500"/>
+</div>
 
 
 
