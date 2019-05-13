@@ -229,8 +229,65 @@ AMP的扩展算法很多，这里不一一列举。
 
 主要流程如下
 
-<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/BM3D.jpg" style="display: inline-block;" width="500"/>
+<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/BM3D.jpg" style="display: inline-block;" width="650"/>
 </div>
+
+*稍微吐槽一下，现在能找到的`BM3D`算法都是封装后的，根本不是开源代码。*
+
+首先对于该算法，原始形式只能对灰度图像进行处理。因此对于彩色图像首先进行灰度化处理。
+
+```python
+img = cv2.imread('lena.png')
+img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+```
+
+如果输入图像是没有噪声的图像，我们手动增加一个$$\sigma=25$$的噪声进去。
+
+```python
+noisy_img = AddNoise(img, sigma)
+```
+
+从此处开始我们已经进入了算法的输入。对于一张含噪声的图像，首先进入`Step - I`的处理，以获取`Basic Estimation`。
+
+首先进行预处理，初始化`Img`和`Weight`矩阵为**零矩阵**，并设置指定大小的`Kaiser`窗函数。
+
+```python
+InitImg = np.zeros(Img.shape, dtype=float)
+InitWeight = np.zeros(Img.shape, dtype=float)
+Window = np.matrix(np.kaiser(BlockSize, Kaiser_Window_beta))
+InitKaiser = np.array(Window.T * Window)
+```
+
+根据算法的流程，首先进行相似块匹配。代码中首先做了离散余弦变换，降低运算复杂度。一般而言，计算所有的`block`所需要的时间为`5s`左右
+
+```python
+BlockDCT_all = np.zeros((Img.shape[0] - BlockSize, Img.shape[1] - BlockSize, BlockSize, BlockSize), dtype=float)
+for i in range(BlockDCT_all.shape[0]):
+    for j in range(BlockDCT_all.shape[1]):
+        Block = Img[i:i + BlockSize, j:j + BlockSize]
+        BlockDCT_all[i, j, :, :] = dct2D(Block.astype(np.float64))
+```
+
+接下来是逐块分析。算法中为了减低计算复杂度，采用了一种叫做`Speed Up Factor`的参数，是在逐块分析的时候的跳跃常数，即每一次选取块的时候会跳过这些像素，以达到降低复杂度的目的。这里选取$$3$$为例，每三个点进行一个`block`取样
+
+```python
+for i in range(int((noisyImg.shape[0] - BlockSize) / spdup_factor) + 2):
+    for j in range(int((noisyImg.shape[1] - BlockSize) / spdup_factor) + 2):
+        RefPoint = [min(spdup_factor * i, noisyImg.shape[0] - BlockSize - 1),
+                    min(spdup_factor * j, noisyImg.shape[1] - BlockSize - 1)]
+        BlockPos, BlockGroup = Step1_Grouping(noisyImg, RefPoint, BlockDCT_all, BlockSize, ThreDist, MaxMatch, WindowSize)
+        BlockGroup, nonzero_cnt = Step1_3DFiltering(BlockGroup)
+        Step1_Aggregation(BlockGroup, BlockPos, basicImg, basicWeight, basicKaiser, nonzero_cnt)
+basicWeight = np.where(basicWeight == 0, 1, basicWeight)
+basicImg[:, :] /= basicWeight[:, :]
+```
+
+
+
+
+
+
+
 
 
 
