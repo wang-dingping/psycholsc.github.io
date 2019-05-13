@@ -14,6 +14,8 @@ categories: Notes
 
 [TOC]
 
+**由于本文内容实在有点难，因此首先从BM3D方法开始，前半部分暂时无限期停更**
+
 ## 从降噪到压缩感知
 
 ### 摘要
@@ -218,6 +220,21 @@ $$y=Ax+w$$
 - 可以被扩展为更为复杂的模型。
 
 AMP的扩展算法很多，这里不一一列举。
+
+---
+
+## BM3D 算法原理与实现
+
+`BM3D`算法是目前一种较好的去噪重建算法，在对噪声没有先验的条件下进行噪声去除。
+
+主要流程如下
+
+<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/BM3D.jpg" style="display: inline-block;" width="500"/>
+</div>
+
+
+
+## BM3D 算法的复数域推广
 
 
 
