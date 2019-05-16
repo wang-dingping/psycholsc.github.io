@@ -450,55 +450,79 @@ $$
 
 ### 实现（以及高效实现）
 
-首先对于该算法，原始形式只能对灰度图像进行处理。因此对于彩色图像首先进行灰度化处理。
+论文指出，如果直接实现，可能会比较慢。那么这里进行一点简化
 
-```python
-img = cv2.imread('lena.png')
-img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+- 滑动匹配的时候，采用每隔$$N_{sample}$$点进行一次采样的方式进行分块，这样可以显著降低处理数量。
+- 将分组时数量设置上限，最多允许匹配$$N_2$$个块
+- 搜索匹配分块的时候，只在以此位置为中心的$$N_S\times N_S$$个块。
+- 这一步好傻逼不翻译了
+- 将`3-D`变换拆成一个`2-D`和一个`1-D`的变换。
+- 在处理之前预计算所有块的变换结果。
+- 算法顺序可以进行适当调整
+- 采用一个$$N_1 \times N_1$$大小的`Kaiser`窗（参数为$$\beta$$），来降低变换的边缘效应。
+
+
+
+首先对于该算法，原始形式只能对灰度图像进行处理。因此对于彩色图像首先进行灰度化处理。为了便于后期处理。我们将图像转化为浮点型数据进行处理。灰度化之后的图像如下。
+
+<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/GrayImage.png" style="display: inline-block;" width="650"/>
+</div>
+
+浮点化处理之后我们添加高斯白噪声。作为样例，我们设置白噪声功率为$$\sigma=25$$。添加噪声后的图像为
+
+<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/NoisyImage.png" style="display: inline-block;" width="650"/>
+</div>
+
+含噪的图像正式进入算法输入。首先进行第一步的基础估计。为了方便处理，我们先把后面可能会用到的离散余弦变换做掉。根据经验，这个过程大约是不到`5s`。
+
+```
+>>> DCT all in 4.547126293182373s
 ```
 
-如果输入图像是没有噪声的图像，我们手动增加一个$$\sigma=25$$的噪声进去。
+一般的，我们经验上会每隔三个点进行一次分块，那么原图$$512\times 512$$的大小就会被分割为$$170\times 170$$个`block`。分块并进行离散余弦变换后，开始分组。这里要进行离散余弦变换，是因为离散余弦变换结果具有很好的稀疏性，二维离散余弦变换后的结果往往会集中在左上角。我们这里举个例子，对于第一个`block`，分割结果为一个$$(16,8,8)$$大小的块，其中第一个变换结果是
 
-```python
-noisy_img = AddNoise(img, sigma)
+```
+[[ 1.29849999e+03  3.74591664e-01  1.83351953e+01 ...  3.02294573e+01
+   -5.66313693e+01 -5.29934685e+00]
+  [-2.50375759e+01  8.09275253e+00  7.49137009e+00 ... -1.07719190e+01
+   -3.36913830e+01 -1.84984453e+01]
+  [ 4.73723066e+01 -5.22545366e+00 -5.88699016e+00 ... -3.96155164e+01
+   -1.19085326e-01  4.44470636e+01]
+  ...
+  [ 8.13641550e+00  2.00919075e+01  3.89090860e+00 ...  3.27180244e+01
+   -3.36336860e+00  1.20396360e+01]
+  [-3.00899028e+01 -7.98224680e+01  9.95073699e+00 ... -4.43562755e+01
+    2.96699942e+01  2.87377413e+01]
+  [ 5.67538581e+01 -3.84358363e+01 -2.19652484e+01 ...  3.70353163e+00
+    1.51453117e+01 -2.34829764e+01]]
 ```
 
-从此处开始我们已经进入了算法的输入。对于一张含噪声的图像，首先进入`Step - I`的处理，以获取`Basic Estimation`。
+这是一个矩阵的形式，可以看出主要的能量都集中在了左上角。
 
-首先进行预处理，初始化`Img`和`Weight`矩阵为**零矩阵**，并设置指定大小的`Kaiser`窗函数。
+由于变换结果都是稀疏的，所以都是一个以左上角为峰的结构，所以进行距离比较的时候，结果匹配会比直接进行图像相关匹配效果更好。
 
-```python
-InitImg = np.zeros(Img.shape, dtype=float)
-InitWeight = np.zeros(Img.shape, dtype=float)
-Window = np.matrix(np.kaiser(BlockSize, Kaiser_Window_beta))
-InitKaiser = np.array(Window.T * Window)
+在程序中，我们直接将分块结果用离散余弦变换来保存了，这将有利于在后面的一步应用拆分的`3-D`变换。
+
+分组后我们直接进行`3-D`滤波。由于`Group`在建立的时候都是采用的离散余弦变换，因此我们得到的直接就是已经完成了`2-D`变换的分组。接下来要实现`3-D`变换，只需要在没有变换过的轴上应用变换即可。此时对于有最大$$16$$个元素的轴，我们进行一维的`dct`，将得到一个主要成分集中在前几个元素的变换结果。通过硬阈值处理这个结果，我们相当于逐行处理整个`Group`的`3-D`变换结果。
+
+进行了硬阈值处理后（注意这里要记录阈值处理后的非零点数量）我们进行反变换，首先是对于刚刚处理的那个维度的反变换，然后是两个之前做`2-D dct`的维度。但是这里仍然不进行反变换，后面还会用到。
+
+给一个例子，对于刚才的那个矩阵的第一行变换，结果是这样的
+
+```
+[5007.15471506    0.            0.            0.            0.
+    0.           79.37501785    0.            0.            0.
+    0.            0.            0.            0.            0.
+    0.        ]
 ```
 
-根据算法的流程，首先进行相似块匹配。代码中首先做了离散余弦变换，降低运算复杂度。一般而言，计算所有的`block`所需要的时间为`5s`左右
+可见非零点数很少，整个矩阵十分稀疏。
 
-```python
-BlockDCT_all = np.zeros((Img.shape[0] - BlockSize, Img.shape[1] - BlockSize, BlockSize, BlockSize), dtype=float)
-for i in range(BlockDCT_all.shape[0]):
-    for j in range(BlockDCT_all.shape[1]):
-        Block = Img[i:i + BlockSize, j:j + BlockSize]
-        BlockDCT_all[i, j, :, :] = dct2D(Block.astype(np.float64))
-```
+完成了`3-D`滤波后我们进行第一次聚合重建。由于第一次的主要处理就是阈值，这里的聚合重建主要就是加权平均与反变换的过程。加权平均采用了$$8\times 8$$`Kaiser`窗函数，这个窗函数是加在反变换后的结果上的，不过随着图像的重建过程，这个窗函数只是一个初值的意义，据论文的意思是可以降低边缘效应。
 
-接下来是逐块分析。算法中为了减低计算复杂度，采用了一种叫做`Speed Up Factor`的参数，是在逐块分析的时候的跳跃常数，即每一次选取块的时候会跳过这些像素，以达到降低复杂度的目的。这里选取$$3$$为例，每三个点进行一个`block`取样
+注意这里的重建过程，在以每一个参考点为基准时，我们都会至多同时恢复$$16$$个位置的图像，每次的恢复都将是一个占一定权重的部分，这个权重是视噪声而定的。我们给出一张当过程进行到一半的时候重建的图像。
 
-```python
-for i in range(int((noisyImg.shape[0] - BlockSize) / spdup_factor) + 2):
-    for j in range(int((noisyImg.shape[1] - BlockSize) / spdup_factor) + 2):
-        RefPoint = [min(spdup_factor * i, noisyImg.shape[0] - BlockSize - 1),
-                    min(spdup_factor * j, noisyImg.shape[1] - BlockSize - 1)]
-        BlockPos, BlockGroup = Step1_Grouping(noisyImg, RefPoint, BlockDCT_all, BlockSize, ThreDist, MaxMatch, WindowSize)
-        BlockGroup, nonzero_cnt = Step1_3DFiltering(BlockGroup)
-        Step1_Aggregation(BlockGroup, BlockPos, basicImg, basicWeight, basicKaiser, nonzero_cnt)
-basicWeight = np.where(basicWeight == 0, 1, basicWeight)
-basicImg[:, :] /= basicWeight[:, :]
-```
 
-这个代码巧妙地采用了`min`函数防止越界。本实现采用的是$$8\times 8$$的`block`，最大匹配$$16$$个，且匹配阈值$$2500$$。如果块内的像素之差超过$$2500$$，此处认为是不能匹配的。
 
 
 
