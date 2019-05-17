@@ -179,47 +179,13 @@ $$
 
 <div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/dfig5.jpg" style="display: inline-block;" width="500"/>
 </div>
----
+这里先介绍一下啥是`BM3D`算法。
+
+
 
 ---
 
 ---
-
-其实我挺想知道到底啥是`AMP`算法的。
-
-**近似消息传递算法**
-
-线性逆变换问题是一个常见的问题，一般问题形式为
-
-$$y=Ax+w$$
-
-我们往往是已知了矩阵$$A$$和测量结果$$y$$，估计$$x$$的值。这样的问题其实很多，在线性回归、压缩感知、图像处理等问题上都有应用。常见的应用举例，例如图像模糊（退化）、多线性回归问题等。这个噪声是个问题，不然就不是“估计”，而是直接计算了。
-
-常用的估计方法就是无约束最小二乘方法，最小二乘意义下的误差是$$y-Ax$$的二范数误差。在平面上的例子就是直线距离$$\Delta y$$。对于一个大三大四的学生，应该很容易就能导出**正规方程**。那么至此一个简单的估计就已经完成了。但是在许多应用中，我们对待估计信号都有一定程度的先验知识，例如$$x$$是一张自然图像。那么我们要如何利用到这些先验知识呢？
-
-有时我们会用正则化最小二乘估计，是采用一个惩罚项$$\varPhi(x)$$作为优化目标中的一项，这一项往往是我们想要直接最小化的一项，例如在最小化最小二乘误差的时候同时最小化$$x$$，则可以在优化目标中加一个惩罚项$$\| x \|_2^2$$。常用的惩罚项就是两类常用范数。根据惩罚的力度，我们往往会使用一个系数$$\lambda$$。根据不同的需求我们可以自己设计惩罚项。
-
-对于稀疏信号，往往会采用1范数惩罚项，这可以使许多系数为$$0$$。
-
-图像信号在变换域中往往会表现出一定程度的稀疏性例如小波域。此时采用L1范数估计方法有利于图像的重建。另外还有一种称为`Total Variation`去噪的算法，就是使用了类似的技术。
-
-在压缩感知中，我们往往会假设待估计量是一个稀疏量，这样就可以从一个欠定方程组中恢复原信号。不过这个测量不能是任意少的，有一个具体的要求，一般是$$m\geq Ck\log n$$。
-
-不过压缩感知也有一些挑战，
-
-- 大多数分析都只能提供界限
-- 基本都局限于L1重建问题。
-- 很难找到一个理论上的最优估计
-- 当模型有噪声的时候会是怎样的情况？
-- 我们何时怎样才能获取最优估计？
-
-这时候我们移步AMP算法。这个算法对于随机矩阵来说
-
-- 收敛很快
-- 可以精确分析
-- 可以被扩展为更为复杂的模型。
-
-AMP的扩展算法很多，这里不一一列举。
 
 ---
 
@@ -465,13 +431,15 @@ $$
 
 首先对于该算法，原始形式只能对灰度图像进行处理。因此对于彩色图像首先进行灰度化处理。为了便于后期处理。我们将图像转化为浮点型数据进行处理。灰度化之后的图像如下。
 
-<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/GrayImage.png" style="display: inline-block;" width="650"/>
+<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/GrayImage.png" style="display: inline-block;" width="500"/>
 </div>
+
 
 浮点化处理之后我们添加高斯白噪声。作为样例，我们设置白噪声功率为$$\sigma=25$$。添加噪声后的图像为
 
-<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/NoisyImage.png" style="display: inline-block;" width="650"/>
+<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/NoisyImage.png" style="display: inline-block;" width="500"/>
 </div>
+
 
 含噪的图像正式进入算法输入。首先进行第一步的基础估计。为了方便处理，我们先把后面可能会用到的离散余弦变换做掉。根据经验，这个过程大约是不到`5s`。
 
@@ -520,20 +488,53 @@ $$
 
 完成了`3-D`滤波后我们进行第一次聚合重建。由于第一次的主要处理就是阈值，这里的聚合重建主要就是加权平均与反变换的过程。加权平均采用了$$8\times 8$$`Kaiser`窗函数，这个窗函数是加在反变换后的结果上的，不过随着图像的重建过程，这个窗函数只是一个初值的意义，据论文的意思是可以降低边缘效应。
 
-注意这里的重建过程，在以每一个参考点为基准时，我们都会至多同时恢复$$16$$个位置的图像，每次的恢复都将是一个占一定权重的部分，这个权重是视噪声而定的。我们给出一张当过程进行到一半的时候重建的图像。
+注意这里的重建过程，在以每一个参考点为基准时，我们都会至多同时恢复$$16$$个位置的图像，每次的恢复都将是一个占一定权重的部分，这个权重是视噪声而定的。我们给出一张当过程进行到中途（这里是$$80\%$$）的时候重建的图像。
 
+<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/BasicEsti80.png" style="display: inline-block;" width="500"/>
+</div>
 
+可见图像是自左上到右下逐个`Block Group`重建的。
 
+这里给出第一步估计的结果，如图所示
 
+<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/BasicEsti.png" style="display: inline-block;" width="500"/>
+</div>
 
+可以看出的不同点是，基础重建的图像在细节上少了一些，例如帽子上的纹理，但是头发这些细节恢复地较好，可能是存在较好的匹配样本。说白了图像重建算法，就是根据现有的信息去估计原有的信息，避免不了各种位置的求均值算法。最后的模糊也是因为均值过程相当于一个低通滤波的效果，去除了图像原有的细节。保留细节是一个挺困难的事情，而深度学习方法可以通过算法本身的特点对细节进行一定的增强，至于效果如何我们不能直接下定论。
 
+接下来使用这个结果进行第二步的估计。第二步的许多操作与第一步类似。分组这里，实际上是重新分组，在流程图中也表现出了分组的明显不同。由于第一步已经给出了基础估计，此时假设这个就是对原图的无偏估计了，我们利用这个图进行重新分组，并且将这个分组方案直接应用于含噪图像。
 
+为了处理方便，这里还是预先计算了两个图像的离散余弦变换，并且同样通过迭代的方法进行逐块重建。与上一次不同的是，这里不再通过硬阈值方法进行处理，而是采用维纳滤波的方法。
 
+维纳滤波器是特指**最小化均方误差**得到的滤波器。而为了最小化均方误差，一般是需要一定的先验知识的，例如一维信号的维纳滤波器形式
+$$
+\begin{equation}
+\begin{split}
+\boldsymbol w=\boldsymbol R^{-1}\boldsymbol p
+\end{split}
+\tag{11}
+\end{equation}
+$$
+其中$$R$$是输入信号的自相关矩阵，$$p$$是输入信号与目标信号的互相关矩阵。这里的互相关计算就是需要一定的先验知识的，因为目标信号往往是我们需要求解的信号，我们并不能得到这个信号，只能估计。这里对真实结果的估计采用的就是第一步中计算的结果。经过维纳滤波后的结果进行反变换就得到了最终估计图像。
+
+*实话讲吧，这个结果我感觉还不如基础估计得到的。*
+
+<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/BasicEsti.png" style="display: inline-block;" width="250"/>
+<img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/FinalEsti.png" style="display: inline-block;" width="250"/>
+</div>
+
+### 总结
+
+27.456659322583956 dB
+
+27.10124841019409   dB
+
+原来老师讲的东西很多都是会用得上的。大三上学期老师说的常见降噪算法中利用硬阈值算法和软阈值算法这里就遇到了，利用小波域稀疏性的特点这里也用到了。
 
 
 ## BM3D 算法的复数域推广
 
-
+这里还没做完，计划是先做一个简单的一维信号重建。
 
 
 
