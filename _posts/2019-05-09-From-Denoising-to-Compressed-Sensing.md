@@ -544,11 +544,430 @@ $$
 图像处理的降噪过程是困难的，我们没有对图像的先验知识的时候，或者先验知识信息量较少难以利用的时候，对图像的降噪处理就是一个瞎编的过程。我们一开始学习了基于各类简单噪声的去除，又稍微讲解了一下如何对图像的退化做复原。再往后，我们学了基于对整体方差的估计方法做去噪处理，对局部方差的估计，到现在这种复杂的算法，实际上去噪就是离不开不断的加权平均，不停地估计。但是手头能够利用的数据就只有那一张图像，甚至都没有噪声的信息，在实际应用中我们又能获得怎么样的效果呢？
 
 
+
+
 ## BM3D 算法的复数域推广
 
 这里还没做完，计划是先做一个简单的一维信号重建。
 
 
+
+## 代码
+
+这里给出一维实现
+
+```python
+# 2019-5-21 20:12:16
+# Personal implementation of BM3D Denoising Algorithm
+
+import numpy as np
+import time
+import cv2
+from scipy.fftpack import dct, idct
+from matplotlib import pyplot as plt
+__author__ = 'Prophet'
+
+# Parameters
+
+sigma = 25  # add-noise var
+S1_blocksize = 8
+S1_Threshold = 5000
+S1_MaxMatch = 16
+S1_DownScale = 1
+S1_WindowSize = 50
+lamb2d = 2.0
+lamb3d = 2.7
+
+S2_Threshold = 400
+S2_MaxMatch = 32
+S2_blocksize = 8
+S2_DownScale = 1
+S2_WindowSize = 50
+
+beta = 2.0
+A = 255
+
+# Utils
+
+
+def signalGen(A=255, f=10, fs=512, show=1):
+    '''
+    Sine Signal Demo
+    '''
+    t = np.linspace(0, 2 * np.pi * f, fs)
+    if show:
+        plt.plot(A * np.sin(t))
+        plt.show()
+    return A * np.sin(t)
+
+
+def AWGN(sigma, signal, show=1):
+    '''
+    Add White Gauss Noise
+    '''
+    noise = sigma * np.random.randn(len(signal))
+    if show:
+        plt.plot(noise + signal)
+        plt.show()
+    return signal + noise, noise
+
+
+def cvInit():
+    print('BM3D Initializing at {}'.format(time.time()))
+    print('Initializing OpenCV')
+    start = time.time()
+    cv2.setUseOptimized(True)
+    end = time.time()
+    print('Initialized in {}s'.format(end - start))
+    pass
+
+
+def preDCT(Img, blocksize, timer=True):
+    s = time.time()
+    BlockDCT_all = np.zeros((Img.shape[0] - blocksize, Img.shape[1] - blocksize, blocksize, blocksize),
+                            dtype=float)
+    for i in range(BlockDCT_all.shape[0]):
+        for j in range(BlockDCT_all.shape[1]):
+            Block = Img[i:i + blocksize, j:j + blocksize]
+            BlockDCT_all[i, j, :, :] = dct2D(Block.astype(np.float64))
+    if timer:
+        print('DCT all in {}s'.format(time.time() - s), end='\n')
+    return BlockDCT_all
+
+
+def preDCT1D(noisySignal, blocksize, timer=True):
+    s = time.time()
+    blockDCT1D_all = np.zeros(
+        (noisySignal.shape[0] - blocksize, blocksize), dtype=float)
+    for i in range(blockDCT1D_all.shape[0]):
+        Block = noisySignal[i:i + blocksize]
+        blockDCT1D_all[i, :] = dct(Block.astype(np.float64))
+    if timer:
+        print('DCT all in {}s'.format(time.time() - s), end='\n')
+    return blockDCT1D_all
+    pass
+
+
+def searchWindow1D(sig, RefPoint, blocksize, WindowSize):
+    '''
+        Set Boundary
+    '''
+    if blocksize >= WindowSize:
+        print('Error: blocksize is smaller than WindowSize.\n')
+        exit()
+    Margin = np.zeros((2, 1), dtype=int)
+    Margin[0, 0] = max(
+        0, RefPoint + int((blocksize - WindowSize) / 2))  # left-top x
+    Margin[1, 0] = Margin[0, 0] + WindowSize  # right-bottom x
+    if Margin[1, 0] >= sig.shape[0]:
+        Margin[1, 0] = sig.shape[0] - 1
+        Margin[0, 0] = Margin[1, 0] - WindowSize
+
+    return Margin
+
+
+def computeSNR(signal, noise, estimate=None):
+    if estimate is None:
+        return 10 * np.log10(np.var(signal) / np.var(noise))
+    else:
+        return 10 * np.log10(np.var(signal) / np.var(estimate - signal))
+
+
+# ===========================================================================
+
+
+def S1_ComputeDist1D(BlockDCT1, BlockDCT2):
+    """
+    Compute the distance of two DCT arrays *BlockDCT1* and *BlockDCT2*
+    """
+    if BlockDCT1.shape != BlockDCT2.shape:
+        print(
+            'ERROR: two DCT Blocks are not at the same shape in step1 computing distance.\n')
+        exit()
+    blocksize = BlockDCT1.shape[0]
+    if sigma > 40:
+        ThreValue = lamb2d * sigma
+        BlockDCT1 = np.where(abs(BlockDCT1) < ThreValue, 0, BlockDCT1)
+        BlockDCT2 = np.where(abs(BlockDCT2) < ThreValue, 0, BlockDCT2)
+    return np.linalg.norm(BlockDCT1 - BlockDCT2)**2 / (blocksize**2)
+
+
+def S1_Grouping1D(noisyImg, RefPoint, blockDCT1D_all, blocksize, ThreDist, MaxMatch, WindowSize):
+    # initialization, get search boundary
+    WindowLoc = searchWindow1D(noisyImg, RefPoint, blocksize, WindowSize)
+    # print(WindowLoc)
+    # number of searched blocks
+    Block_Num_Searched = (WindowSize - blocksize + 1)
+    # print(Block_Num_Searched)
+    # 0 padding init
+    BlockPos = np.zeros((Block_Num_Searched, 1), dtype=int)
+    BlockGroup = np.zeros(
+        (Block_Num_Searched, blocksize), dtype=float)
+    Dist = np.zeros(Block_Num_Searched, dtype=float)
+
+    RefDCT = blockDCT1D_all[RefPoint, :]
+    # print(RefDCT)
+    match_cnt = 0
+    # k = []
+    for i in range(WindowSize - blocksize + 1):
+        # for j in range(WindowSize - blocksize + 1):
+        SearchedDCT = blockDCT1D_all[WindowLoc[0, 0] + i, :]
+        dist = S1_ComputeDist1D(RefDCT, SearchedDCT)
+        # k.append(dist)
+        if dist < ThreDist:
+            BlockPos[match_cnt, :] = [
+                WindowLoc[0, 0] + i, ]
+            # Block Group has DCT data inside.
+            # convenient for 3-D Transform
+            BlockGroup[match_cnt, :] = SearchedDCT
+            Dist[match_cnt] = dist
+            match_cnt += 1
+    # print(k)
+    # print(sorted(k))
+    '''
+    if match_cnt == 1:
+        print('WARNING: no similar blocks founded for the reference block {} in basic estimate.\n'\
+              .format(RefPoint))
+    '''
+    if match_cnt <= MaxMatch:
+        # less than MaxMatch similar blocks founded, return all similar blocks
+        BlockPos = BlockPos[:match_cnt, :]
+        BlockGroup = BlockGroup[:match_cnt, :]
+    else:
+        # more than MaxMatch similar blocks founded, return MaxMatch similarest blocks
+        # These lines are awesome.
+        idx = np.argpartition(Dist[:match_cnt], MaxMatch)
+        BlockPos = BlockPos[idx[:MaxMatch], :]
+        BlockGroup = BlockGroup[idx[:MaxMatch], :]
+    return BlockPos, BlockGroup
+
+
+def S1_2DFiltering(BlockGroup):
+    # print(BlockGroup)
+    ThreValue = lamb3d * sigma * 8
+    nonzero_cnt = 0
+    # since 2D transform has been done, we do 1D transform, hard-thresholding and inverse 1D
+    # transform, the inverse 2D transform is left in aggregation processing
+
+    for i in range(BlockGroup.shape[1]):  # shape=(16,8)
+        # print(BlockGroup[:, i, j])
+        ThirdVector = dct(BlockGroup[:, i], norm='ortho')  # 1D DCT
+        # print(abs(ThirdVector[:]) < ThreValue)
+        ThirdVector[abs(ThirdVector[:]) < ThreValue] = 0.
+        # print(ThirdVector)
+        # exit()
+        nonzero_cnt += np.nonzero(ThirdVector)[0].size
+        BlockGroup[:, i] = list(idct(ThirdVector, norm='ortho'))
+    return BlockGroup, nonzero_cnt
+    pass
+
+
+def S1_Aggregation(BlockGroup, BlockPos, basic_estimate, basicWeight, basicKaiser, nonzero_cnt):
+
+    if nonzero_cnt < 1:
+        BlockWeight = 1.0 * basicKaiser
+    else:
+        BlockWeight = (1. / (sigma ** 2 * nonzero_cnt)) * basicKaiser
+    # print(BlockPos.shape[0])
+    for i in range(BlockPos.shape[0]):
+        # print(BlockPos[i, 0], BlockPos[i, 0] + BlockGroup.shape[1])
+        basic_estimate[BlockPos[i, 0]:BlockPos[i, 0] +
+                       BlockGroup.shape[1]] += np.dot(BlockWeight, np.diag(idct(BlockGroup[i, :])))
+        basicWeight[BlockPos[i, 0]:BlockPos[i, 0] +
+                    BlockGroup.shape[1]] += BlockWeight
+
+
+def BM3D1D_S1(noisySignal, para=None):
+    # Using global variables
+    basicEstimate = np.zeros(noisySignal.shape, dtype=float)
+    basicWeight = np.zeros(noisySignal.shape, dtype=float)
+    window = np.array(np.kaiser(S1_blocksize, beta))
+    # basicKaiser = np.array(window.T * window)
+    basicKaiser = window
+
+    blockDCT1D_all = preDCT1D(noisySignal, S1_blocksize)
+
+    all_ = int((noisySignal.shape[0] - S1_blocksize) / S1_DownScale) + 2
+    print('{} iterations remain.'.format(all_))
+    count = 0
+    start_ = time.time()
+
+    for i in range(all_):
+        if i != 0:
+            print('i={}; Processing {}% ({}/{}), consuming {} s'.format(i,
+                                                                        count * 100 / all_, count, all_, time.time() - start_))
+        count += 1
+        RefPoint = min(S1_DownScale * i,
+                       noisySignal.shape[0] - S1_blocksize - 1)
+        BlockPos, BlockGroup = S1_Grouping1D(
+            noisySignal, RefPoint, blockDCT1D_all, S1_blocksize, S1_Threshold, S1_MaxMatch, S1_WindowSize)
+        # print(BlockPos, BlockGroup)
+        # exit()
+        BlockGroup, nonzero_cnt = S1_2DFiltering(BlockGroup)
+        S1_Aggregation(BlockGroup, BlockPos, basicEstimate,
+                       basicWeight, basicKaiser, nonzero_cnt)
+    basicWeight = np.where(basicWeight == 0, 1, basicWeight)
+    basicEstimate[:] /= basicWeight[:]
+    return basicEstimate
+
+
+# ==========================================================
+
+def S2_Aggregation1D(BlockGroup_noisy, WienerWeight, BlockPos, finalImg, finalWeight, finalKaiser):
+    """
+    Compute the final estimate of the true-image by aggregating all of the obtained local estimates
+    using a weighted average
+    """
+    BlockWeight = WienerWeight * finalKaiser
+    for i in range(BlockPos.shape[0]):
+        finalImg[BlockPos[i, 0]:BlockPos[i, 0] + BlockGroup_noisy.shape[1]
+                 ] += BlockWeight * idct(BlockGroup_noisy[i, :])
+        finalWeight[BlockPos[i, 0]:BlockPos[i, 0] +
+                    BlockGroup_noisy.shape[1]] += BlockWeight
+
+
+def S2_2DFiltering(BlockGroup_basic, BlockGroup_noisy):
+    """
+    Wiener Filtering
+    """
+    Weight = 0
+    coef = 1.0 / BlockGroup_noisy.shape[0]
+    for i in range(BlockGroup_noisy.shape[1]):
+        # for j in range(BlockGroup_noisy.shape[2]):
+        Vec_basic = dct(BlockGroup_basic[:, i], norm='ortho')
+        Vec_noisy = dct(BlockGroup_noisy[:, i], norm='ortho')
+        Vec_value = Vec_basic**2 * coef
+        Vec_value /= (Vec_value + sigma**2)  # pixel weight
+        Vec_noisy *= Vec_value
+        Weight += np.sum(Vec_value)
+        '''for k in range(BlockGroup_noisy.shape[0]):
+                Value = Vec_basic[k]**2 * coef
+                Value /= (Value + sigma**2) # pixel weight
+                Vec_noisy[k] = Vec_noisy[k] * Value
+                Weight += Value'''
+        BlockGroup_noisy[:, i] = list(idct(Vec_noisy, norm='ortho'))
+    if Weight > 0:
+        WienerWeight = 1. / (sigma**2 * Weight)
+    else:
+        WienerWeight = 1.0
+    return BlockGroup_noisy, WienerWeight
+
+
+def S2_ComputeDist1D(sig, Point1, Point2, BlockSize):
+    """
+    Compute distance between blocks whose left-top margins' coordinates are *Point1* and *Point2*
+    """
+    Block1 = (sig[Point1[0]:Point1[0] + BlockSize]).astype(np.float64)
+    Block2 = (sig[Point2[0]:Point2[0] + BlockSize]).astype(np.float64)
+    return np.linalg.norm(Block1 - Block2)**2 / (BlockSize**2)
+
+
+def S2_Grouping1D(basicEstimate, noisyImg, RefPoint, BlockSize, ThreDist, MaxMatch, WindowSize,
+                  BlockDCT_basic, BlockDCT_noisy):
+    WindowLoc = searchWindow1D(basicEstimate, RefPoint, BlockSize, WindowSize)
+
+    Block_Num_Searched = (WindowSize - BlockSize + 1)
+
+    BlockPos = np.zeros((Block_Num_Searched, 1), dtype=int)
+    BlockGroup_basic = np.zeros(
+        (Block_Num_Searched, BlockSize), dtype=float)
+    BlockGroup_noisy = np.zeros(
+        (Block_Num_Searched, BlockSize), dtype=float)
+    Dist = np.zeros(Block_Num_Searched, dtype=float)
+    match_cnt = 0
+    for i in range(WindowSize - BlockSize + 1):
+        SearchedPoint = [WindowLoc[0, 0] + i]
+        dist = S2_ComputeDist1D(
+            basicEstimate, [RefPoint], SearchedPoint, BlockSize)
+        if dist < ThreDist:
+            BlockPos[match_cnt, :] = SearchedPoint
+            Dist[match_cnt] = dist
+            match_cnt += 1
+    if match_cnt <= MaxMatch:
+        BlockPos = BlockPos[:match_cnt, :]
+    else:
+        idx = np.argpartition(Dist[:match_cnt], MaxMatch)
+        BlockPos = BlockPos[idx[:MaxMatch], :]
+    for i in range(BlockPos.shape[0]):
+        SimilarPoint = BlockPos[i, :]
+        BlockGroup_basic[i, :] = BlockDCT_basic[SimilarPoint[0], :]
+        BlockGroup_noisy[i, :] = BlockDCT_noisy[SimilarPoint[0], :]
+    BlockGroup_basic = BlockGroup_basic[:BlockPos.shape[0], :]
+    BlockGroup_noisy = BlockGroup_noisy[:BlockPos.shape[0], :]
+    return BlockPos, BlockGroup_basic, BlockGroup_noisy
+
+
+def BM3D1D_S2(noisySignal, basicEstimate):
+    finalEstimate = np.zeros(noisySignal.shape, dtype=float)
+    finalWeight = np.zeros(noisySignal.shape, dtype=float)
+    Window = np.array(np.kaiser(S2_blocksize, beta))
+    finalKaiser = Window
+
+    BlockDCT_noisy = preDCT1D(noisySignal, S2_blocksize)
+    BlockDCT_basic = preDCT1D(basicEstimate, S2_blocksize)
+    count = 0
+    start_ = time.time()
+    all_ = int((basicEstimate.shape[0] - S2_blocksize) / S2_DownScale) + 2
+
+    for i in range(int((basicEstimate.shape[0] - S2_blocksize) / S2_DownScale) + 2):
+        print('i={}; Processing {}% ({}/{}), consuming {} s'.format(i,
+                                                                    count * 100 / all_, count, all_, time.time() - start_))
+        RefPoint = min(S2_DownScale * i,
+                       basicEstimate.shape[0] - S2_blocksize - 1)
+        BlockPos, BlockGroup_basic, BlockGroup_noisy = S2_Grouping1D(basicEstimate, noisySignal,
+                                                                     RefPoint, S2_blocksize,
+                                                                     S2_Threshold, S2_MaxMatch,
+                                                                     S2_WindowSize,
+                                                                     BlockDCT_basic,
+                                                                     BlockDCT_noisy)
+
+        BlockGroup_noisy, WienerWeight = S2_2DFiltering(
+            BlockGroup_basic, BlockGroup_noisy)
+        S2_Aggregation1D(BlockGroup_noisy, WienerWeight, BlockPos, finalEstimate, finalWeight,
+                         finalKaiser)
+        count += 1
+
+    finalWeight = np.where(finalWeight == 0, 1, finalWeight)
+    finalEstimate[:] /= finalWeight[:]
+    return finalEstimate
+# ==========================================================
+
+
+if __name__ == '__main__':
+    cvInit()
+
+    sig = signalGen(A)
+    noisySignal, noise = AWGN(25, sig)
+    print(np.var(noisySignal))
+
+    S1_start = time.time()
+    signalBasicEstimate = BM3D1D_S1(noisySignal) / np.sqrt(A)
+    print('\nFinish Basic Estimate in {} s'.format(time.time() - S1_start))
+    plt.plot(signalBasicEstimate)
+    plt.show()
+
+    print('signal power:\t{}'.format(np.var(sig)))
+    print('noise power:\t{}'.format(np.var(noise)))
+    print('SNR:\t\t\t{} dB'.format(computeSNR(sig, noise)))
+    print('basic estimate SNR:\t{} dB'.format(
+        computeSNR(sig, None, signalBasicEstimate)))
+
+    S2_start = time.time()
+    finalEstimate = BM3D1D_S2(signalBasicEstimate, noisySignal) / np.sqrt(A)
+    print('\nFinish Final Estimate in {} s'.format(time.time() - S2_start))
+    plt.plot(finalEstimate)
+    plt.show()
+
+    print('signal power:\t{}'.format(np.var(sig)))
+    print('noise power:\t{}'.format(np.var(noise)))
+    print('SNR:\t\t\t{} dB'.format(computeSNR(sig, noise)))
+    print('final estimate SNR:\t{} dB'.format(
+        computeSNR(sig, None, finalEstimate)))
+
+    exit()
+    # Basic_PSNR = computePSNR()
+
+```
 
 
 
