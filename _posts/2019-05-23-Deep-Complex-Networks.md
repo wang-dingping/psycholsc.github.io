@@ -188,7 +188,7 @@ $$
 
 以及
 
-<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/ComplexNetworkTab2.png" style="display: inline-block;" width="600"/>
+<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/ComplexNetworksTab2.png" style="display: inline-block;" width="600"/>
 </div>
 
 ### 3.5 COMPLEX BATCH NORMALIZATION
