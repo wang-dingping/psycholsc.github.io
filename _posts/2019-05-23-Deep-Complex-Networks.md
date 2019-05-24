@@ -114,8 +114,9 @@ $$
 \end{equation}
 $$
 
-<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/ComplexNetworks1.png" style="display: inline-block;" width="500"/>
+<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/ComplexNetworks1.png" style="display: inline-block;" width="650"/>
 </div>
+
 
 如图所示我们将运算写成矩阵的形式就会得到
 $$
@@ -131,8 +132,9 @@ $$
 
 这里需要考虑到复链式法则。我贴个图
 
-<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/ComplexNetworks6.3.png" style="display: inline-block;" width="500"/>
+<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/ComplexNetworks6.3.png" style="display: inline-block;" width="600"/>
 </div>
+
 
 为了可以实现复数网络的反向传播算法，就需要我们可以找到一个分别在实数和虚数部分都可微的代价函数和激活函数。
 
@@ -181,7 +183,13 @@ zReLU(z)=z,\:where\:\theta_z\in[0,\pi/2],else \:\:0
 $$
 上述结果的测试如下
 
+<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/ComplexNetworksTab1.png" style="display: inline-block;" width="600"/>
+</div>
 
+以及
+
+<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/ComplexNetworkTab2.png" style="display: inline-block;" width="600"/>
+</div>
 
 ### 3.5 COMPLEX BATCH NORMALIZATION
 
@@ -224,10 +232,94 @@ $$
 \begin{split}
 \gamma = \left( \begin{matrix} \gamma_{rr}&\gamma{ri}\\ \gamma_{ri}&\gamma_{ii} \end{matrix} \right)
 \end{split}
-\tag{11}
+\tag{12}
 \end{equation}
 $$
-初始化时均初始化为$$1/\sqrt{2}$$，$$\beta=0+0i$$。
+初始化时均初始化为$$1/\sqrt{2}$$，$$\beta=0+0i$$。优化过程采用带动量的滑动平均。
+
+### 3.6 COMPLEX WEIGHT INITIALIZATION
+
+当我们没有部署批量归一化的时候，正确的初始值是一个非常重要的降低梯度爆炸或消失的因素。一个复数权重可以表示为
+$$
+\begin{equation}
+\begin{split}
+W=\mid W\mid e^{i\theta}=\mathfrak R\{ W \}+i\mathfrak I\{ W \}
+\end{split}
+\tag{13}
+\end{equation}
+$$
+计算方差为
+$$
+\begin{equation}
+\begin{split}
+var(W)=\mathbb E[WW^*]-\mathbb E^2[W]
+\end{split}
+\tag{14}
+\end{equation}
+$$
+当均值为$$0$$的时候，这个结果就会自然地**收敛到前面的式子**。我们并不知道这个方差是多少，但是我们知道$$var(|W|)$$，
+$$
+\begin{equation}
+\begin{split}
+var(|W|)=\mathbb E[|W||W|^*]-\mathbb E^2[|W|]
+\end{split}
+\tag{15}
+\end{equation}
+$$
+可以将两式合并得到
+$$
+\begin{equation}
+\begin{split}
+var(|W|)=var(W)-\mathbb E^2[|W|]
+\end{split}
+\tag{16}
+\end{equation}
+$$
+
+
+因此可以通过瑞利分布得到原结果
+$$
+\begin{equation}
+\begin{split}
+E[|W|]&=\sigma\sqrt \frac \pi 2\\
+Var(|W|)&=\frac{4-\pi} 2 \sigma^2
+\end{split}
+\tag{17}
+\end{equation}
+$$
+即
+$$
+\begin{equation}
+\begin{split}
+var(W)=2\sigma^2
+\end{split}
+\tag{18}
+\end{equation}
+$$
+这是很简单的推导过程。
+
+根据前人不同的研究成果，这里的$$\sigma$$其实可以较为自由地选取，在不同条件下得到的结果也是不同的。 方差显然只由$$\sigma $$这一个参数决定，而且与相位没有关系，所以我们可以使用$$-\pi\sim \pi$$均匀分布来初始化相位。
+
+学习去相关的特征有利于泛化以及快速学习。
+
+> 实话讲初始化这一部分我就没看懂
+
+### 3.7  COMPLEX CONVOLUTIONAL RESIDUAL NETWORK
+
+<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/ComplexNetworks6.1.png" style="display: inline-block;" width="500"/>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
