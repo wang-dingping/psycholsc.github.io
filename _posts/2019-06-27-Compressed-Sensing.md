@@ -31,7 +31,7 @@ $$
 
 其中我将观测矩阵写成了列向量的形式，直观些的写法还可以画成图像如下
 
-<div style="text-align:center"><img alt="" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/cs1.png" style="display: inline-block;" width="200"/>
+<div style="text-align:center"><img alt="fig.1" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/cs1.png" style="display: inline-block;" width="200"/>
 </div>
 
 如果$$x$$是一个通常意义上的信号，直观上不存在稀疏性，则在线性代数的知识中我们知道，通过$$y$$和$$D$$我们不能重建出信号$$x$$，因为对于$$M>N$$个未知参量，我们只做了$$N$$次线性采样，一定无法计算出正确的$$x$$。如果此时我们的方程式过定的，即$$M>N$$，这样我们其实实现了过采样，通过最小二乘方法是可以获得近似解的。注意如果是$$M=N$$的饱和采样，我们通过直接求逆的方法可以直接求得完美解，欠定的情况虽然也能获取一个最小二乘表达式，但是仍然不能获取正确的解（毕竟欠采样信息量丢的一塌糊涂），由于自由度没有被完全约束，实际上可以有无穷多组解都满足条件。
@@ -81,3 +81,15 @@ $$
 
 有时我们说$$\theta $$是`K`稀疏的，即$$\theta$$中包含`K`个非零项，其他项均为`0`。不过实际中也往往并非如此，实际应用中稀疏往往是其他项远小于`K`个明显的非零项（即近似为零但并不为零），呈现簇状分布。
 
+### 信号的稀疏表示
+
+信号的稀疏表示说，在给定的超完备字典中用尽可能少的原子来表示信号，可以获得信号更为简洁的表示方式，从而方便信号的编码和压缩等。信号的稀疏表示与压缩感知中的一般模型相似，例如假设我们用$$D$$矩阵表示字典矩阵，$$\theta$$表示信号的稀疏分解（稀疏表示），原信号为$$X$$，信号模型就可以描述为
+$$
+\begin{equation}
+\begin{split}
+X=D\theta
+\end{split}
+\tag{5}
+\end{equation}
+$$
+这个表达就相当于将信号$$X$$表示为一个字典下的稀疏形式。如果这个字典矩阵是一个方阵，我们说这是一个完备字典，例如傅里叶变换阵；如果字典阵的形式
