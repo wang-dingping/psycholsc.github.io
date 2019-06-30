@@ -13,6 +13,12 @@ author: Shicong Liu
 
 [TOC]
 
+
+
+<div style="text-align:center" title="fig.1"><img alt="fig.1" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/cstitle.png" style="display: inline-block;" width="200" />
+<p>Fig.0 Abstract</p>
+</div>
+
 ## 背景&概述
 
 信号处理中，我们往往是将信号通过`ADC`后做处理。这个过程需要`ADC`的高速采样，因为目前已有较多的信号频段逐渐靠近`6GHz`，需要更高的采样速率，这将增大`ADC`的功耗，也会带来处理与存储上的困难。
@@ -115,4 +121,19 @@ $$
 > 具体方法日后补全
 
 ### 字典相关性
+
+ 我们假设$$X=D\theta$$中字典为
+$$
+\begin{equation}
+\begin{split}
+D=\left[\begin{matrix}\\ \\ d_1\:d_2\:...\:d_N\\ \\ \\\end{matrix}\right]
+\end{split}
+\tag{7}
+\end{equation}
+$$
+则稀疏$$\theta$$将选出字典中的$$K$$列进行线性组合，表达信号$$X$$。我们说，字典的每一列$$d_k$$是字典的一个基。从这个角度来看，当这一组基恰好是一组正交基的时候，例如`DFT`变换基，字典就可以说是完备的了，但是这样的字典表达能力可能并不完善，因此人们会采用过完备字典，例如将矩阵横向间隔减小，从而使矩阵变得更长，因此增加了基的数量，提高模型的表现力。
+
+字典的相关性是一个重要的问题。我们假设字典是高度相关的，则每一个线性组合之间就存在高度冗余，这将导致稀疏解不唯一或难以求解等问题。从另一个角度看，相关性越小可以证明信息量越大，则字典矩阵包含的信息量越大，也可以表达更多的信号。
+
+相关性被定义为
 
