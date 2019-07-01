@@ -15,15 +15,19 @@ author: Shicong Liu
 
 
 
-<div style="text-align:center" title="fig.1"><img alt="fig.1" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/cstitle.png" style="display: inline-block;" width="200" />
-<p>Fig.0 Abstract</p>
+<div style="text-align:center" title="fig.1"><img alt="fig.1" src="https://raw.githubusercontent.com/psycholsc/psycholsc.github.io/master/assets/cstitle.png" style="display: inline-block;" width="600" />
+<p>Fig.0 CS Abstract </p>
 </div>
+
+*总体来说我个人还是感觉这不是什么复杂技术的啦*
 
 ## 背景&概述
 
-信号处理中，我们往往是将信号通过`ADC`后做处理。这个过程需要`ADC`的高速采样，因为目前已有较多的信号频段逐渐靠近`6GHz`，需要更高的采样速率，这将增大`ADC`的功耗，也会带来处理与存储上的困难。
+直到`2004`年压缩感知技术的正式提出之前，奈奎斯特采样定理始终统治着信号处理。即使有的信号没有明显的带宽，其采样也要遵循着时空间分辨率的限制，这实际上也是隐性的应用了那奎斯特采样定理，因为往往需要低通滤波器进行抗混叠。因此在使用`ADC`时，典型的场景就是利用高于奈奎斯特采样频率的速率进行均匀采样。
 
-但是实际上我们处理的许多通信信号都是稀疏的，或者说在某个域上是稀疏的（这也将导致奈奎斯特采样速率下得到的信号存在大量的冗余），我们在恢复信号的时候就可以不必受限于奈奎斯特采样速率，从而在更少的采样点数中恢复信号。摆脱这一限制的方法就是压缩感知方法，可以通过远小于奈奎斯特采样率的速率通过非线性重建算法较完美地重建原有信号。
+这个过程需要`ADC`的高速采样，但因为目前已有较多的信号频段逐渐靠近`6GHz`，因此需要更高的采样速率，这将增大`ADC`的功耗，也会带来处理与存储上的困难。
+
+实际上我们处理的许多通信信号都是稀疏的，或者说在某个域上是稀疏的（这也将导致奈奎斯特采样速率下得到的信号存在大量的冗余），我们在恢复信号的时候就可以不必受限于奈奎斯特采样速率，从而在更少的采样点数中恢复信号。摆脱这一限制的方法就是压缩感知方法，可以通过远小于奈奎斯特采样率的速率通过非线性重建算法较完美地重建原有信号。
 
 一个典型的压缩感知问题如下，假设我们的信号$$x$$通过观测矩阵$$h$$后得到接收结果$$y$$，其表示为矩阵如下
 $$
@@ -136,4 +140,21 @@ $$
 字典的相关性是一个重要的问题。我们假设字典是高度相关的，则每一个线性组合之间就存在高度冗余，这将导致稀疏解不唯一或难以求解等问题。从另一个角度看，相关性越小可以证明信息量越大，则字典矩阵包含的信息量越大，也可以表达更多的信号。
 
 相关性被定义为
+$$
+\begin{equation}
+\begin{split}
+\mu=\max\limits_{l\neq m}\mid \varPhi_l^T \varPhi_m \mid
+\end{split}
+\tag{8}
+\end{equation}
+$$
+字典中的各个基之间的相关性越低，可以认为字典表达能力越强。除此之外有人评价$$\varPhi$$和$$\varPsi$$之间元素的相关性，在我看来还不能理解这样做的意义。
+
+
+
+## Reference
+
+[1] D. L. Donoho, "Compressed sensing," in *IEEE Transactions on Information Theory*, vol. 52, no. 4, pp. 1289-1306, April 2006.
+
+[2] E. J. Candes and M. B. Wakin, "An Introduction To Compressive Sampling," in *IEEE Signal Processing Magazine*, vol. 25, no. 2, pp. 21-30, March 2008.
 
