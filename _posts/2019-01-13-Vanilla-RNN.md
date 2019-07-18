@@ -55,7 +55,7 @@ $$y^t=g(W_{hy}h^t+b_y) \tag{2}$$
 
 
 
-以上计算与个人习惯有关，运算可以理解为，每一个`cell`输入前一时刻的状态$$h^{t-1}​$$，利用输入$$x^{t}​$$，通过一个非线性关系计算该时刻的状态$$h^t​$$，然后利用该时刻状态计算输出$$y^t​$$。此过程建立了输入与输出的联系，并且对其中循环更新的隐藏状态$$h​$$进行更新。
+以上计算与个人习惯有关，运算可以理解为，每一个`cell`输入前一时刻的状态$$h^{t-1}$$，利用输入$$x^{t}$$，通过一个非线性关系计算该时刻的状态$$h^t$$，然后利用该时刻状态计算输出$$y^t$$。此过程建立了输入与输出的联系，并且对其中循环更新的隐藏状态$$h$$进行更新。
 
 最简单的vanilla RNN应用是文字的预测，此处以字母为输入，依照输入指定长度的字符序列，预测接下来输出的字符序列。
 
@@ -67,15 +67,15 @@ $$y^t=g(W_{hy}h^t+b_y) \tag{2}$$
 >
 >2. 词向量法（word2vec）。此编码方式通过一定的算法将单词向量化，最小处理单位是词。这种方法生成的词向量，在同义词之间有很强的相关性（表现为长度与方向的近似，以及相加时可以将词的表意相加而组成词组），而且是指定长度（维度）的，在字典超大的条件下可以降低内存使用。
 
-这样，该模型输入$$x^t​$$就可以用向量的方式来表达。按照上图所示，假设模型输入是$$m​$$维的向量，例如
+这样，该模型输入$$x^t$$就可以用向量的方式来表达。按照上图所示，假设模型输入是$$m$$维的向量，例如
 
-$$ x^t=\left[ \begin{matrix} x_0  \\ x_1  \\ x_2 \\ x_3 \\ ... \\ x_m  \end{matrix} \right] _{m \times 1}​$$ 
+$$ x^t=\left[ \begin{matrix} x_0  \\ x_1  \\ x_2 \\ x_3 \\ ... \\ x_m  \end{matrix} \right] _{m \times 1}$$ 
 
 
 
 由于编码为独热码，因此可以写作
 
-$$ x^t=\left[ \begin{matrix} 0  \\ ...  \\ 1 \\ ... \\  0  \end{matrix} \right] _{m \times 1}​$$
+$$ x^t=\left[ \begin{matrix} 0  \\ ...  \\ 1 \\ ... \\  0  \end{matrix} \right] _{m \times 1}$$
 
 对于上面图中表示的RNN模型，输入时每一个时序输入一个向量即可。
 
@@ -83,7 +83,7 @@ $$ x^t=\left[ \begin{matrix} 0  \\ ...  \\ 1 \\ ... \\  0  \end{matrix} \right] 
 
 $$ x_A=\left[ \begin{matrix} 1  \\ 0  \\ ... \\  0  \end{matrix} \right] _{m \times 1}$$
 
-另外假设隐藏状态$$h​$$的长度为$$n​$$，则计算过程可以写成矩阵
+另外假设隐藏状态$$h$$的长度为$$n$$，则计算过程可以写成矩阵
 
 $$ h^t=\left[ \begin{matrix} h_1^t  \\ h_2^t   \\ ... \\ ... \\ h_n^t  \end{matrix} \right] _{n \times 1}=\mathfrak F\left( \left[ \begin{matrix} ... & W_{hx}(1,j) & ... \\... & ... & ...   \\ ... & W_{hx}(i,j) & ...  \\ ... & ... & ...  \\  ... & W_{hx}(n,j) & ...   \end{matrix} \right] _{n \times m} \left[ \begin{matrix} 0  \\ ...  \\ 1 \\ ... \\  0  \end{matrix} \right] _{m \times 1}+    \left[ \begin{matrix} ... & W_{hh}(1,j) & ... \\... & ... & ...   \\ ... & W_{hh}(i,j) & ...  \\ ... & ... & ...  \\  ... & W_{hh}(n,j) & ...   \end{matrix} \right] _{n \times n} \left[ \begin{matrix} h_1^{t-1}  \\ h_2^{t-1}   \\ ... \\ ... \\ h_n^{t-1}  \end{matrix} \right] _{n \times 1}        \right) $$ 
 
@@ -91,7 +91,7 @@ $$ h^t=\left[ \begin{matrix} h_1^t  \\ h_2^t   \\ ... \\ ... \\ h_n^t  \end{matr
 
 相似的，输出可以写作
 
-$$ y^t=\left[ \begin{matrix} \hat y_1^t  \\ \hat y_2^t   \\ ... \\ ... \\ \hat y_m^t  \end{matrix} \right] _{m \times 1}=\mathfrak G\left( \left[ \begin{matrix} ... & W_{hy}(1,j) & ... \\... & ... & ...   \\ ... & W_{hy}(i,j) & ...  \\ ... & ... & ...  \\  ... & W_{hy}(m,j) & ...   \end{matrix} \right] _{m \times n} \left[ \begin{matrix} h_1^t  \\ h_2^t   \\ ... \\ ... \\ h_n^t  \end{matrix} \right] _{n \times 1}   \right) ​$$
+$$ y^t=\left[ \begin{matrix} \hat y_1^t  \\ \hat y_2^t   \\ ... \\ ... \\ \hat y_m^t  \end{matrix} \right] _{m \times 1}=\mathfrak G\left( \left[ \begin{matrix} ... & W_{hy}(1,j) & ... \\... & ... & ...   \\ ... & W_{hy}(i,j) & ...  \\ ... & ... & ...  \\  ... & W_{hy}(m,j) & ...   \end{matrix} \right] _{m \times n} \left[ \begin{matrix} h_1^t  \\ h_2^t   \\ ... \\ ... \\ h_n^t  \end{matrix} \right] _{n \times 1}   \right) $$
 
 
 
@@ -99,7 +99,7 @@ $$ y^t=\left[ \begin{matrix} \hat y_1^t  \\ \hat y_2^t   \\ ... \\ ... \\ \hat y
 
 上述操作将在不同的`cell`之间传播，整个网络相当于一个时序处理模型。现在我们需要调整系统，因为各个矩阵的权值都是初始化的时候自动生成的，因此并不能直接输出我们期待的结果。因此要设计算法，能够根据我们期待的输出结果对系统进行调整。最常见的能够动态调整的算法就是梯度下降法，这里会从梯度下降的角度介绍RNN的优化过程。
 
-梯度下降的计算方法是，让目前的参数向错误减小的梯度方向进行一定步长的移动。首先我们需要规定一个能够衡量参数误差的函数，常命名为$$loss​$$或$$E​$$。简单常用的衡量方法有很多，取其中的两种。
+梯度下降的计算方法是，让目前的参数向错误减小的梯度方向进行一定步长的移动。首先我们需要规定一个能够衡量参数误差的函数，常命名为$$loss$$或$$E$$。简单常用的衡量方法有很多，取其中的两种。
 
 >一、 **直接比较**，采用均方误差方法衡量，
 >
@@ -107,19 +107,19 @@ $$ y^t=\left[ \begin{matrix} \hat y_1^t  \\ \hat y_2^t   \\ ... \\ ... \\ \hat y
 >
 >或
 >
->$$MSE=\frac{1}{2m}\sum\limits_{i=1}^m(y-\hat y)^2​$$
+>$$MSE=\frac{1}{2m}\sum\limits_{i=1}^m(y-\hat y)^2$$
 >
 >其中$$t$$是期待的正确输出，$$y$$是系统真实输出。采用这种方法，只需要设计算法让$$E$$向$$0$$逼近即可。二次方项在求导后会消失，计算起来也很方便。这个函数也是一个凸函数，因此在区间内的局部最优解就是全局最优解。
 
 >二、 **交叉熵比较**，衡量两个概率分布的不同（距离）
 >
->$$H(p,q)=-\sum\limits_i p(x_i)log\: q(x_i)​$$
+>$$H(p,q)=-\sum\limits_i p(x_i)log\: q(x_i)$$
 >
 >或写作
 >
 >$$loss^t=-\frac{1}{n}\sum\limits_{i} \left[y_i\: log(\hat y_i^t) + (1-y_i)\: log(1-\hat y_i^t)  \right]$$
 >
->交叉熵的一般描述是这样的，在此处我们可以认为$$p\:\&\:q​$$是输出变量和实际变量的概率分布。至于为什么说是概率分布，因为输出层常常会做一个`Softmax`操作，这个操作可以将数值转化为一个具有概率意义的值，也可以说是一种归一化方法。
+>交叉熵的一般描述是这样的，在此处我们可以认为$$p\:\&\:q$$是输出变量和实际变量的概率分布。至于为什么说是概率分布，因为输出层常常会做一个`Softmax`操作，这个操作可以将数值转化为一个具有概率意义的值，也可以说是一种归一化方法。
 >
 >注意这里的计算结果是一个数而非矩阵或向量，求和运算是针对向量中的所有元素的。
 >
@@ -129,13 +129,13 @@ $$ y^t=\left[ \begin{matrix} \hat y_1^t  \\ \hat y_2^t   \\ ... \\ ... \\ \hat y
 >
 >$$loss^t = -y_i^tlog(\hat y_i^t)$$
 >
->这里的$$y^t_i$$一般是取值为$$1​$$的那一项，所以也常常不写。这样一比其实可以发现对数似然损失函数和交叉熵损失函数在这种条件下等价。
+>这里的$$y^t_i$$一般是取值为$$1$$的那一项，所以也常常不写。这样一比其实可以发现对数似然损失函数和交叉熵损失函数在这种条件下等价。
 >
 >> 交叉熵和对数损失函数应当是同一种损失函数。我们来稍微讨论一下熵这个东西
 >>
 >> **熵**是给定概率分布时的**不确定性**的度量，通信领域用于衡量**信息量**。以二分类器为例，假设概率分布为$$\{0,1\}$$，显然这个分布时完全确定的，并不存在什么不确定性，我们希望这个时候熵的数值为0；假设概率分布为$$\{0.5,0.5\}$$，则对于某一时刻分类器的输出结果，不确定性是最大的。分类的结果既可能是1，也有可能是2。实际上《通信原理》、《**信息论**》等课本中已经对熵有过明确地计算与定义，即
 >>
->> $$H(x)=-\sum\limits_{i=1}^N p(x_i)log\left(p(x_i) \right)​$$
+>> $$H(x)=-\sum\limits_{i=1}^N p(x_i)log\left(p(x_i) \right)$$
 >>
 >> ---
 >>
@@ -185,23 +185,23 @@ $$ y^t=\left[ \begin{matrix} \hat y_1^t  \\ \hat y_2^t   \\ ... \\ ... \\ \hat y
 >
 > 指数函数族的表达式是
 >
-> $$p(y;\eta)=b(y)e^{\eta^TT(y)-a(\eta)}​$$
+> $$p(y;\eta)=b(y)e^{\eta^TT(y)-a(\eta)}$$
 >
-> 其中$$\eta$$被称为分布的**特性参数**或**自然参数**，$$T(y)$$是充分统计量，$$a(\eta)$$是对数分割函数，使$$e^{-a(\eta)}$$成为一个归一化常数，规定其取值可以令$$\sum p(y;\eta)=1$$。规定了$$T,a,b$$的模型可以表示一族分布，在改变$$\eta​$$时分布随之在族内改变。伯努利分布（两点分布）和高斯分布都是指数函数族内的一种特殊情况。例如两点分布
+> 其中$$\eta$$被称为分布的**特性参数**或**自然参数**，$$T(y)$$是充分统计量，$$a(\eta)$$是对数分割函数，使$$e^{-a(\eta)}$$成为一个归一化常数，规定其取值可以令$$\sum p(y;\eta)=1$$。规定了$$T,a,b$$的模型可以表示一族分布，在改变$$\eta$$时分布随之在族内改变。伯努利分布（两点分布）和高斯分布都是指数函数族内的一种特殊情况。例如两点分布
 >
 > $$p(y;\phi)=\phi^y(1-\phi)^{1-y}=e^{ylog(\phi)+(1-y)log(1-\phi)}=e^{ylog(\frac{\phi}{1-\phi})+log(1-\phi)}$$
 >
-> 以上运算时先取对数将乘性与指数项分离，然后取自然指数。其中$$\phi​$$的定义显然就是$$y=1​$$时的概率。
+> 以上运算时先取对数将乘性与指数项分离，然后取自然指数。其中$$\phi$$的定义显然就是$$y=1$$时的概率。
 >
 > 其中
 >
-> $$T(y)=y​$$
+> $$T(y)=y$$
 >
-> $$a(\eta)=-log(1-\phi)=log(1+e^\eta)​$$
+> $$a(\eta)=-log(1-\phi)=log(1+e^\eta)$$
 >
-> $$b(y)=1​$$
+> $$b(y)=1$$
 >
-> 继续推一步我们会发现$$\phi = \frac{1}{1+e^{-\eta}}​$$，这个函数就是做逻辑回归的`Sigmoid`函数。
+> 继续推一步我们会发现$$\phi = \frac{1}{1+e^{-\eta}}$$，这个函数就是做逻辑回归的`Sigmoid`函数。
 >
 > 我们尝试对逻辑回归进行GLM建模。GLM建模有三个基本**假设**（assumption）
 >
@@ -215,11 +215,11 @@ $$ y^t=\left[ \begin{matrix} \hat y_1^t  \\ \hat y_2^t   \\ ... \\ ... \\ \hat y
 >
 > 又根据伯努利分布的特点，如果
 >
-> $$(y\mid x;\theta)\sim Bernoulli(\phi) ​$$
+> $$(y\mid x;\theta)\sim Bernoulli(\phi) $$
 >
-> 其中$$\theta​$$是系数参数，那么期望是
+> 其中$$\theta$$是系数参数，那么期望是
 >
-> $$E[y\mid x;\theta]=\phi​$$
+> $$E[y\mid x;\theta]=\phi$$
 >
 > 估计函数就可以根据上述假设第二条写作
 >
@@ -231,23 +231,23 @@ $$ y^t=\left[ \begin{matrix} \hat y_1^t  \\ \hat y_2^t   \\ ... \\ ... \\ \hat y
 >
 > 相同的方法可以推一下多分类模型。
 >
-> 对于多分类问题，假设$$y​$$可以分为$$k​$$种不同类别，使用GLM建立模型。根据流程，首先确定一个分布。由于是多分类问题，因此可以采用多项分布（多项式分布）。
+> 对于多分类问题，假设$$y$$可以分为$$k$$种不同类别，使用GLM建立模型。根据流程，首先确定一个分布。由于是多分类问题，因此可以采用多项分布（多项式分布）。
 >
 > >简单说明，伯努利分布是两点分布，两种状态的单次试验问题；二项分布是将两点分布推广到多次试验，而多项式分布则将二项分布推广到多种状态。
 >
 > 多项式分布当然也是可以使用指数函数族进行表示的。首先为了参数化分类结果，目前常用的手段是采用一个列向量作为输出结果，描述方法为
 >
-> $$\hat y=\left[ \begin{matrix} \phi_1^t  \\  \phi_2^t   \\ ... \\ ... \\  \phi_k^t  \end{matrix} \right]​$$
+> $$\hat y=\left[ \begin{matrix} \phi_1^t  \\  \phi_2^t   \\ ... \\ ... \\  \phi_k^t  \end{matrix} \right]$$
 >
-> 我们可以看到$$\phi_i​$$的定义仍然是概率意义。不过实际上这些参数冗余了。例如我们在伯努利分布中仅使用了一个参数$$\phi​$$，但实际上我们是二分类器，因为第二个概率就是$$1-\phi​$$。这里可以采用相同的方法，将概率表示为$$\phi_1,\phi_2,...,\phi_{k-1}​$$，这样第$$k​$$类就可以用$$\phi_k=1-\sum\limits_{i=1}^{k-1}\phi_i​$$。这个方法是仿照伯努利分布来的，只是需要稍微说明。
+> 我们可以看到$$\phi_i$$的定义仍然是概率意义。不过实际上这些参数冗余了。例如我们在伯努利分布中仅使用了一个参数$$\phi$$，但实际上我们是二分类器，因为第二个概率就是$$1-\phi$$。这里可以采用相同的方法，将概率表示为$$\phi_1,\phi_2,...,\phi_{k-1}$$，这样第$$k$$类就可以用$$\phi_k=1-\sum\limits_{i=1}^{k-1}\phi_i$$。这个方法是仿照伯努利分布来的，只是需要稍微说明。
 >
 > 这样，用于与输出比较的结果$$T(y)$$也需要进行修改，原来只需要表示为$$T(y)=0$$或$$T(y)=1$$，这里考虑到多分类模型，就需要描述为
 >
-> $$T(1)=\left[ \begin{matrix} 1  \\  0   \\ ... \\ ... \\  0  \end{matrix} \right];T(2)=\left[ \begin{matrix} 0  \\  1   \\ ... \\ ... \\  0  \end{matrix} \right];T(k-1)=\left[ \begin{matrix} 0 \\  0   \\ ... \\ ... \\  1  \end{matrix} \right];T(k)=\left[ \begin{matrix} 0  \\  0   \\ ... \\ ... \\  0  \end{matrix} \right]​$$
+> $$T(1)=\left[ \begin{matrix} 1  \\  0   \\ ... \\ ... \\  0  \end{matrix} \right];T(2)=\left[ \begin{matrix} 0  \\  1   \\ ... \\ ... \\  0  \end{matrix} \right];T(k-1)=\left[ \begin{matrix} 0 \\  0   \\ ... \\ ... \\  1  \end{matrix} \right];T(k)=\left[ \begin{matrix} 0  \\  0   \\ ... \\ ... \\  0  \end{matrix} \right]$$
 >
-> 严格的说这里就不再是$$T(y)=y$$了。这时候$$T(y)$$被描述为一个$$k-1$$维向量，通过上述方式对分类结果进行描述，当分类为对应位置时，该位置值为1，其他位置为0。多项式分布在$$y​$$取离散值时的概率分布为
+> 严格的说这里就不再是$$T(y)=y$$了。这时候$$T(y)$$被描述为一个$$k-1$$维向量，通过上述方式对分类结果进行描述，当分类为对应位置时，该位置值为1，其他位置为0。多项式分布在$$y$$取离散值时的概率分布为
 >
-> $$p(y;\phi)=\phi_1^{true(y==1)} \phi_2^{true(y==2)} ...\phi_k^{true(y==k)}​$$
+> $$p(y;\phi)=\phi_1^{true(y==1)} \phi_2^{true(y==2)} ...\phi_k^{true(y==k)}$$
 >
 > 其中$$true(y==k)$$的含义是$$y$$是否为$$k$$。若为真则取该函数为1，否则为0。根据分类结果，其实可以写作$$T(y)_i$$
 >
@@ -257,11 +257,11 @@ $$ y^t=\left[ \begin{matrix} \hat y_1^t  \\ \hat y_2^t   \\ ... \\ ... \\ \hat y
 >
 > 类似的进行对数与指数运算操作（为了向指数函数族靠近）可以得到
 >
-> $$p(y;\phi)=exp\left[T(y)_1 log(\phi_1)  +T(y)_2 log(\phi_2) +...+(1-\sum\limits _{i=1}^{k-1}T(y)_i) log(\phi_k)  \right]​$$
+> $$p(y;\phi)=exp\left[T(y)_1 log(\phi_1)  +T(y)_2 log(\phi_2) +...+(1-\sum\limits _{i=1}^{k-1}T(y)_i) log(\phi_k)  \right]$$
 >
 > 展开最右侧求和的括号可以得到
 >
-> $$p(y;\phi)=exp\left[T(y)_1 log(\phi_1/\phi_k)  +T(y)_2 log(\phi_2/\phi_k) +...+T(y)_{k-1} log(\phi_{k-1}/\phi_k)+ log(\phi_k）  \right]​$$
+> $$p(y;\phi)=exp\left[T(y)_1 log(\phi_1/\phi_k)  +T(y)_2 log(\phi_2/\phi_k) +...+T(y)_{k-1} log(\phi_{k-1}/\phi_k)+ log(\phi_k）  \right]$$
 >
 > 将上述结果表示成指数函数族可以得到
 >
@@ -279,23 +279,23 @@ $$ y^t=\left[ \begin{matrix} \hat y_1^t  \\ \hat y_2^t   \\ ... \\ ... \\ \hat y
 >
 > 现在推导概率$$\phi$$的表达式
 >
-> $$e^{\eta_i}=\phi_i/\phi_k​$$
+> $$e^{\eta_i}=\phi_i/\phi_k$$
 >
 > $$\phi_k e^{\eta_i}=\phi_i$$
 >
 > 概率之和为1，则
 >
-> $$\phi_k \sum\limits_{i=1}^k e^{\eta_i}=1​$$
+> $$\phi_k \sum\limits_{i=1}^k e^{\eta_i}=1$$
 >
-> $$\phi_k =\frac{1}{ \sum\limits_{i=1}^k e^{\eta_i}}​$$
+> $$\phi_k =\frac{1}{ \sum\limits_{i=1}^k e^{\eta_i}}$$
 >
 > 回代得到
 >
-> $$\phi_i = \frac{e^{\eta_i}}{ \sum\limits_{j=1}^k e^{\eta_j}}​$$
+> $$\phi_i = \frac{e^{\eta_i}}{ \sum\limits_{j=1}^k e^{\eta_j}}$$
 >
 > 这个函数就被称为**Softmax**，在$$\eta=\theta^T x$$的假设3下，
 >
-> $$p(y=i\mid x;\theta)=\phi_i=\frac{e^{\theta_i^T x}}{ \sum\limits_{j=1}^k e^{\theta_j^T x}}​$$
+> $$p(y=i\mid x;\theta)=\phi_i=\frac{e^{\theta_i^T x}}{ \sum\limits_{j=1}^k e^{\theta_j^T x}}$$
 >
 > 其他内容在此不再赘述。
 
@@ -315,7 +315,7 @@ $$y^t=g(W_{hy}h^t+b_y)\tag{2} $$
 
 ---
 
-指定时序$$t​$$，计算此时的反向传播参数。由于是时序模型，此时也是针对时间的反向传播。
+指定时序$$t$$，计算此时的反向传播参数。由于是时序模型，此时也是针对时间的反向传播。
 
 我们定义总损失
 
@@ -323,19 +323,19 @@ $$E=\sum\limits_{t}E^t\tag{3}$$
 
 最简单的梯度是输出层的梯度。根据计算公式
 
-$$\hat y^t=g(W_{hy}h^t+b_y)=Softmax(W_{hy}h^t+b_y)​$$
+$$\hat y^t=g(W_{hy}h^t+b_y)=Softmax(W_{hy}h^t+b_y)$$
 
 则输出层**偏置**的梯度为
 
-$$\frac{\partial E}{\partial b_y}=\frac{\partial }{\partial b_y}\sum\limits_{t}E^t=\sum\limits_{t}\frac{\partial E^t}{\partial b_y}​$$
+$$\frac{\partial E}{\partial b_y}=\frac{\partial }{\partial b_y}\sum\limits_{t}E^t=\sum\limits_{t}\frac{\partial E^t}{\partial b_y}$$
 
 根据链式法则
 
-$$\sum\limits_{t}\frac{\partial E^t}{\partial b_y}=\sum\limits_{t}\frac{\partial E^t}{\partial \hat y^t} \frac{\partial \hat y^t}{\partial z^t}\frac{\partial z^t}{\partial b_y}​$$
+$$\sum\limits_{t}\frac{\partial E^t}{\partial b_y}=\sum\limits_{t}\frac{\partial E^t}{\partial \hat y^t} \frac{\partial \hat y^t}{\partial z^t}\frac{\partial z^t}{\partial b_y}$$
 
 第一个求导是关于损失函数的求导，第二个求导是关于`Softmax`的求导，第三层就是Softmax内部的求导过程。这样根据链式法则分别求导可以得到
 
-$$\sum\limits_{t}\frac{\partial E^t}{\partial \hat y^t} \frac{\partial \hat y^t}{\partial z^t}\frac{\partial z^t}{\partial b_y}=\sum\limits_{t}-\frac{1}{\hat y^t} \frac{\partial \hat y^t}{\partial z^t}\frac{\partial z^t}{\partial b_y}=\sum\limits_{t}\left[ -\frac{1}{\hat y^t} \frac{e^{z_i}\sum\limits_j e^{z_j} -(e^{z_i})^2}{(\sum\limits_j e^{z_j})^2}·1\right]​$$
+$$\sum\limits_{t}\frac{\partial E^t}{\partial \hat y^t} \frac{\partial \hat y^t}{\partial z^t}\frac{\partial z^t}{\partial b_y}=\sum\limits_{t}-\frac{1}{\hat y^t} \frac{\partial \hat y^t}{\partial z^t}\frac{\partial z^t}{\partial b_y}=\sum\limits_{t}\left[ -\frac{1}{\hat y^t} \frac{e^{z_i}\sum\limits_j e^{z_j} -(e^{z_i})^2}{(\sum\limits_j e^{z_j})^2}·1\right]$$
 
 最终可以求得向量化导数为
 
@@ -343,7 +343,7 @@ $$\sum\limits_t (\hat y^t -y^t)\tag{4}$$
 
 这里求导只有一个需要注意的，就是求导过程中**分母不能只当做是一个常数**，而是应该注意到分母的**求和项中也有我们的自变量项**，因此求导时需要使用除法求导的法则。
 
-> 注意到RNN参数共享，此处$$b_y​$$并不需要写作$$b_y^t​$$，倒是可以在需要的时候写$$(b_y)_i​$$，但很多模型中由于考虑到计算方便，往往不会将$$b_y​$$设计为向量，而是常数。
+> 注意到RNN参数共享，此处$$b_y$$并不需要写作$$b_y^t$$，倒是可以在需要的时候写$$(b_y)_i$$，但很多模型中由于考虑到计算方便，往往不会将$$b_y$$设计为向量，而是常数。
 
 同理可以计算关于$$W_{hy}$$的导数，此时的不同点只在上述求导中的第三项
 
@@ -357,7 +357,7 @@ $$\sum\limits_t (\hat y^t -y^t)·(h^t)^T\tag{5}$$
 
 ---
 
-这里分页，因为后面的计算变得复杂了许多。观察计算表达式可以发现，如果计算关于$$W_{hh}​$$和$$W_{hx}​$$的表达式的导数，就会发现，对于$$t​$$时刻的输出结果，应由两部分组成，分别为$$t​$$时刻的梯度与$$t+1​$$时刻的梯度。这是因为在前向传播计算时，$$t​$$时刻状态$$h^t​$$不仅影响该时刻的输出$$\hat y^t​$$，还会影响下一时刻的输出$$\hat y^{t+1}​$$。当然这还都只是从表达式直接得到的，考虑到状态在网络中不断传递，实际上影响是不断传递的。计算时根据前向传播表达式计算的结果就可以直接推导整个过程。
+这里分页，因为后面的计算变得复杂了许多。观察计算表达式可以发现，如果计算关于$$W_{hh}$$和$$W_{hx}$$的表达式的导数，就会发现，对于$$t$$时刻的输出结果，应由两部分组成，分别为$$t$$时刻的梯度与$$t+1$$时刻的梯度。这是因为在前向传播计算时，$$t$$时刻状态$$h^t$$不仅影响该时刻的输出$$\hat y^t$$，还会影响下一时刻的输出$$\hat y^{t+1}$$。当然这还都只是从表达式直接得到的，考虑到状态在网络中不断传递，实际上影响是不断传递的。计算时根据前向传播表达式计算的结果就可以直接推导整个过程。
 
 我们在这里把两个表达式写出来，一个是该时刻的损失
 
@@ -369,35 +369,35 @@ $$E^t=-log\left[ Softmax\left( W_{hy}h^t +b_y \right) \right]\tag{6}$$
 
 一个是下一时刻的损失
 
-$$E^{t+1}=-log\left[ Softmax\left( W_{hy}tanh(W_{hx}x^{t+1} +W_{hh}h^{t} +b_h )  +b_y \right) \right]\tag{7}​$$
+$$E^{t+1}=-log\left[ Softmax\left( W_{hy}tanh(W_{hx}x^{t+1} +W_{hh}h^{t} +b_h )  +b_y \right) \right]\tag{7}$$
 
-可以看出总损失$$E​$$与两个方向的导数有关，因此计算的时候可能会考虑到两个方向的计算。首先计算较为简单的$$b_h​$$的导数。$$b_h​$$就是$$h^t​$$计算中的一个共享参数，计算时采用链式法则可以写作
+可以看出总损失$$E$$与两个方向的导数有关，因此计算的时候可能会考虑到两个方向的计算。首先计算较为简单的$$b_h$$的导数。$$b_h$$就是$$h^t$$计算中的一个共享参数，计算时采用链式法则可以写作
 
-$$\frac{\partial E}{\partial b_h}=\frac{\partial \sum\limits_{t}E^t}{\partial b_h}=\sum\limits_{t}\frac{\partial E^t}{\partial b_h}=\sum\limits_{t}\frac{\partial E^t}{\partial h^t}\frac{\partial h^t}{\partial b_h} ​$$
+$$\frac{\partial E}{\partial b_h}=\frac{\partial \sum\limits_{t}E^t}{\partial b_h}=\sum\limits_{t}\frac{\partial E^t}{\partial b_h}=\sum\limits_{t}\frac{\partial E^t}{\partial h^t}\frac{\partial h^t}{\partial b_h} $$
 
 
 
-这里比较复杂的就是$$h^t​$$部分的处理，前面说了存在两种方法，计算时主要是考虑$$\frac{\partial E}{\partial h^t}​$$的特殊性。
+这里比较复杂的就是$$h^t$$部分的处理，前面说了存在两种方法，计算时主要是考虑$$\frac{\partial E}{\partial h^t}$$的特殊性。
 
 这里假设一个
 
 $$\delta^{t}=\frac{\partial E}{\partial h^t}=\frac{\partial E^t}{\partial h^t}+\frac{\partial E^{t+1}}{\partial h^{t+1}}\frac{\partial h^{t+1}}{\partial h^{t}}\tag{8}$$
 
-由于每一次计算时刻$$t​$$的导数时都会导致两项结果，因此可以通过这种递推方式求得所有层的结果。
+由于每一次计算时刻$$t$$的导数时都会导致两项结果，因此可以通过这种递推方式求得所有层的结果。
 
 另外，实际上效果应该是无穷传递的，但是这样下去不会得到解析解，因此求导的假设是其它层已知时求导该层。前面一项前面求过了
 
-$$\frac{\partial E^t}{\partial h^t}=W_{hy}^T (\hat y^t-y^t)\tag{9}​$$
+$$\frac{\partial E^t}{\partial h^t}=W_{hy}^T (\hat y^t-y^t)\tag{9}$$
 
-后面一项计算时有些需要考虑的内容，一个是$$tanh​$$的导数，另一个是`Hadamard Product`问题。
+后面一项计算时有些需要考虑的内容，一个是$$tanh$$的导数，另一个是`Hadamard Product`问题。
 
 按照求导规则，激活函数的导数一般是与之前结果做**哈达玛积**，`tanh`的导数一般也采用其本身来表示，即$$(tanh(x))'=1-(tanh(x))^2$$，计算结果就可以表示为
 
-$$\frac{\partial E^{t+1}}{\partial h^{t+1}}\frac{\partial h^{t+1}}{\partial h^{t}}=W_{hh}^T \frac{\partial E^{t+1}}{\partial h^{t+1}}\odot(1-(h^{t+1})^2)​$$
+$$\frac{\partial E^{t+1}}{\partial h^{t+1}}\frac{\partial h^{t+1}}{\partial h^{t}}=W_{hh}^T \frac{\partial E^{t+1}}{\partial h^{t+1}}\odot(1-(h^{t+1})^2)$$
 
 哈达玛积在解决问题时比较复杂，我们直接写成矩阵的乘积比较方便，处理方法就是将两个做哈达玛积的$$n\times 1$$向量的前者写成对角阵，即$$diag(...)$$
 
-$$W_{hh}^T diag\left((1-(h^{t+1})^2)\right)\frac{\partial E^{t+1}}{\partial h^{t+1}}=W_{hh}^T diag\left((1-(h^{t+1})^2)\right)\delta ^{t+1} \tag{10}​$$
+$$W_{hh}^T diag\left((1-(h^{t+1})^2)\right)\frac{\partial E^{t+1}}{\partial h^{t+1}}=W_{hh}^T diag\left((1-(h^{t+1})^2)\right)\delta ^{t+1} \tag{10}$$
 
 所以
 

@@ -37,43 +37,43 @@ comments: true
 
 不得不说，良乡的两年里还是十分精彩的。我认识了一群新朋友，我们组了数不清的队伍，我们完成了许多事情，我们留下了很多回忆。
 
-There are places I remember,
-
-All my life, though some have changed.
-
-Some forever not for better,
-
-Some have gone, and  some remain.
-
-All these places have their moments,
-
-With lovers and friends, I still can recall.
-
-Some are dead and some are living,
-
-In my life,
-
-I've loved them all.
-
-But of all these friends and lovers,
-
-There in no one compares with you.
-
-And these memories lose their meaning,
-
-When I think of love as something new.
-
-Though I know I'll never lose affection,
-
-For people and things, that went before.
-
-I know I'll often stop and think about them,
-
-In my life, 
-
-I love you more. 
+> There are places I remember,
+>
+> All my life, though some have changed.
+>
+> Some forever not for better,
+>
+> Some have gone, and  some remain.
+>
+> All these places have their moments,
+>
+> With lovers and friends, I still can recall.
+>
+> Some are dead and some are living,
+>
+> In my life,
+>
+> I've loved them all.
+>
+> But of all these friends and lovers,
+>
+> There in no one compares with you.
+>
+> And these memories lose their meaning,
+>
+> When I think of love as something new.
+>
+> Though I know I'll never lose affection,
+>
+> For people and things, that went before.
+>
+> I know I'll often stop and think about them,
+>
+> In my life, 
+>
+> I love you more. 
 
 ---
 
-2018-11-26 17:13:09 Modified：
+`2019-5-17 15:16:22 Last Modified`
 
